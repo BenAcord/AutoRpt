@@ -1,0 +1,15 @@
+----------------------------------------------------------------------
+                     AutoRpt TRAINING README
+----------------------------------------------------------------------
+
+Only one IP addresses is stubbed in the targets.txt file for use with 
+any recon tools that take a file for input (eg. autorecon, nmap, etc.).
+
+The training report is a simplistic, single page intended for a single 
+system write up.  A good option for Hack the Box, Try Hack Me, VulnHub, 
+or a college assignment.
+
+When complete with the write-up use the following command to produce a 
+PDF file.  This is the only output produced by the finalize parameter.
+
+autorpt finalize

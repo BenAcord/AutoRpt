@@ -1,0 +1,9 @@
+----------------------------------------------------------------------
+                     AutoRpt OSCP README
+----------------------------------------------------------------------
+
+Only four IP addresses are stubbed in the targets.txt file.
+The buffer overflow system is intentionally excluded from this file.
+You are welcome to add it to the list, thus having all five OSCP 
+targets listed, but this will effect overall scan times if used as
+an input file to autorecon, nmapAutomator, or nmap.
