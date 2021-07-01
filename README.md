@@ -8,10 +8,13 @@ Streamline the exam report writing experience.
 
 **TBD: Insert video or GIF here**
 
-First, good luck on your exam and report writing endevors.  I wish you well.
-Second, mad props and respect to noraj for the "Offensive Security Exam Report Template in Markdown".
-Third, if you are looking for a solid markdown tool, take a look at Obsidian.
-Finally, with that said... `:exclamation:` use at your own risk.
+:clap: First, good luck on your exam and report writing endevors.  I wish you well.
+
+:trophy: Second, mad props and respect to noraj for the "Offensive Security Exam Report Template in Markdown".
+
+:hammer_and_wrench: Third, if you are looking for a solid markdown tool, take a look at Obsidian.
+
+:warning: Finally, with that said... :exclamation: use at your own risk.
 
 Happy writing!
 
@@ -29,7 +32,7 @@ $ sudo apt-get install -y p7zip pandoc pandoc-data
 
 ### Clone the Repo
 ```Bash
-$ git clone ...
+$ git clone https://github.com/BenAcord/AutoRpt.git
 $ cd autorecon
 $ sudo ln -s INSTALL_DIR/autorpt.py /usr/bin/autorpt
 ```
@@ -50,7 +53,7 @@ If you created a symbolic link as shown in the "Install, Clone the Repo" section
 
 After running `autorpt startup` change to the newly created exam directory (eg. `cd oscp`) before running any scan tools.  This will keep all recon output subdirectories in the exam directory.
 
-```Bash
+```
 $ autorpt.py startup
 
  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄
@@ -97,7 +100,7 @@ When the systems markdown are fully documented move on to edit the executive sum
 ## Example #3: Generate Submission Files
 Once all the report markdown files are content complete it is time to finalize them into a PDF file and 7z archive.  The `finalize` option does this automatically and updates boilerplate values from the template to reflect your input.
 
-```Bash
+```
 $ autorpt.py finalize
 
  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄
@@ -131,7 +134,7 @@ $ autorpt.py finalize
 ## Example #4: Displaying help
 Sometimes it is good to read a man page or a bit of documentation.  autorpt will display help if any of the following options are submitted: `-h`, `help`, `--help`.
 
-```Bash
+```
 $ autorpt.py help
 
  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄
@@ -164,7 +167,7 @@ Examples:
 ```
 
 ## Example #5: No Prompts for Input
-Add your detais to the config.json file and autorpt will not prompt for those values.
-```JSON
-
+Add your detais to the config.yml file and autorpt will not prompt for those values.
+```
+TBD
 ```
