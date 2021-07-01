@@ -35,7 +35,7 @@ $ sudo apt-get install -y p7zip pandoc pandoc-data
 $ cd /opt
 $ git clone https://github.com/BenAcord/AutoRpt.git
 $ cd AutoRpt
-$ sudo ln -s INSTALL_DIR/autorpt.py /usr/bin/autorpt
+$ sudo ln -s /opt/AutoRpt/autorpt.py /usr/bin/autorpt
 $ autorpt help
 ```
 
