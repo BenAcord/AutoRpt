@@ -44,6 +44,42 @@ $ autorpt help
 ## Usage:
 `autorpt.py [ help | startup | finalize ]`
 
+
+### Example #0: Displaying help
+Sometimes it is good to read a man page or a bit of documentation.  autorpt will display help if any of the following options are submitted: `-h`, `help`, `--help`.
+
+```
+$ autorpt.py help
+
+ ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄
+▐█ ▀█ █▪██▌•██  ▪     ▀▄ █·▐█ ▄█•██  
+▄█▀▀█ █▌▐█▌ ▐█.▪ ▄█▀▄ ▐▀▀▄  ██▀· ▐█.▪
+▐█ ▪▐▌▐█▄█▌ ▐█▌·▐█▌.▐▌▐█•█▌▐█▪·• ▐█▌·
+ ▀  ▀  ▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀.▀    ▀▀▀ 
+              Tag your work
+
+
+[!] Use at your own risk.
+
+AutoRpt is an exam preparation aid accomplishing two main reporting tasks:
+1. (startup) Prior to starting an exam, it creates a base exam directory
+   structure with markdown report templates.
+   It is a good idea to run this well in advance of the exam start.
+
+2. (finalize) During the exam and after the VPN drops, autorpt generates 
+   a final PDF and 7z.
+
+Usage: autorpt.py [ help | startup | finalize ]
+
+Examples:
+
+  1. when you are ready to start an exam:
+    autorpt.py startup
+
+  2. after the report is written:
+    autorpt.py finalize
+```
+
 ## Example #1: Startup
 **Scafold Exam Report Structure**
 Similar to how tools like autorecon and nmapAutomator create subdirectories for organizing enumeration output files during the pentest, autorpt does something similar for reporting.  The startup option creates a directory for the selected exam and a report subdirectory.  It then populates a barebones targets.txt file for recon scripts.  Then it copies a markdown template file for each major section of the final report.  These files are numbered similar to chapters and named with the respective system point value.  A tree structure is displayed showing the new exam home.
@@ -68,14 +104,13 @@ $ autorpt.py startup
 
 Available exam templates:
         0.  ejpt
-        1.  example_oscp
-        2.  oscp
-        3.  osed
-        4.  osee
-        5.  osep
-        6.  oswe
-        7.  oswp
-        8.  training
+        1.  oscp
+        2.  osed
+        3.  osee
+        4.  osep
+        5.  oswe
+        6.  oswp
+        7.  training
 [+] Pick a number for the exam are you taking: 1
 
 [i] Copying templates directory for the selected exam.
@@ -133,42 +168,8 @@ $ autorpt.py finalize
 [i] Generating 7z archive ./report/OSCP_OS-12345_exam_report.7z
 ```
 
-## Example #4: Displaying help
-Sometimes it is good to read a man page or a bit of documentation.  autorpt will display help if any of the following options are submitted: `-h`, `help`, `--help`.
 
-```
-$ autorpt.py help
-
- ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄
-▐█ ▀█ █▪██▌•██  ▪     ▀▄ █·▐█ ▄█•██  
-▄█▀▀█ █▌▐█▌ ▐█.▪ ▄█▀▄ ▐▀▀▄  ██▀· ▐█.▪
-▐█ ▪▐▌▐█▄█▌ ▐█▌·▐█▌.▐▌▐█•█▌▐█▪·• ▐█▌·
- ▀  ▀  ▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀.▀    ▀▀▀ 
-              Tag your work
-
-
-[!] Use at your own risk.
-
-AutoRpt is an exam preparation aid accomplishing two main reporting tasks:
-1. (startup) Prior to starting an exam, it creates a base exam directory
-   structure with markdown report templates.
-   It is a good idea to run this well in advance of the exam start.
-
-2. (finalize) During the exam and after the VPN drops, autorpt generates 
-   a final PDF and 7z.
-
-Usage: autorpt.py [ help | startup | finalize ]
-
-Examples:
-
-  1. when you are ready to start an exam:
-    autorpt.py startup
-
-  2. after the report is written:
-    autorpt.py finalize
-```
-
-## Example #5: No Prompts for Input
+## Example #4: No Prompts for Input
 Add your detais to the config.yml file and autorpt will not prompt for those values.
 ```
 TBD
