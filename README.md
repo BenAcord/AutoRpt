@@ -80,7 +80,7 @@ Examples:
     autorpt.py finalize
 ```
 
-## Example #1: Startup
+### Example #1: Startup
 **Scafold Exam Report Structure**
 Similar to how tools like autorecon and nmapAutomator create subdirectories for organizing enumeration output files during the pentest, autorpt does something similar for reporting.  The startup option creates a directory for the selected exam and a report subdirectory.  It then populates a barebones targets.txt file for recon scripts.  Then it copies a markdown template file for each major section of the final report.  These files are numbered similar to chapters and named with the respective system point value.  A tree structure is displayed showing the new exam home.
 
@@ -129,7 +129,7 @@ oscp/
 └── targets.txt
 ```
 
-## Example #2: Writing the Pentest Report
+### Example #2: Writing the Pentest Report
 The exam/report subdirectory contains a markdown file for each major section of the pentest report.  Notably, a markdown file exists for each point-value system.  During the exam use your favorite markdown editor of choice to document findings and evidence for each system.  I use Obsidian, so in my case I'd open a new vault in the oscp/report directory.  The markdown files contain guidance from the sample reports provided by Offensive Security.  I can write, modify, and delete in markdown without the need for any other tool.  Well, Flameshot too but you get the gist.
 
 When the systems markdown are fully documented move on to edit the executive summary and closing markdown files.  There are several boilerplate variables in these documents that are automatically updated by autorpt with its finalize option.  Just ignore any "BOILERPLATE_" items, they are important.
@@ -169,7 +169,7 @@ $ autorpt.py finalize
 ```
 
 
-## Example #4: No Prompts for Input
+### Example #4: No Prompts for Input
 Add your detais to the config.yml file and autorpt will not prompt for those values.
 ```
 TBD
