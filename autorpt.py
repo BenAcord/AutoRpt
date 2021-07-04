@@ -3,8 +3,7 @@
 """
 ---
 autorpt.py - Penetration testing report automatic generator
-             Sets up a clean directory for taking the OSCP exam
-             Now with 13% more penetration!
+             Sets up a clean directory for taking the OSCP exam or a training box.
 
 If you use Obsidian, which I highly recommend, open the report subdirectory as a new vault.
 During the exam update markdown files report/1-5*.md.
@@ -13,38 +12,7 @@ Once the dust settles and the VPN drops the overarching report sections 0- and 6
 Dependencies
 $ sudo apt-get install -y p7zip pandoc
 
-Purpose
---- Startup
-Create skeleton directory structure with template scripts and reports.
- Other tools may create additional subdirectories (eg. autorecon, nmapAutomator, etc.)
-
- ./
-  |__targets.txt - IP addresses only
-  |__report
-     |__0-execsummary.md
-     |__1-10pt.md
-     |__2-20pt.md
-     |__3-20pt.md
-     |__4-25pt.md
-     |__5-25pt-bufferoverflow.md
-     |__6-closing.md
-     |__{screenshots added to your markdown files will also be stored here}
-
---- Finalize
-Combine report markdown files and generate the PDF report and 7z for submission.
-Always review the PDF and 7z before submitting.  This script helps but it never
-replaces your responsibility.
-
- ./
-  |__report
-     |__OSCP-{your OS ID}-exam-report.pdf
-     |__TBD.7z
-
---- Future Features
-  1.  config - pre-answer most if not all prompts
-  2.  Lab finalize prompt or config setting that compiles all md files in all subdirectories.
-        This is for the Offensive Security course labs or PortSwigger's Web Security Academy.
-        Compile all notes for a lab into a single PDF report.
+--- Future Features: See GitHub Issues
 ---------------------------------------------------------------------------------------------
 """
 
@@ -139,7 +107,7 @@ def startup(exam_name, email, student_id, style_name):
             sys.exit(5)
     
     if "training" == exam_name:
-        os.rename(rpt_path + "renameme.md", rpt_path + training_name + ".md")
+        os.rename(rpt_path + "report/renameme.md", rpt_path + "report/" + training_name + ".md")
     
     print("[i] Templates successfully copied to report directory.  Here's the new structure:\n")
     
