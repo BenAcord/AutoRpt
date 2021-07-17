@@ -456,5 +456,44 @@ if __name__ == "__main__":
     # Get the script home starting directory
     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
 
+    if os.path.exists(autorpt_runfrom + '/config.yml'):
+        config_file = open(autorpt_runfrom + '/config.yml', 'r')
+        config_data = yaml.safe_load(config_file)
+    else:
+        config_data = None
+    print("Debug config file values and yaml import")
+    print("-------------------------------------------------------------")
+    for x in config_data:
+        print(x + ' - [' + str(config_data[x]) + ']')
+    
+    print("\n\nDebug Keys\n-------------------------------------------------------------")
+    print('config_data keys: ' + str(config_data.keys()))
+    print("\n\nDebug Values\n-------------------------------------------------------------")
+    print('config_data values: ' + str(config_data.values()))
+    print("-------------------------------------------------------------")
+    #sys.exit(255)
+    print("End Debug")
+
+    # Verify configuration data entries
+    if config_data is not None:
+        if 'exam' in config_data.keys():
+            exam_name = config_data['exam']
+            if not os.path.isdir(autorpt_runfrom + '/templates/' + exam_name):
+                print('[!] config file exam value is not supported.')
+                sys.exit(11)
+        if 'email' in config_data.keys():
+            email = config_data['email']
+        if 'studentid' in config_data.keys():
+            student_id = str(config_data['studentid'])
+        if 'style' in config_data.keys():
+            style_name = config_data['style']
+    
+    print("==================================================\nDEBUG")
+    print('exam type: ' + str(type(exam_name)) + ' Value: ' + exam_name)
+    print('email type: ' + str(type(email)) + ' Value: ' + email)
+    print('student_id type: ' + str(type(student_id)) + ' Value: ' + student_id)
+    print('style_name type: ' + str(type(style_name)) + ' Value: ' + style_name)
+    print("END DEBUG\n==================================================")
+
     # Parse parameters and route to functions
     params(sys.argv[1:], exam_name, email, student_id, style_name)

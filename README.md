@@ -27,17 +27,17 @@ AutoRpt has only been tested on Linux, specifically, Kali Linux.
 - pandoc
 - pandoc-data
 ```Bash
-$ sudo apt-get install -y p7zip pandoc pandoc-data
+sudo apt-get install -y p7zip pandoc pandoc-data
 ```
 
 ### Clone the Repo
 ```Bash
-$ cd /opt
-$ git clone https://github.com/BenAcord/AutoRpt.git
-$ cd AutoRpt
-$ sudo ln -s /opt/AutoRpt/autorpt.py /usr/bin/autorpt
-$ chmod 700 autorpt.py
-$ autorpt help
+cd /opt
+git clone https://github.com/BenAcord/AutoRpt.git
+cd AutoRpt
+sudo ln -s /opt/AutoRpt/autorpt.py /usr/bin/autorpt
+chmod 700 autorpt.py
+autorpt help
 ```
 
 ---
