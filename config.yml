@@ -1,0 +1,30 @@
+exam: training
+studentid:  Your OS-ID or the word NONE
+your_name: Your Name
+email: a@b.c
+style: haddock
+preferred_output_format: pdf and 7z
+#  DO NOT MODIFY BELOW THIS LINE
+outpuf_formats:
+- pdf
+- pdf and 7z
+- docx
+- OpenDocument
+- xlsx
+- gfm
+- markdown-mmd
+- jira
+- json
+- plain
+- pptx
+spreadsheet_skeleton:
+- target
+- port
+- service
+- vulnerability
+- MITRE ATTACK
+- likelihood
+- impact
+- data_sensitivity
+- severity
+- comments

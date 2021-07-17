@@ -3,8 +3,7 @@
 """
 ---
 autorpt.py - Penetration testing report automatic generator
-             Sets up a clean directory for taking the OSCP exam
-             Now with 13% more penetration!
+             Sets up a clean directory for taking an exam or training.
 
 If you use Obsidian, which I highly recommend, open the report subdirectory as a new vault.
 During the exam update markdown files report/1-5*.md.
@@ -12,33 +11,6 @@ Once the dust settles and the VPN drops the overarching report sections 0- and 6
 
 Dependencies
 $ sudo apt-get install -y p7zip pandoc
-
-Purpose
---- Startup
-Create skeleton directory structure with template scripts and reports.
- Other tools may create additional subdirectories (eg. autorecon, nmapAutomator, etc.)
-
- ./
-  |__targets.txt - IP addresses only
-  |__report
-     |__0-execsummary.md
-     |__1-10pt.md
-     |__2-20pt.md
-     |__3-20pt.md
-     |__4-25pt.md
-     |__5-25pt-bufferoverflow.md
-     |__6-closing.md
-     |__{screenshots added to your markdown files will also be stored here}
-
---- Finalize
-Combine report markdown files and generate the PDF report and 7z for submission.
-Always review the PDF and 7z before submitting.  This script helps but it never
-replaces your responsibility.
-
- ./
-  |__report
-     |__OSCP-{your OS ID}-exam-report.pdf
-     |__TBD.7z
 
 --- Future Features
   1.  config - pre-answer most if not all prompts
@@ -79,12 +51,12 @@ def helper():
     print("2. (finalize) During the exam and after the VPN drops, autorpt generates")
     print("   a final PDF and 7z.\n")
 
-    print("Usage: autorpt.py [ help | startup | finalize ]\n")
+    print("Usage: autorpt.py [ help | startup | vuln | sitrep | finalize ]\n")
     print("Examples:\n")
-    print("  1. when you are ready to start an exam:")
-    print("    autorpt.py startup")
-    print("\n  2. after the report is written:")
-    print("    autorpt.py finalize")
+    print("  When you are ready to start an exam: autorpt.py startup")
+    print("  Log a verified vulnerability: autorpt.py vuln")
+    print("  Log your current status: autorpt.py sitrep pwned buffer overflow")
+    print("\n  After the report is written: autorpt.py finalize")
     sys.exit(1)
 
 def startup(exam_name, email, student_id, style_name):
@@ -139,7 +111,7 @@ def startup(exam_name, email, student_id, style_name):
             sys.exit(5)
     
     if "training" == exam_name:
-        os.rename(rpt_path + "renameme.md", rpt_path + training_name + ".md")
+        os.rename(rpt_path + "report/renameme.md", rpt_path + "report/" + training_name + ".md")
     
     print("[i] Templates successfully copied to report directory.  Here's the new structure:\n")
     
@@ -247,11 +219,12 @@ def finalize(exam_name, email, student_id, style_name):
 
 
 def params(argv, exam_name, email, student_id, style_name):
+    # DEBUG
+    print ('Number of arguments:', len(sys.argv), 'arguments.')
+    print ('Argument List:', str(sys.argv))
+    
     # Set routing action based on argument.  Otherwise, display help.
     if len(sys.argv) == 2:
-        # DEBUG
-        # print ('Number of arguments:', len(sys.argv), 'arguments.')
-        # print ('Argument List:', str(sys.argv))
         action = sys.argv[1]
     else:
         helper()
@@ -262,6 +235,9 @@ def params(argv, exam_name, email, student_id, style_name):
         startup(exam_name, email, student_id, style_name)
     elif action == 'f' or action == 'finalize' or action == '--finalize':
         finalize(exam_name, email, student_id, style_name)
+    elif action == 'v' or action == 'vuln' or action == '--vuln':
+        print('autorpt vuln menu\n1.Add new vulnerability\n2. Modify existing vulnerability\n3. Remove existing vulnerability\n\nPlease make a selection: ')
+        sys.exit(255)
     else:
         print ('Action is "', action)
         helper()
@@ -362,18 +338,23 @@ if __name__ == "__main__":
     # Get the script home starting directory
     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
 
-    if os.path.exists('/config.yml'):
+    if os.path.exists(autorpt_runfrom + '/config.yml'):
         config_file = open(autorpt_runfrom + '/config.yml', 'r')
         config_data = yaml.safe_load(config_file)
     else:
         config_data = None
-    # Debug config file values and yaml import
-    #for x in config_data:
-    #    print(x + ' - ' + config_data[x])
-    #print('config_data keys: ' + str(config_data.keys()))
-    #print('config_data values: ' + str(config_data.values()))
+    print("Debug config file values and yaml import")
+    print("-------------------------------------------------------------")
+    for x in config_data:
+        print(x + ' - [' + str(config_data[x]) + ']')
+    
+    print("\n\nDebug Keys\n-------------------------------------------------------------")
+    print('config_data keys: ' + str(config_data.keys()))
+    print("\n\nDebug Values\n-------------------------------------------------------------")
+    print('config_data values: ' + str(config_data.values()))
+    print("-------------------------------------------------------------")
     #sys.exit(255)
-    # End Debug
+    print("End Debug")
 
     # Verify configuration data entries
     if config_data is not None:
@@ -389,11 +370,12 @@ if __name__ == "__main__":
         if 'style' in config_data.keys():
             style_name = config_data['style']
     
-    # DEBUG
-    #print('exam type: ' + str(type(exam_name)) + ' Value: ' + exam_name)
-    #print('email type: ' + str(type(email)) + ' Value: ' + email)
-    #print('student_id type: ' + str(type(student_id)) + ' Value: ' + student_id)
-    #print('style_name type: ' + str(type(style_name)) + ' Value: ' + style_name)
+    print("==================================================\nDEBUG")
+    print('exam type: ' + str(type(exam_name)) + ' Value: ' + exam_name)
+    print('email type: ' + str(type(email)) + ' Value: ' + email)
+    print('student_id type: ' + str(type(student_id)) + ' Value: ' + student_id)
+    print('style_name type: ' + str(type(style_name)) + ' Value: ' + style_name)
+    print("END DEBUG\n==================================================")
 
     # Parse parameters and route to functions
     params(sys.argv[1:], exam_name, email, student_id, style_name)
