@@ -1,0 +1,44 @@
+TACTIC,TECHNIQUE,TID
+collection,Abuse Accessibility Features,T1453
+collection,Access Notifications,T1517
+collection,Foreground Persistence,T1541
+collection,Input Capture,T1417
+collection,Screen Capture,T1513
+command-and-control,Remote File Copy,T1544
+credential-access,Abuse Accessibility Features,T1453
+credential-access,Access Notifications,T1517
+credential-access,Input Capture,T1417
+credential-access,Input Prompt,T1411
+credential-access,Keychain,T1579
+credential-access,URI Hijacking,T1416
+defense-evasion,Abuse Accessibility Features,T1453
+defense-evasion,Code Injection,T1540
+defense-evasion,Delete Device Data,T1447
+defense-evasion,Geofencing,T1581
+defense-evasion,Input Injection,T1516
+defense-evasion,Masquerade as Legitimate Application,T1444
+defense-evasion,Native Code,T1575
+defense-evasion,Proxy Through Victim,T1604
+defense-evasion,Suppress Application Icon,T1508
+defense-evasion,Uninstall Malicious Application,T1576
+discovery,System Information Discovery,T1426
+discovery,System Network Configuration Discovery,T1422
+execution,Broadcast Receivers,T1402
+execution,Command-Line Interface,T1605
+execution,Native Code,T1575
+execution,Scheduled Task/Job,T1603
+impact,Abuse Accessibility Features,T1453
+impact,Carrier Billing Fraud,T1448
+impact,Delete Device Data,T1447
+impact,Input Injection,T1516
+impact,SMS Control,T1582
+initial-access,Deliver Malicious App via Other Means,T1476
+initial-access,Masquerade as Legitimate Application,T1444
+initial-access,Supply Chain Compromise,T1474
+persistence,Broadcast Receivers,T1402
+persistence,Code Injection,T1540
+persistence,Compromise Application Executable,T1577
+persistence,Foreground Persistence,T1541
+persistence,Scheduled Task/Job,T1603
+privilege-escalation,Code Injection,T1540
+privilege-escalation,Device Administrator Permissions,T1401

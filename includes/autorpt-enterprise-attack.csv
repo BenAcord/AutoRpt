@@ -1,0 +1,231 @@
+TACTIC,TECHNIQUE,TID
+collection,Archive Collected Data,T1560
+collection,Audio Capture,T1123
+collection,Automated Collection,T1119
+collection,Clipboard Data,T1115
+collection,Data Staged,T1074
+collection,Data from Cloud Storage Object,T1530
+collection,Data from Configuration Repository,T1602
+collection,Data from Information Repositories,T1213
+collection,Data from Local System,T1005
+collection,Data from Network Shared Drive,T1039
+collection,Data from Removable Media,T1025
+collection,Email Collection,T1114
+collection,Input Capture,T1056
+collection,Man in the Browser,T1185
+collection,Man-in-the-Middle,T1557
+collection,Screen Capture,T1113
+collection,Video Capture,T1125
+command-and-control,Application Layer Protocol,T1071
+command-and-control,Commonly Used Port,T1043
+command-and-control,Communication Through Removable Media,T1092
+command-and-control,Data Encoding,T1132
+command-and-control,Data Obfuscation,T1001
+command-and-control,Dynamic Resolution,T1568
+command-and-control,Encrypted Channel,T1573
+command-and-control,Fallback Channels,T1008
+command-and-control,Ingress Tool Transfer,T1105
+command-and-control,Multi-Stage Channels,T1104
+command-and-control,Multiband Communication,T1026
+command-and-control,Non-Application Layer Protocol,T1095
+command-and-control,Non-Standard Port,T1571
+command-and-control,Protocol Tunneling,T1572
+command-and-control,Proxy,T1090
+command-and-control,Remote Access Software,T1219
+command-and-control,Traffic Signaling,T1205
+command-and-control,Web Service,T1102
+credential-access,Brute Force,T1110
+credential-access,Credentials from Password Stores,T1555
+credential-access,Exploitation for Credential Access,T1212
+credential-access,Forced Authentication,T1187
+credential-access,Forge Web Credentials,T1606
+credential-access,Input Capture,T1056
+credential-access,Man-in-the-Middle,T1557
+credential-access,Modify Authentication Process,T1556
+credential-access,Network Sniffing,T1040
+credential-access,OS Credential Dumping,T1003
+credential-access,Steal Application Access Token,T1528
+credential-access,Steal Web Session Cookie,T1539
+credential-access,Steal or Forge Kerberos Tickets,T1558
+credential-access,Two-Factor Authentication Interception,T1111
+credential-access,Unsecured Credentials,T1552
+defense-evasion,Abuse Elevation Control Mechanism,T1548
+defense-evasion,Access Token Manipulation,T1134
+defense-evasion,BITS Jobs,T1197
+defense-evasion,Build Image on Host,T1612
+defense-evasion,Deobfuscate/Decode Files or Information,T1140
+defense-evasion,Deploy Container,T1610
+defense-evasion,Direct Volume Access,T1006
+defense-evasion,Domain Policy Modification,T1484
+defense-evasion,Execution Guardrails,T1480
+defense-evasion,Exploitation for Defense Evasion,T1211
+defense-evasion,File and Directory Permissions Modification,T1222
+defense-evasion,Hide Artifacts,T1564
+defense-evasion,Hijack Execution Flow,T1574
+defense-evasion,Impair Defenses,T1562
+defense-evasion,Indicator Removal on Host,T1070
+defense-evasion,Indirect Command Execution,T1202
+defense-evasion,LC_MAIN Hijacking,T1149
+defense-evasion,Masquerading,T1036
+defense-evasion,Modify Authentication Process,T1556
+defense-evasion,Modify Cloud Compute Infrastructure,T1578
+defense-evasion,Modify Registry,T1112
+defense-evasion,Modify System Image,T1601
+defense-evasion,Network Boundary Bridging,T1599
+defense-evasion,Obfuscated Files or Information,T1027
+defense-evasion,Pre-OS Boot,T1542
+defense-evasion,Process Injection,T1055
+defense-evasion,Redundant Access,T1108
+defense-evasion,Rogue Domain Controller,T1207
+defense-evasion,Rootkit,T1014
+defense-evasion,Scripting,T1064
+defense-evasion,Signed Binary Proxy Execution,T1218
+defense-evasion,Signed Script Proxy Execution,T1216
+defense-evasion,Subvert Trust Controls,T1553
+defense-evasion,Template Injection,T1221
+defense-evasion,Traffic Signaling,T1205
+defense-evasion,Trusted Developer Utilities Proxy Execution,T1127
+defense-evasion,Unused/Unsupported Cloud Regions,T1535
+defense-evasion,Use Alternate Authentication Material,T1550
+defense-evasion,Valid Accounts,T1078
+defense-evasion,Virtualization/Sandbox Evasion,T1497
+defense-evasion,Weaken Encryption,T1600
+defense-evasion,XSL Script Processing,T1220
+discovery,Account Discovery,T1087
+discovery,Application Window Discovery,T1010
+discovery,Browser Bookmark Discovery,T1217
+discovery,Cloud Infrastructure Discovery,T1580
+discovery,Cloud Service Dashboard,T1538
+discovery,Cloud Service Discovery,T1526
+discovery,Container and Resource Discovery,T1613
+discovery,Domain Trust Discovery,T1482
+discovery,File and Directory Discovery,T1083
+discovery,Network Service Scanning,T1046
+discovery,Network Share Discovery,T1135
+discovery,Network Sniffing,T1040
+discovery,Password Policy Discovery,T1201
+discovery,Peripheral Device Discovery,T1120
+discovery,Permission Groups Discovery,T1069
+discovery,Process Discovery,T1057
+discovery,Query Registry,T1012
+discovery,Remote System Discovery,T1018
+discovery,Software Discovery,T1518
+discovery,System Information Discovery,T1082
+discovery,System Location Discovery,T1614
+discovery,System Network Configuration Discovery,T1016
+discovery,System Network Connections Discovery,T1049
+discovery,System Owner/User Discovery,T1033
+discovery,System Service Discovery,T1007
+discovery,System Time Discovery,T1124
+discovery,Virtualization/Sandbox Evasion,T1497
+execution,Command and Scripting Interpreter,T1059
+execution,Component Object Model and Distributed COM,T1175
+execution,Container Administration Command,T1609
+execution,Deploy Container,T1610
+execution,Exploitation for Client Execution,T1203
+execution,Graphical User Interface,T1061
+execution,Inter-Process Communication,T1559
+execution,Native API,T1106
+execution,Scheduled Task/Job,T1053
+execution,Scripting,T1064
+execution,Shared Modules,T1129
+execution,Software Deployment Tools,T1072
+execution,Source,T1153
+execution,System Services,T1569
+execution,User Execution,T1204
+execution,Windows Management Instrumentation,T1047
+exfiltration,Automated Exfiltration,T1020
+exfiltration,Data Transfer Size Limits,T1030
+exfiltration,Exfiltration Over Alternative Protocol,T1048
+exfiltration,Exfiltration Over C2 Channel,T1041
+exfiltration,Exfiltration Over Other Network Medium,T1011
+exfiltration,Exfiltration Over Physical Medium,T1052
+exfiltration,Exfiltration Over Web Service,T1567
+exfiltration,Scheduled Transfer,T1029
+exfiltration,Transfer Data to Cloud Account,T1537
+impact,Account Access Removal,T1531
+impact,Data Destruction,T1485
+impact,Data Encrypted for Impact,T1486
+impact,Data Manipulation,T1565
+impact,Defacement,T1491
+impact,Disk Wipe,T1561
+impact,Endpoint Denial of Service,T1499
+impact,Firmware Corruption,T1495
+impact,Inhibit System Recovery,T1490
+impact,Network Denial of Service,T1498
+impact,Resource Hijacking,T1496
+impact,Service Stop,T1489
+impact,System Shutdown/Reboot,T1529
+initial-access,Drive-by Compromise,T1189
+initial-access,Exploit Public-Facing Application,T1190
+initial-access,External Remote Services,T1133
+initial-access,Hardware Additions,T1200
+initial-access,Phishing,T1566
+initial-access,Replication Through Removable Media,T1091
+initial-access,Supply Chain Compromise,T1195
+initial-access,Trusted Relationship,T1199
+initial-access,Valid Accounts,T1078
+lateral-movement,Component Object Model and Distributed COM,T1175
+lateral-movement,Exploitation of Remote Services,T1210
+lateral-movement,Internal Spearphishing,T1534
+lateral-movement,Lateral Tool Transfer,T1570
+lateral-movement,Remote Service Session Hijacking,T1563
+lateral-movement,Remote Services,T1021
+lateral-movement,Replication Through Removable Media,T1091
+lateral-movement,Shared Webroot,T1051
+lateral-movement,Software Deployment Tools,T1072
+lateral-movement,Taint Shared Content,T1080
+lateral-movement,Use Alternate Authentication Material,T1550
+persistence,Account Manipulation,T1098
+persistence,BITS Jobs,T1197
+persistence,Boot or Logon Autostart Execution,T1547
+persistence,Boot or Logon Initialization Scripts,T1037
+persistence,Browser Extensions,T1176
+persistence,Compromise Client Software Binary,T1554
+persistence,Create Account,T1136
+persistence,Create or Modify System Process,T1543
+persistence,Event Triggered Execution,T1546
+persistence,External Remote Services,T1133
+persistence,Hijack Execution Flow,T1574
+persistence,Hypervisor,T1062
+persistence,Implant Internal Image,T1525
+persistence,Modify Authentication Process,T1556
+persistence,Office Application Startup,T1137
+persistence,Path Interception,T1034
+persistence,Pre-OS Boot,T1542
+persistence,Redundant Access,T1108
+persistence,Scheduled Task/Job,T1053
+persistence,Server Software Component,T1505
+persistence,Traffic Signaling,T1205
+persistence,Valid Accounts,T1078
+privilege-escalation,Abuse Elevation Control Mechanism,T1548
+privilege-escalation,Access Token Manipulation,T1134
+privilege-escalation,Boot or Logon Autostart Execution,T1547
+privilege-escalation,Boot or Logon Initialization Scripts,T1037
+privilege-escalation,Create or Modify System Process,T1543
+privilege-escalation,Domain Policy Modification,T1484
+privilege-escalation,Escape to Host,T1611
+privilege-escalation,Event Triggered Execution,T1546
+privilege-escalation,Exploitation for Privilege Escalation,T1068
+privilege-escalation,Hijack Execution Flow,T1574
+privilege-escalation,Path Interception,T1034
+privilege-escalation,Process Injection,T1055
+privilege-escalation,Scheduled Task/Job,T1053
+privilege-escalation,Valid Accounts,T1078
+reconnaissance,Active Scanning,T1595
+reconnaissance,Gather Victim Host Information,T1592
+reconnaissance,Gather Victim Identity Information,T1589
+reconnaissance,Gather Victim Network Information,T1590
+reconnaissance,Gather Victim Org Information,T1591
+reconnaissance,Phishing for Information,T1598
+reconnaissance,Search Closed Sources,T1597
+reconnaissance,Search Open Technical Databases,T1596
+reconnaissance,Search Open Websites/Domains,T1593
+reconnaissance,Search Victim-Owned Websites,T1594
+resource-development,Acquire Infrastructure,T1583
+resource-development,Compromise Accounts,T1586
+resource-development,Compromise Infrastructure,T1584
+resource-development,Develop Capabilities,T1587
+resource-development,Establish Accounts,T1585
+resource-development,Obtain Capabilities,T1588
+resource-development,Stage Capabilities,T1608

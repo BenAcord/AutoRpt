@@ -1,10 +1,16 @@
 # AutoRpt
 ## What It Is
-Streamline the exam report writing experience.  
+Streamline report writing experience.  
 
 1. (**startup**) Prior to starting an exam, creates a base exam directory structure and populates it with a markdown report template.  Run this well in advance of the exam start time.
 
-2. (**finalize**) During the exam autorpt generates a final report PDF and 7z archive from your markdown files.
+2. (**ports**) 
+
+3. (**vuln**) A submenu for logging confirmed vulnerabilities
+
+4. (**sitrep**) Track your status and activity throughout the engagement.  You can quickly add a status or review the log to see the history of activities.  Yes, I realize this isn't a real sitrep report.
+
+5. (**finalize**) During the exam autorpt generates a final report PDF and 7z archive from your markdown files.
 
 **TBD: Insert video or GIF here**
 
@@ -26,8 +32,9 @@ AutoRpt has only been tested on Linux, specifically, Kali Linux.
 - p7zip
 - pandoc
 - pandoc-data
+- texlive-xetex
 ```Bash
-sudo apt-get install -y p7zip pandoc pandoc-data
+sudo apt-get install -y p7zip pandoc pandoc-data texlive-xetex
 ```
 
 ### Clone the Repo
