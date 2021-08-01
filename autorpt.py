@@ -36,6 +36,7 @@ supported_filetypes = ["PDF", "PDF+7z", "DOCX", "ODT", "JIRA", "COMMONMARK_X", "
 extentionsWithoutTemplate = ["DOCX"]
 term = blessings.Terminal(kind='xterm-256color')
 #portsFile = 'report/ports.xlsx'
+targetsFile = 'targets.txt'
 portsSpreadsheet = 'report/ports.xlsx'
 vulnsCsv = 'report/vulns.csv'
 sitrepLog = 'report/sitrep.log'
@@ -281,7 +282,6 @@ def getMitreAttack():
         mainMenu()
     else:
         technique = techniques.iloc[picker, 0]
-        colorVerificationPass('For Return ', 'Tactic: ' + tactic + ' Technique: ' + technique)
     
     return [tactic, technique]
 
@@ -536,6 +536,7 @@ def ports():
                     except:
                         colorVerificationFail("[e]", "Unable to write to xlsx file.")
             else:
+                # Issue #13: No AutoRecon used.  Pull vulns into ports.xlsx.
                 print('[e] file does not exist: ' + nmapFile)
     return None
 
@@ -610,24 +611,52 @@ def vuln():
 
 def vulnAdd():
     colorHeader("    Add Vulnerability    ")
+    i = 0
+    if os.path.isfile(targetsFile):
+        colorNotice("For which target?\nOr '99' to go back to the menu.")
+        with open(targetsFile) as f: 
+            targets = f.readlines()
+            f.close()
+        for target in targets:
+            target = target.strip()
+            print(f'{i}.  {term.yellow}{target}{term.normal}')
+            i = i + 1
+        targetId = int(input(">  "))
+        if 99 == targetId:
+            vuln()
+        else:
+            target = targets[targetId].strip()
+    else:
+        print(f'{term.white}targets file is empty.{term.normal}\n\n')
+    
+    colorNotice("What is the port number [0-65535]?")
+    port = int(input('>  '))
+    if port < 1 or port > 65535:
+        colorNotice("Number is outside the range of acceptable port numbers: 0 - 65535.")
+        vuln()
+    
     colorNotice("What is the name for this vulnerability?\n(eg. Remote code injection in Vendor_Product_Component)")
     vulnName = str(input('>  '))
+    
     colorNotice("Describe the business impact: ")
     vulnImpact = str(input('>  '))
+    
     colorNotice("Do you have a comment for where you left off? ")
     vulnComment = str(input('>  '))
     if len(vulnComment) > 0:
         sitrepAuto(vulnComment)
+    
     rawCvss = getCvss3Score()
     cvssSeverity = rawCvss[0]
     cvssScore = rawCvss[1]
     cvssVector = rawCvss[2]
-    colorDebug('Getting Mitre ATT&CK values')
     mitreAttack = getMitreAttack()
-    colorVerification('mitreAttack', str(mitreAttack))
     vulnMitreTactic = mitreAttack[0]
     vulnMitreTechnique = mitreAttack[1]
+    
     colorNotice("\n-----------------------------\n  Verify the data entered.\n-----------------------------")
+    colorVerification('[Target]                ',target)
+    colorVerification('[Port]                  ',port)
     colorVerification('[Name]                  ',vulnName)
     colorVerification("[CVSS Overall Score]    ", str(cvssScore))
     colorVerification("[CVSS Severity]         ", cvssSeverity)
@@ -635,9 +664,10 @@ def vulnAdd():
     colorVerification("[Comment]               ", vulnComment)
     colorVerification('[MITRE ATT&CK Tactic]   ', vulnMitreTactic)
     colorVerification('[MITRE ATT&CK Technique]', vulnMitreTechnique)
+    
     checkPoint = str(input("\nAre these values correct? [Y|N]  > ")).upper()
     if checkPoint == "Y":
-        row = f'{vulnName},{vulnImpact},{vulnComment},{cvssScore},{cvssSeverity},{cvssVector},{vulnMitreTactic},{vulnMitreTechnique}'
+        row = f'{target},{port},{vulnName},{vulnImpact},{vulnComment},{cvssScore},{cvssSeverity},{cvssVector},{vulnMitreTactic},{vulnMitreTechnique}'
         vulnCsvNewRow(row)
     else:
         print("[!] Reseting values")
@@ -652,7 +682,8 @@ def vulnAdd():
 
 def vulnCsvNewRow(row):
     if not os.path.isfile(vulnsCsv):
-        headings = 'Name,Impact,Comment'
+        headings = 'IpAddress,Port,'
+        headings += 'Name,Impact,Comment'
         headings += ',CvssScore,CvssSeverity,CvssVector'
         headings += ',MitreTactic,MitreTechnique'
         with open(vulnsCsv, 'a', encoding='utf-8') as f:
@@ -669,8 +700,10 @@ def vulnCsvNewRow(row):
 def vulnList():
     colorHeader("    List of Current Vulnerabilities    ")
     if os.path.exists(vulnsCsv):
-        df = pd.read_csv('report/vulns.csv', index_col=False, engine="python")
-        colorList(tabulate(df[['Name', 'Impact', 'CvssSeverity', 'CvssScore', 'Comment']], headers=df.columns))
+        df = pd.read_csv('report/vulns.csv', sep=",", engine="python") # , index_col=False
+        colorList(tabulate(df[['IpAddress', 'Port', 'Name', 'Impact', 'CvssSeverity', 'CvssScore', 'Comment']], 
+                           headers=df.columns,
+                           showindex="never"))
     else:
         print("0 vulnerabilities")
     if len(sys.argv) == 3 and 'list' == sys.argv[2]:
