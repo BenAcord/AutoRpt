@@ -237,7 +237,48 @@ def getMitreAttack():
     colorHeader("    MITRE ATT&CK    ")
     path_includes = autorpt_runfrom + '/includes'
     csvFiles = glob(path_includes + '/autorpt-*-attack.csv')
-    #colorDebug(path_includes + '  - Files: ' + str(csvFiles))
+    
+    def getTactic(df):
+        tactics = df.TACTIC.unique()
+        i = 0
+        picker = 0
+        tactic = ''
+        colorNotice('What is the Tactic?\nOr 99 to return to the ATT&CK menu.')
+        for tactic in tactics:
+            colorMenuItem(f'{i}. {tactic}')
+            i = i + 1
+        picker = int(input('>  '))
+        if 99 == picker:
+            getMitreAttack()
+        elif picker > len(tactics):
+            colorNotice('Selection out of range.')
+            mainMenu()
+        else:
+            tactic = tactics[picker]
+            #colorVerificationPass('PASS', f'Selected {picker} for {tactic}')
+        getTechnique(df, tactic)
+    
+    def getTechnique(df, tactic):
+        techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
+        colorNotice('Pick a Technique?\nOr 99 to return to the tactic menu.')
+        i = 0
+        picker = 0
+        technique = ''
+        for t in techniques.iterrows():
+            colorMenuItem(str(i) + '. ' + str(techniques.iloc[i,0]))
+            i = i + 1
+        picker = int(input('>  '))
+        if 99 == picker:
+            getTactic(df)
+            getMitreAttack()
+        elif picker > len(techniques):
+            colorNotice('Selection out of range')
+            time.sleep(2)
+            getMitreAttack()
+        else:
+            technique = techniques.iloc[picker, 0]
+        return technique
+    
     i = 0
     colorNotice('Which MITRE ATT&CK Framework applies?\nPress 99 for main menu.')
     for file in csvFiles:
@@ -254,35 +295,8 @@ def getMitreAttack():
     
     matrix = re.match(r"^autorpt-(\W+)-attack.csv$", str(file))
     df = pd.read_csv(file, index_col=False, engine="python")
-    tactics = df.TACTIC.unique()
-    i = 0
-    colorNotice('What is the Tactic?\nOr 99 to return to the main menu.')
-    for tactic in tactics:
-        colorMenuItem(f'{i}. {tactic}')
-        i = i + 1
-    picker = int(input('>  '))
-    if 99 == picker:
-        mainMenu()
-    elif picker > len(tactics):
-        colorNotice('Selection out of range.')
-        mainMenu()
-    else:
-        tactic = tactics[picker]
-        colorVerificationPass('PASS', f'Selected {picker} for {tactic}')
-    
-    techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
-    colorNotice('Pick a Technique?')
-    i = 0
-    for t in techniques.iterrows():
-        colorMenuItem(str(i) + '. ' + str(techniques.iloc[i,0]))
-        i = i + 1
-    picker = int(input('>  '))
-    if picker > len(techniques):
-        colorNotice('Selection out of range')
-        mainMenu()
-    else:
-        technique = techniques.iloc[picker, 0]
-    
+    tactic = getTactic(df)
+    technique = getTechnique(df, tactic)
     return [tactic, technique]
 
 def startup(exam_name, email, student_id, style_name):
@@ -608,6 +622,8 @@ def vuln():
         mainMenu()
     elif 6 == vuln_selection:
         sys.exit(0)
+    else:
+        vuln()
 
 def vulnAdd():
     colorHeader("    Add Vulnerability    ")
@@ -790,6 +806,8 @@ def mainMenu():
         finalize()
     elif 5 == picker:
         sys.exit(0)
+    else:
+        mainMenu()
 
 def params(argv, exam_name, email, student_id, style_name):
     # Set routing action based on argument.  Otherwise, display help.
