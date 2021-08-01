@@ -8,6 +8,7 @@ autorpt.py - Penetration testing report automatic generator
 """
 
 import blessings
+import csv
 from cvss import CVSS3
 import datetime
 import getopt
@@ -228,6 +229,61 @@ def getCvssMetricValue(cvssDict, metricName):
     for (i, opt) in enumerate(list(cvssDict)):
         print("\t" + str(i) + ") " + opt)
     return list(cvssDict)[int(input(" >  "))]
+
+def getMitreAttack():
+    tactic = ''
+    technique = ''
+    colorHeader("    MITRE ATT&CK    ")
+    path_includes = autorpt_runfrom + '/includes'
+    csvFiles = glob(path_includes + '/autorpt-*-attack.csv')
+    #colorDebug(path_includes + '  - Files: ' + str(csvFiles))
+    i = 0
+    colorNotice('Which MITRE ATT&CK Framework applies?\nPress 99 for main menu.')
+    for file in csvFiles:
+        colorMenuItem(f'{i}. {file[30:-11]}')
+        i = i + 1
+    picker = int(input('>  '))
+    if 99 == picker:
+        mainMenu()
+    elif picker > (len(csvFiles)):
+        colorNotice('Selection out of range')
+        mainMenu()
+    else:
+        file = csvFiles[picker]
+    
+    matrix = re.match(r"^autorpt-(\W+)-attack.csv$", str(file))
+    df = pd.read_csv(file, index_col=False, engine="python")
+    tactics = df.TACTIC.unique()
+    i = 0
+    colorNotice('What is the Tactic?\nOr 99 to return to the main menu.')
+    for tactic in tactics:
+        colorMenuItem(f'{i}. {tactic}')
+        i = i + 1
+    picker = int(input('>  '))
+    if 99 == picker:
+        mainMenu()
+    elif picker > len(tactics):
+        colorNotice('Selection out of range.')
+        mainMenu()
+    else:
+        tactic = tactics[picker]
+        colorVerificationPass('PASS', f'Selected {picker} for {tactic}')
+    
+    techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
+    colorNotice('Pick a Technique?')
+    i = 0
+    for t in techniques.iterrows():
+        colorMenuItem(str(i) + '. ' + str(techniques.iloc[i,0]))
+        i = i + 1
+    picker = int(input('>  '))
+    if picker > len(techniques):
+        colorNotice('Selection out of range')
+        mainMenu()
+    else:
+        technique = techniques.iloc[picker, 0]
+        colorVerificationPass('For Return ', 'Tactic: ' + tactic + ' Technique: ' + technique)
+    
+    return [tactic, technique]
 
 def startup(exam_name, email, student_id, style_name):
     # Startup pulls from script home
@@ -496,7 +552,7 @@ def sitrepAuto(msg):
 
 def sitrepList():
     if os.path.isfile(sitrepLog):
-        clearScreen()
+        #clearScreen()
         colorHeader("    SITREP Log Entries    ")
         with open(sitrepLog) as f: 
             s = f.readlines()
@@ -529,6 +585,154 @@ def sitrepMenu():
     elif 2 == sitrepAction:
         sitrepNew()
     sitrepMenu()
+
+def vuln():
+    colorHeader('[    Vulnerabilities    ]')
+    colorMenuItem("1. Add a new vulnerability")
+    colorMenuItem("2. List all vulnerabilities")
+    colorMenuItem("3. Modify an existing vulnerability")
+    colorMenuItem("4. Remove a vulnerability\n")
+    colorMenuItem('5. Main Menu')
+    colorMenuItem("6. quit")
+    vuln_selection = int(input("> "))
+    if 1 == vuln_selection:
+        vulnAdd()
+    elif 2 == vuln_selection:
+        vulnList()
+    elif 3 == vuln_selection:
+        vulnModify()
+    elif 4 == vuln_selection:
+        vulnRemove()
+    elif 5 == vuln_selection:
+        mainMenu()
+    elif 6 == vuln_selection:
+        sys.exit(0)
+
+def vulnAdd():
+    colorHeader("    Add Vulnerability    ")
+    colorNotice("What is the name for this vulnerability?\n(eg. Remote code injection in Vendor_Product_Component)")
+    vulnName = str(input('>  '))
+    colorNotice("Describe the business impact: ")
+    vulnImpact = str(input('>  '))
+    colorNotice("Do you have a comment for where you left off? ")
+    vulnComment = str(input('>  '))
+    if len(vulnComment) > 0:
+        sitrepAuto(vulnComment)
+    rawCvss = getCvss3Score()
+    cvssSeverity = rawCvss[0]
+    cvssScore = rawCvss[1]
+    cvssVector = rawCvss[2]
+    colorDebug('Getting Mitre ATT&CK values')
+    mitreAttack = getMitreAttack()
+    colorVerification('mitreAttack', str(mitreAttack))
+    vulnMitreTactic = mitreAttack[0]
+    vulnMitreTechnique = mitreAttack[1]
+    colorNotice("\n-----------------------------\n  Verify the data entered.\n-----------------------------")
+    colorVerification('[Name]                  ',vulnName)
+    colorVerification("[CVSS Overall Score]    ", str(cvssScore))
+    colorVerification("[CVSS Severity]         ", cvssSeverity)
+    colorVerification("[Business Impact]       ", vulnImpact)
+    colorVerification("[Comment]               ", vulnComment)
+    colorVerification('[MITRE ATT&CK Tactic]   ', vulnMitreTactic)
+    colorVerification('[MITRE ATT&CK Technique]', vulnMitreTechnique)
+    checkPoint = str(input("\nAre these values correct? [Y|N]  > ")).upper()
+    if checkPoint == "Y":
+        row = f'{vulnName},{vulnImpact},{vulnComment},{cvssScore},{cvssSeverity},{cvssVector},{vulnMitreTactic},{vulnMitreTechnique}'
+        vulnCsvNewRow(row)
+    else:
+        print("[!] Reseting values")
+        vulnName = ''
+        vulnImpact = ''
+        vulnCvss = ''
+        vulnMitreTactic = ''
+        vulnMitreTechnique = ''
+        vulnComment = ''
+        vulnAdd()
+    vuln()
+
+def vulnCsvNewRow(row):
+    if not os.path.isfile(vulnsCsv):
+        headings = 'Name,Impact,Comment'
+        headings += ',CvssScore,CvssSeverity,CvssVector'
+        headings += ',MitreTactic,MitreTechnique'
+        with open(vulnsCsv, 'a', encoding='utf-8') as f:
+            f.write(headings + "\n")
+            f.write(row + "\n")
+            f.close()
+    else:
+        with open(vulnsCsv, 'a', encoding='utf-8') as f:
+            f.write(row + "\n")
+            f.close()
+    msg = f'Added new vulnerability: {str(row)}'
+    sitrepAuto(msg)
+
+def vulnList():
+    colorHeader("    List of Current Vulnerabilities    ")
+    if os.path.exists(vulnsCsv):
+        df = pd.read_csv('report/vulns.csv', index_col=False, engine="python")
+        colorList(tabulate(df[['Name', 'Impact', 'CvssSeverity', 'CvssScore', 'Comment']], headers=df.columns))
+    else:
+        print("0 vulnerabilities")
+    if len(sys.argv) == 3 and 'list' == sys.argv[2]:
+        sys.exit(0)    
+    else:
+        vuln()
+
+def vulnModify():
+    print("\n")
+    vm = pd.read_csv(vulnsCsv)
+    rowCount = len(vm.index)
+    headings = list(vm.columns.values)
+    # Need a better method of displaying rows.
+    # Or just let pandas truncate for selection and display long-form details.
+    colorList(tabulate(vm[['Name', 'Impact', 'CvssSeverity', 'CvssScore', 'Comment']], headers=vm.columns))
+    vulnId = int(input("\nPick an entry to modify or '99' to go back to the menu:  "))
+    if 99 == vulnId:
+        vuln()
+    print("\n" + str(headings))
+    fieldId = str(input("Type a column name to modify or '99' to go back to the menu:  "))
+    if '99' == fieldId:
+        vuln()
+    if fieldId not in headings:
+        print("INVALID HEADING")
+        vuln()
+    if 'CVSS' == fieldId:
+        newValue = float(input("What is the new value?  "))
+    else:
+        newValue = str(input(f'What is the new value?  '))
+    vm.at[vulnId, fieldId] = newValue
+    print(vm)
+    msg = f"Modified vulnerability {fieldId} to: {newValue} for {str(vm.at[vulnId, 'Name'])}"
+    colorNotice(msg)
+    sitrepAuto(msg)
+    with open(vulnsCsv, 'w', newline='') as f:
+        vm.to_csv(f, index=False)
+        f.close()
+    colorDebug('Modified rows written to csv file.')
+    time.sleep(3)
+    vuln()
+
+def vulnRemove():
+    # Replace with modification of vulnModify
+    i = 0
+    print("\n")
+    r = csv.reader(open(vulnsCsv))
+    rows = list(r)
+    for row in rows:
+        print(str(i) + ") " + str(row))
+        i += 1
+    vulnId = int(input("\nPick an entry to remove or '99' to go back to the menu:  "))
+    if 99 == vulnId:
+        vuln()    
+    # Bug: Get vuln name and log it with sitrep
+    msg = "Remove vulnerability: " + str(rows[vulnId])
+    sitrepAuto(msg)
+    del rows[vulnId]
+    with open(vulnsCsv, 'w', newline='') as f:
+        writer = csv.writer(f, delimiter=',')
+        writer.writerows(rows)
+        f.close()
+    vuln()
 
 def mainMenu():
     clearScreen()
