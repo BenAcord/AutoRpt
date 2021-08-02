@@ -365,19 +365,19 @@ def finalize(exam_name, author, email, student_id, style_name):
             colorNotice("\nWhat is your student ID, if required?\n(eg. OS-12345, N/A)")
             student_id = str(input('>  '))
         else:
-            print("[i] Student ID pulled from config file as " + student_id)
+            colorNotice("Student ID pulled from config file as " + student_id)
     
     if email == '':
         colorNotice("What is your full email address?")
         email = str(input('>  '))
     else:
-        colorNotice("[i] Email address pulled from config file as " + email)
+        colorNotice("Email address pulled from config file as " + email)
 
     if author == '':
         colorNotice("What is your name?")
         author = str(input('>  '))
     else:
-        colorNotice("[i] Author pulled from config file as " + author)
+        colorNotice("Author pulled from config file as " + author)
     
     # Rename as rptMarkdownFile
     rpt_filename = rpt_base + rpt_name + ".md"
@@ -976,7 +976,6 @@ if __name__ == "__main__":
     if config_data is not None:
         if 'exam' in config_data.keys():
             exam_name = config_data['exam']
-            colorDebug(f'Checking for key named exam in {str(config_data.keys())}')
         if config_data['author'] != None:
             author = config_data['author']
         if config_data['email'] != None:
