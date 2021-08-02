@@ -663,7 +663,7 @@ def mainMenu():
     elif 7 == picker:
         attackLoad()
 
-def getConfiData():
+def getConfigData():
     exam_name = None
     email = None
     student_id = None
@@ -820,9 +820,10 @@ class DisplayablePath(object):
         return ''.join(reversed(parts))
 
 if __name__ == "__main__":
+    banner()
     # Get the script home starting directory
     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
-
+    getConfigData()
     if len(sys.argv) <= 1:
         mainMenu()
     else:

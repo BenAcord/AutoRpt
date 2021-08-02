@@ -26,21 +26,6 @@ from tabulate import tabulate
 import time
 import yaml
 
-# Global variables
-autorpt_runfrom = None
-exam_name = None
-email = None
-student_id = None
-style_name = None
-supported_filetypes = ["PDF", "PDF+7z", "DOCX", "ODT", "JIRA", "COMMONMARK_X", "GFM"]
-extentionsWithoutTemplate = ["DOCX"]
-term = blessings.Terminal(kind='xterm-256color')
-#portsFile = 'report/ports.xlsx'
-targetsFile = 'targets.txt'
-portsSpreadsheet = 'report/ports.xlsx'
-vulnsCsv = 'report/vulns.csv'
-sitrepLog = 'report/sitrep.log'
-
 def helper():
     colorNotice("USAGE:")
     colorNotice("autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize ]\n")
@@ -299,9 +284,10 @@ def getMitreAttack():
     technique = getTechnique(df, tactic)
     return [tactic, technique]
 
-def startup(exam_name, email, student_id, style_name):
+def startup(exam_name, author, email, student_id, style_name):
     # Startup pulls from script home
-    autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
+    # 21-08-02 BTA removed as set in global
+    #     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
     
     if exam_name is None:
         templates_path_base = autorpt_runfrom + "/templates/"
@@ -351,42 +337,57 @@ def startup(exam_name, email, student_id, style_name):
     if "training" == exam_name:
         os.rename(rpt_path + "report/renameme.md", rpt_path + "report/" + training_name + ".md")
     
-    print("[i] Templates successfully copied to report directory.  Here's the new structure:\n")
+    msg = f'Startup initiated new working directory {cwd} for {exam_name}'
+    sitrepAuto(msg)
+    
+    colorNotice("Templates successfully copied to report directory.  Here's the new structure:\n")
     
     # Display a directory tree for the exam
     paths = DisplayablePath.make_tree(Path(exam_path))
     for path in paths:
         print(path.displayable())
 
-def finalize(exam_name, email, student_id, style_name):
+def finalize(exam_name, author, email, student_id, style_name):
     toArchive = 'No'
     rpt_base = './report/'
     rpt_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    
-    # Student info only applies for exams and perhaps specific exams (eg OffSec)
-    if 'oscp' == exam_name:    
-        rpt_name = "OSCP_" + student_id + "_Exam_Report"
-    else:
-        rpt_name = "training_" + os.getcwd().split('/')[-1] + "_Report"
-    
-    if student_id is None:
-        student_id = input("\n[+] What is your student ID, if required (eg. OS-12345, N/A)? ")
-    else:
-        print("[i] Student ID pulled from config file as " + student_id)
-    
-    if email is None:
-        email = input("[+] What is your full email address? ")
-    else:
-        print("[i] Email address pulled from config file as " + email)
+    targetName = os.getcwd().split('/')[-1]
+    ports_table = pd.read_excel(portsSpreadsheet, sheet_name='All Ports').to_markdown()
+    vulns_table = 'FUTURE FEATURE IS TO AUTOMATICALLY ADD THE VULNS TABLE'
 
+    # Student info only applies for exams and perhaps specific exams (eg OffSec)
+    if 'training' == exam_name:
+        rpt_name = "training_" + targetName + "_Report"
+    else:
+        rpt_name = "OSCP_" + student_id + "_Exam_Report"
+
+        if student_id == '':
+            colorNotice("\nWhat is your student ID, if required?\n(eg. OS-12345, N/A)")
+            student_id = str(input('>  '))
+        else:
+            print("[i] Student ID pulled from config file as " + student_id)
+    
+    if email == '':
+        colorNotice("What is your full email address?")
+        email = str(input('>  '))
+    else:
+        colorNotice("[i] Email address pulled from config file as " + email)
+
+    if author == '':
+        colorNotice("What is your name?")
+        author = str(input('>  '))
+    else:
+        colorNotice("[i] Author pulled from config file as " + author)
+    
     # Rename as rptMarkdownFile
     rpt_filename = rpt_base + rpt_name + ".md"
     
-    print("From these options: ")
+    print("From these options, Pick an output format:")
     for (i, ext) in enumerate(supported_filetypes):
-        print("\t" + str(i) + ") " + ext)
-    picked = int(input("Pick an output format "))
+        colorList("\t" + str(i) + ") " + ext)
+    picked = int(input('>  '))
     rptFormat = supported_filetypes[picked].lower()
+
     if rptFormat in ["commonmark_x", "jira", "gfm"]:
         rpt_extension = 'md'
     else:
@@ -395,11 +396,13 @@ def finalize(exam_name, email, student_id, style_name):
     if '7z' in rpt_extension:
         toArchive = 'yes'
         rpt_extension = rpt_extension.split("+")[0]
-        rptFullPath = rpt_base + rpt_name + "." + rpt_extension  # Rename as rptFullPathTargetFile
-        print('toArchive? ' + toArchive + '\tExt: ' + str(rpt_extension) + '\tFile: ' + rptFullPath)
+        rptFullPath = rpt_base + rpt_name + "." + rpt_extension
     else:
-        rptFullPath = rpt_base + rpt_name + "." + rpt_extension  # Rename as rptFullPathTargetFile
-        print('toArchive? ' + toArchive + '\tExt: ' + str(rpt_extension) + '\tFile: ' + rptFullPath)
+        rptFullPath = rpt_base + rpt_name + "." + rpt_extension
+    
+    msg = f'Creating final report.  toArchive? {toArchive}  Ext: {str(rpt_extension)}  File: {rptFullPath}'
+    sitrepAuto(msg)
+    
     # Remove merged rpt md file if it already exists. Previous failed attempt.
     if os.path.exists(rpt_filename):
         try:
@@ -412,18 +415,20 @@ def finalize(exam_name, email, student_id, style_name):
     md_file_list = glob(rpt_base + '[0-9]*.md')
     md_file_list = sorted(md_file_list)
     for file in md_file_list:
-        colorDebug(f'Parsing {file} for boilerplate content replacing with Email: {email} RptDate: {rpt_date} StudentID: {student_id}')
         with open(file, 'r+') as f:
             file_contents = f.read()
+            file_contents = re.sub('BOILERPLATE_AUTHOR', author, file_contents)
             file_contents = re.sub('BOILERPLATE_EMAIL', email, file_contents)
             file_contents = re.sub('BOILERPLATE_DATE', rpt_date, file_contents)
+            file_contents = re.sub('BOILERPLATE_PORTS', ports_table, file_contents)
+            file_contents = re.sub('BOILERPLATE_VULNS', vulns_table, file_contents)
             if "training" == exam_name:
-                file_contents = re.sub('BOILERPLATE_HOSTNAME', 'targetName', file_contents)
+                file_contents = re.sub('BOILERPLATE_HOSTNAME', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_OSID', '', file_contents)
             else:
                 file_contents = re.sub('BOILERPLATE_OSID', student_id, file_contents)
                 
-            # Future Functionality: Some markdown for pasted images are incompatable with Pandoc 
+            # Some markdown for pasted images are incompatable with Pandoc 
             # and results in no images reaching the final report.
             # Rewrite all pasted screenshots "![[Pasted_image_A.png]]" 
             # in the format "![Pasted_image_A.png](Pasted_image_A.png)"
@@ -434,28 +439,29 @@ def finalize(exam_name, email, student_id, style_name):
             with open(rpt_filename, 'a') as result:
                 result.write(file_contents + '\n')
 
-    if style_name is None:
-        print("\n[i] From the following list, what syntax highlight style should be used for code in the report?")
+    if style_name == '':
+        print("\nFrom the following list, pick a syntax highlight style for code blocks?")
         print("   Recommendation: lighter styles are easier to read and use less ink if printed.")
         print("   Dark styles include: espresso, zenburn, and breezedark.")
         print("   Light styles include: pygments, tango, kate, monochrome, haddock")
-        # Store pandoc code syntax highlight styles in a dictionary list
         i = 0
         style_list = {}
-        p = str(subprocess.run(["pandoc", "--list-highlight-styles"], check=True, universal_newlines=True, capture_output=True).stdout)
+        p = str(subprocess.run(["pandoc", "--list-highlight-styles"], 
+                                check=True, 
+                                universal_newlines=True, 
+                                capture_output=True).stdout)
         output = p.splitlines(False)
         for s in output:
             print('\t' + str(i) + ". " + s)
             style_list[i] = s
             i += 1
-        style_id = int(input("[+] Pick a number for the style: "))
+        
+        style_id = int(input('>  '))
         style_name = style_list[style_id]
-        print("[i] Style set to " + style_name)
     else:
-        print("[i] Style pulled from config file as " + style_name)
-
+        colorNotice("Style pulled from config file as " + style_name)
     
-    print("[i] Generating report " + rptFullPath)
+    colorNotice("Generating report " + rptFullPath)
     # Hack.  Use OS install of pandoc.
     # Need to figure out Pythonic pandoc module use.
     cmd = 'pandoc ' + rpt_filename
@@ -467,29 +473,30 @@ def finalize(exam_name, email, student_id, style_name):
     cmd += ' --top-level-division=chapter'
     cmd += ' --wrap=auto '
     cmd += ' --highlight-style ' + style_name
-    cmd += ' -f ' + rptFormat
-    if not rpt_extension in extentionsWithoutTemplate:
-        # certain output formats break if a template is used
-        print("[d] No template for extension " + rpt_extension + " not in list of exclusions: " + str(extentionsWithoutTemplate))
-    else:
+    if rpt_extension in extentionsWithoutTemplate:
         cmd += ' --template' + ' eisvogel'
+    #if not rpt_extension in extentionsWithoutTemplate:
+    #    # if a template is used for certain output formats break pandoc creating the file
+    #    colorDebug("Do Not Use template for extension " + rpt_extension + " in list of exclusions: " + str(extentionsWithoutTemplate))
+    #else:
+    #    cmd += ' --template' + ' eisvogel'
     
-    print("[d] Pandoc command: " + cmd)
+    #colorDebug("Pandoc command: " + cmd)
 
     try:
         p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
     except:
-        print("[!] Failed to generate PDF using pandoc.")
+        colorVerificationFail("[!]", "Failed to generate PDF using pandoc.")
         sys.exit(10)
     
     if 'yes' == toArchive:
         archive_file = rpt_base + rpt_name + ".7z"
-        print("[i] Generating 7z archive " + archive_file)
+        colorVerification("[i]", "Generating 7z archive " + archive_file)
         cmd = '/usr/bin/7z a ' + archive_file + ' ' + rptFullPath
         try:
             p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
         except:
-            print("[!] Failed to generate 7z archive")
+            colorVerificationFail("[!]", "Failed to generate 7z archive")
             sys.exit(15)
 
 def ports():
@@ -497,20 +504,21 @@ def ports():
         os.remove(portsSpreadsheet)
     # autorecon specific: scans/_full_*_nmap.txt
     with open('targets.txt', 'r', encoding='utf-8', newline='') as t:
+        allPorts = pd.DataFrame({})
         targets = t.readlines()
         for target in targets:
             target = target.strip()
             nmapFile = './results/' + target + '/scans/_full_tcp_nmap.txt'
             if os.path.isfile(nmapFile):
-                with open(nmapFile, 'r', encoding='utf-8', newline='') as n:
-                    nmapContents = n.readlines()
-                    n.close()
                 df = pd.DataFrame({})
                 ip = ''
                 port = '' 
                 state = ''
                 service = '' 
                 version = ''
+                with open(nmapFile, 'r', encoding='utf-8', newline='') as n:
+                    nmapContents = n.readlines()
+                    n.close()
                 for line in nmapContents:
                     if re.match(r"^Nmap scan report for ", line):
                         ip = line.strip().replace('Nmap scan report for ', '')
@@ -521,16 +529,19 @@ def ports():
                         state = fields[1]
                         service = fields[2]
                         #version = ' '.join(fields[4:])
-                        version = re.sub(r'\(.*\)', '', ' '.join(fields[4:]))  # if broken flip last option to version
+                        # if broken flip last option to version
+                        version = re.sub(r'\(.*\)', '', ' '.join(fields[4:]))
                         newRow = {'IPADDRESS': ip,
                                 'PORT': port, 
                                 'STATE': state, 
                                 'SERVICE': service, 
                                 'VERSION': version}
                         df = df.append(newRow, ignore_index = True)
-                
+                        allPorts = allPorts.append(newRow, ignore_index = True)
+                # Create worksheet per target
                 colorHeader(f'    {target} - Port Count: {str(len(df.index))}    ')
-                colorList(tabulate(df[['IPADDRESS', 'PORT', 'SERVICE', 'STATE', 'VERSION']], headers=df.columns))
+                colorList(tabulate(df[['IPADDRESS', 'PORT', 'SERVICE', 'STATE', 'VERSION']], 
+                                    headers=df.columns))
                 
                 with pd.ExcelWriter(portsSpreadsheet, engine='openpyxl') as writer:
                     if os.path.exists(portsSpreadsheet):
@@ -552,7 +563,25 @@ def ports():
             else:
                 # Issue #13: No AutoRecon used.  Pull vulns into ports.xlsx.
                 print('[e] file does not exist: ' + nmapFile)
-    return None
+        # Create single worksheet for all targets and ports
+        with pd.ExcelWriter(portsSpreadsheet, engine='openpyxl') as writer:
+            if os.path.exists(portsSpreadsheet):
+                book = openpyxl.load_workbook(portsSpreadsheet)
+            else:
+                book = openpyxl.Workbook()
+            
+            writer.book = book
+            sheetActive = book.active
+            if 'Sheet' in book.sheetnames:
+                del book['Sheet']
+
+            try:
+                allPorts.to_excel(writer, sheet_name='All Ports', index=False)
+                writer.save()
+                writer.close()
+            except:
+                colorVerificationFail("[e]", "Unable to write to xlsx file.")
+    return allPorts
 
 def sitrepAuto(msg):
     d = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -809,15 +838,15 @@ def mainMenu():
     else:
         mainMenu()
 
-def params(argv, exam_name, email, student_id, style_name):
+def params(argv, exam_name, author, email, student_id, style_name):
     # Set routing action based on argument.  Otherwise, display help.
     action = sys.argv[1]
     if action == '-h' or action == '--help' or action == 'help':
         helper()
     elif action == '-s' or action == 'startup' or action == '--startup':
-        startup(exam_name, email, student_id, style_name)
+        startup(exam_name, author, email, student_id, style_name)
     elif action == '-f' or action == 'finalize' or action == '--finalize':
-        finalize(exam_name, email, student_id, style_name)
+        finalize(exam_name, author, email, student_id, style_name)
     elif action == '-v' or action == 'vuln' or action == '--vuln':
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
             vulnList()
@@ -914,12 +943,50 @@ class DisplayablePath(object):
         return ''.join(reversed(parts))
 
 if __name__ == "__main__":
-    banner()
-
+    # Global variables
+    autorpt_runfrom = ''
+    exam_name = ''
+    author = ''
+    email = ''
+    student_id = ''
+    style_name = ''
+    # current working directory
+    cwd = os.getcwd()
     # Get the script home starting directory
     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
+    supported_filetypes = ["PDF", "PDF+7z", "DOCX", "ODT", "JIRA", "COMMONMARK_X", "GFM"]
+    extentionsWithoutTemplate = ["DOCX"]
+    term = blessings.Terminal(kind='xterm-256color')
+    targetsFile = 'targets.txt'
+    portsSpreadsheet = 'report/ports.xlsx'
+    vulnsCsv = 'report/vulns.csv'
+    sitrepLog = 'report/sitrep.log'
+    
+    banner()
+    
+    if os.path.exists(cwd + '/config.yml'):
+        config_file = open(cwd + '/config.yml', 'r')
+        config_data = yaml.safe_load(config_file)
+    else:
+        config_data = None
+    for x in config_data:
+        msg = x + ' - [' + str(config_data[x]) + ']'
+    
+    # Verify configuration data entries
+    if config_data is not None:
+        if 'exam' in config_data.keys():
+            exam_name = config_data['exam']
+            colorDebug(f'Checking for key named exam in {str(config_data.keys())}')
+        if config_data['author'] != None:
+            author = config_data['author']
+        if config_data['email'] != None:
+            email = config_data['email']
+        if config_data['email'] != None:
+            student_id = str(config_data['studentid'])
+        if config_data['style'] != None:
+            style_name = config_data['style']
     
     if len(sys.argv) <= 1:
         mainMenu()
     else:
-        params(sys.argv[1:], exam_name, email, student_id, style_name)
+        params(sys.argv[1:], exam_name, author, email, student_id, style_name)
