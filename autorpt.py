@@ -291,6 +291,16 @@ def dictToMenu(dictionary):
     colorMenuItem('99 for main menu')
     return i
 
+def configSectionToMenu(section):
+    i = 0
+    items = []
+    for item in section:
+        colorMenuItem(str(i) + ".  " + section[item])
+        items.append(section[item])
+        i += 1
+    colorMenuItem('99 for main menu')
+    return items
+
 def startup():
     colorHeader('[    Startup    ]')
 
@@ -308,16 +318,65 @@ def startup():
     else:
         engagementType = appConfig['Settings']['types'].split(',')[picker]
 
-    # Get the platform
-    colorNotice('Enter the platform or company name:')
-    colorNotice('(eg. mypentestcompany, hackthebox, tryhackme, offsec, bugcrowd, etc.)')
-    platform = str(input('>  ')).replace('\s+', '')
+    # Set default path for templates. Only exams are unique.
+    templates_path = f'{autorpt_runfrom}/templates/training/'
+    if 'training' == engagementType:
+        # Get the platform
+        colorNotice('Enter the platform or company name:')
+        providers = configSectionToMenu(appConfig['Training'])
+        platform = providers[int(input('>  '))]
+        # No means to custom add a platform
+        # Get the box name
+        colorNotice('What is the box name?')
+        colorNotice('(eg. waldo, kenobi, etc.')
+        engagementName = str(input('>  ')).replace('\s+', '').lower()
+    elif 'bugbounty' == engagementType:
+        # Get the platform
+        colorNotice('Enter the platform or company name:')
+        providers = configSectionToMenu(appConfig['Bug Bounty'])
+        platform = providers[int(input('>  '))]
+        # No means to custom add a platform
+        # Get the program name
+        colorNotice('What is the program name?')
+        colorNotice('(eg. Tesla, Domain.com, etc.')
+        engagementName = str(input('>  ')).replace('\s+', '').lower()
+    elif 'ctf' == engagementType:
+        # Get the engagement name
+        colorNotice('What is the name of this CTF event?')
+        platform = str(input('>  ')).replace('\s+', '').lower()
+        # Get the engagement name
+        colorNotice('What is the team name?')
+        engagementName = str(input('>  ')).replace('\s+', '').lower()
+    elif 'exam' == engagementType:
+        # pick the exam
+        colorNotice('Select the exam')
+        i = 0
+        exams = []
+        for item in appConfig['Exams']:
+            examName = appConfig['Exams'][item].split(',')[1]
+            colorMenuItem(str(i) + ".  " + examName)
+            exams.append(item)
+            i += 1
+        colorMenuItem('99 for main menu')
+        picker = int(input('>  '))
+        if 99 == picker:
+            mainMenu()
+        platform = appConfig['Exams'][exams[picker]].split(',')[0]
+        engagementName = exams[picker]
+        # No means to custom add a platform
+        templates_path = f'{autorpt_runfrom}/templates/{engagementName}/'
+    elif 'pentest' == engagementType:
+         # Company performing the test
+        colorNotice('What is the penetration testing company name?')
+        providers = configSectionToMenu(appConfig['Bug Bounty'])
+        platform = str(input('>  '))
+        # Client name
+        colorNotice('What is the client name?')
+        engagementName = str(input('>  ')).replace('\s+', '').lower()
+    else:
+        mainMenu()
     
-    # Get the engagement name
-    colorNotice('What is the name of this engagement?')
-    colorNotice('(eg. q1pentest, waldo, kenobi, oscp, tesla, etc.')
-    engagementName = str(input('>  '))
-
+    colorDebug(f'Type: {engagementType} Provider: {platform} Box: {engagementName}')
     # Set timestamp for this engagement for uniqueness
     timestamp = datetime.datetime.now().strftime('%Y%m%d')
     
@@ -330,12 +389,7 @@ def startup():
     thisDir += f'/{platform}'
     thisDir += f'/{engagementName}'
     thisDir += f'-{timestamp}'
-    
-    if "training" == engagementType:
-        templates_path = autorpt_runfrom + '/templates/training' + '/'
-    else:
-        templates_path = autorpt_runfrom + '/templates/' + engagementType + '/'
-    
+
     # Copy the template to the engagement directory
     try:
         shutil.copytree(templates_path, f'{thisDir}/')
@@ -511,6 +565,9 @@ def finalize():
             colorVerificationFail("[!]", "Failed to generate 7z archive")
             sys.exit(15)
 
+def getActivePath():
+    return f"{session['Engagements'][session['Current']['active']].split(',')[0]}"
+
 def getPandocStyle():
     colorNotice("\nFrom the following list, pick a syntax highlight style for code blocks?")
     colorNotice("   Recommendation: lighter styles are easier to read and use less ink if printed.")
@@ -632,7 +689,7 @@ def sitrepAuto(msg):
     colorNotice('sitrep logged')
 
 def sitrepList():
-    sitrepFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{sitrepLog}"
+    sitrepFile = f"{getActivePath()}/report/{sitrepLog}"
     if os.path.isfile(sitrepFile):
         colorHeader("    SITREP Log Entries    ")
         with open(sitrepFile) as f: 
