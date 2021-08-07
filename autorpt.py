@@ -240,8 +240,7 @@ def getMitreAttack():
             mainMenu()
         else:
             tactic = tactics[picker]
-            #colorVerificationPass('PASS', f'Selected {picker} for {tactic}')
-        getTechnique(df, tactic)
+        return tactic
     
     def getTechnique(df, tactic):
         techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
@@ -284,70 +283,107 @@ def getMitreAttack():
     technique = getTechnique(df, tactic)
     return [tactic, technique]
 
-def startup(exam_name, author, email, student_id, style_name):
-    # Startup pulls from script home
-    # 21-08-02 BTA removed as set in global
-    #     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
-    
-    if exam_name is None:
-        templates_path_base = autorpt_runfrom + "/templates/"
-        print("Available exam templates:")
-        i = 0
-        exam_list = {}
-        for root, dirs, files in os.walk(templates_path_base):
-            dirs.sort()
-            for exam in dirs:
-                if "report" != exam:
-                    exam_list[i] = exam
-                    print('\t' + str(i) + ".  " + exam)
-                    i += 1
+def dictToMenu(dictionary):
+    i = 0
+    for item in dictionary.split(','):
+        colorMenuItem(str(i) + ".  " + item)
+        i += 1
+    colorMenuItem('99 for main menu')
+    return i
 
-        try:
-            exam_id = int(input("[+] Pick a number for the exam are you taking: "))
-            exam_name = exam_list[exam_id]
-        except:
-            print("[!] Invalid number selected.")
-            sys.exit(4)
-        
-        del exam_list
-    else:
-        print("[i] Exam name pulled from config file as " + exam_name)
-    
-    if "training" == exam_name:
-        training_name = str(input("[+] What is the name of your target? (single word, no spaces) "))
-        templates_path = autorpt_runfrom + '/templates/' + exam_name + '/'
-        exam_path = './' + training_name + '/'
-        rpt_path = training_name + '/'
-    else:
-        print("\n[i] Copying templates directory for the selected exam.")
-        templates_path = autorpt_runfrom + '/templates/' + exam_name + '/'
-        exam_path = './' + exam_name + '/'
-        rpt_path = exam_name + '/'
+def startup():
+    colorHeader('[    Startup    ]')
 
+    colorNotice('Startup will first create a directory structure for the engagement.')
+    colorNotice('(eg. training/hackthebox/waldo)\n')
+
+    # Get the engagement type: training, ctf, exam, bugbounty, pentest
+    colorNotice('Select the type of engagement:')
+    dictLen = int(dictToMenu(appConfig['Settings']['types']))
+    picker = int(input('>  '))
+    if 99 == picker:
+        mainMenu()
+    elif picker >= dictLen:
+        mainMenu()
+    else:
+        engagementType = appConfig['Settings']['types'].split(',')[picker]
+
+    # Get the platform
+    colorNotice('Enter the platform or company name:')
+    colorNotice('(eg. mypentestcompany, hackthebox, tryhackme, offsec, bugcrowd, etc.)')
+    platform = str(input('>  ')).replace('\s+', '')
+    
+    # Get the engagement name
+    colorNotice('What is the name of this engagement?')
+    colorNotice('(eg. q1pentest, waldo, kenobi, oscp, tesla, etc.')
+    engagementName = str(input('>  '))
+
+    # Set timestamp for this engagement for uniqueness
+    timestamp = datetime.datetime.now().strftime('%Y%m%d')
+    
+    # Compile the engagement string and directory path to create
+    thisEngagement = f'{engagementName}'
+    thisEngagement += f'-{timestamp}'
+
+    thisDir = appConfig['Paths']['pathwork']
+    thisDir += f'/{engagementType}'
+    thisDir += f'/{platform}'
+    thisDir += f'/{engagementName}'
+    thisDir += f'-{timestamp}'
+    
+    if "training" == engagementType:
+        templates_path = autorpt_runfrom + '/templates/training' + '/'
+    else:
+        templates_path = autorpt_runfrom + '/templates/' + engagementType + '/'
+    
+    # Copy the template to the engagement directory
     try:
-        shutil.copytree(templates_path, rpt_path)
+        shutil.copytree(templates_path, f'{thisDir}/')
     except OSError as exc: # python >2.5
-        print("[!] Copytree templates failed.  Trying copy.")
+        colorVerificationFail("[!]", "Copytree templates failed.  Trying copy.")
         try:
-            shutil.copy(templates_path, rpt_path)
+            shutil.copy(templates_path, f'{thisDir}/')
         except OSError as exc:
-            print("[!] Copy templates failed. Done.")
+            colorVerificationFail("[!]", "Copy templates failed. Done.")
             sys.exit(5)
     
-    if "training" == exam_name:
-        os.rename(rpt_path + "report/renameme.md", rpt_path + "report/" + training_name + ".md")
+    if "training" == engagementType:
+        os.rename(f'{thisDir}/report/1-renameme.md', f'{thisDir}/report/1-{engagementName}.md')
     
-    msg = f'Startup initiated new working directory {cwd} for {exam_name}'
+    # Update sessions file
+    # Set active
+    session['Current']['active'] = thisEngagement
+    # Set new details record
+    msg = f'{thisDir},'
+    msg += f'{engagementType},'
+    msg += f'{appConfig["Settings"]["studentid"]},'
+    msg += f'{appConfig["Settings"]["your_name"]},'
+    msg += f'{appConfig["Settings"]["email"]},'
+    msg += f'{appConfig["Settings"]["style"]}'
+    session['Engagements'][thisEngagement] = msg
+    saveEnagements()
+
+    # Journal entry in sitrep
+    msg = f'Startup initiated new working directory for {engagementName}: {thisDir}'
     sitrepAuto(msg)
-    
+
+    # Display directory tree
     colorNotice("Templates successfully copied to report directory.  Here's the new structure:\n")
-    
-    # Display a directory tree for the exam
-    paths = DisplayablePath.make_tree(Path(exam_path))
+    paths = DisplayablePath.make_tree(Path(thisDir))
     for path in paths:
         print(path.displayable())
+    time.sleep(3)
+    mainMenu()
 
-def finalize(exam_name, author, email, student_id, style_name):
+def finalize():
+    
+    
+    
+    # GET ALL VALUES FROM appConfig
+    # Remove exam_name from parameters
+
+
+
     toArchive = 'No'
     rpt_base = './report/'
     rpt_date = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -498,15 +534,16 @@ def getPandocStyle():
     return style_list[style_id]
 
 def ports():
-    if os.path.isfile(portsSpreadsheet):
-        os.remove(portsSpreadsheet)
+    portsFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{portsSpreadsheet}"
+    if os.path.isfile(portsFile):
+        os.remove(portsFile)
     # autorecon specific: scans/_full_*_nmap.txt
-    with open('targets.txt', 'r', encoding='utf-8', newline='') as t:
+    with open(f"{session['Engagements'][session['Current']['active']].split(',')[0]}/targets.txt", 'r', encoding='utf-8', newline='') as t:
         allPorts = pd.DataFrame({})
         targets = t.readlines()
         for target in targets:
             target = target.strip()
-            nmapFile = './results/' + target + '/scans/_full_tcp_nmap.txt'
+            nmapFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/results/{target}/scans/_full_tcp_nmap.txt"
             if os.path.isfile(nmapFile):
                 df = pd.DataFrame({})
                 ip = ''
@@ -539,9 +576,9 @@ def ports():
                 colorVerification(target, f'Port Count: {str(len(df.index))}')
                 #colorList(df.to_markdown())
 
-                with pd.ExcelWriter(portsSpreadsheet, engine='openpyxl') as writer:
-                    if os.path.exists(portsSpreadsheet):
-                        book = openpyxl.load_workbook(portsSpreadsheet)
+                with pd.ExcelWriter(portsFile, engine='openpyxl') as writer:
+                    if os.path.exists(portsFile):
+                        book = openpyxl.load_workbook(portsFile)
                     else:
                         book = openpyxl.Workbook()
                     
@@ -558,12 +595,12 @@ def ports():
                         colorVerificationFail("[e]", "Unable to write to xlsx file.")
             else:
                 # Issue #13: No AutoRecon used.  Pull vulns into ports.xlsx.
-                colorVerificationFail('[e]', 'file does not exist: ' + nmapFile)
+                colorVerificationFail('[e599]', f'file does not exist: {nmapFile}')
         colorList(allPorts.to_markdown())
 
-        with pd.ExcelWriter(portsSpreadsheet, engine='openpyxl') as writer:
-            if os.path.exists(portsSpreadsheet):
-                book = openpyxl.load_workbook(portsSpreadsheet)
+        with pd.ExcelWriter(portsFile, engine='openpyxl') as writer:
+            if os.path.exists(portsFile):
+                book = openpyxl.load_workbook(portsFile)
             else:
                 book = openpyxl.Workbook()
             
@@ -582,20 +619,23 @@ def ports():
 
 def sitrepAuto(msg):
     d = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-    if os.path.isfile('report/sitrep.log'):
-        with open('report/sitrep.log', 'a', encoding='utf-8', newline='') as f:
+    sitrepFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{sitrepLog}"
+    #colorDebug(f"sitrepFile: {sitrepFile}")
+    if os.path.exists(sitrepFile):
+        with open(sitrepFile, 'a', encoding='utf-8', newline='') as f:
             f.write(f'{d} - {msg}\n')
             f.close()
     else:
-        with open('report/sitrep.log', 'w', encoding='utf-8', newline='') as f:
+        with open(sitrepFile, 'w', encoding='utf-8', newline='') as f:
             f.write(f'{d} - {msg}\n')
             f.close()
     colorNotice('sitrep logged')
 
 def sitrepList():
-    if os.path.isfile(sitrepLog):
+    sitrepFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{sitrepLog}"
+    if os.path.isfile(sitrepFile):
         colorHeader("    SITREP Log Entries    ")
-        with open(sitrepLog) as f: 
+        with open(sitrepFile) as f: 
             s = f.readlines()
             f.close()
         for l in s:
@@ -654,9 +694,10 @@ def vuln():
 def vulnAdd():
     colorHeader("    Add Vulnerability    ")
     i = 0
-    if os.path.isfile(targetsFile):
+    targetFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/{targetsFile}"
+    if os.path.isfile(targetFile):
         colorNotice("For which target?\nOr '99' to go back to the menu.")
-        with open(targetsFile) as f: 
+        with open(targetFile) as f: 
             targets = f.readlines()
             f.close()
         for target in targets:
@@ -723,17 +764,18 @@ def vulnAdd():
     vuln()
 
 def vulnCsvNewRow(row):
-    if not os.path.isfile(vulnsCsv):
+    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    if not os.path.isfile(vulnsFile):
         headings = 'IpAddress,Port,'
         headings += 'Name,Impact,Comment'
         headings += ',CvssScore,CvssSeverity,CvssVector'
         headings += ',MitreTactic,MitreTechnique'
-        with open(vulnsCsv, 'a', encoding='utf-8') as f:
+        with open(vulnsFile, 'a', encoding='utf-8') as f:
             f.write(headings + "\n")
             f.write(row + "\n")
             f.close()
     else:
-        with open(vulnsCsv, 'a', encoding='utf-8') as f:
+        with open(vulnsFile, 'a', encoding='utf-8') as f:
             f.write(row + "\n")
             f.close()
     msg = f'Added new vulnerability: {str(row)}'
@@ -741,8 +783,9 @@ def vulnCsvNewRow(row):
 
 def vulnList():
     colorHeader("    List of Current Vulnerabilities    ")
-    if os.path.exists(vulnsCsv):
-        df = pd.read_csv('report/vulns.csv', sep=",", engine="python") # , index_col=False
+    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    if os.path.exists(vulnsFile):
+        df = pd.read_csv(vulnsFile, sep=",", engine="python") # , index_col=False
         colorList(df.to_markdown())
     else:
         print("0 vulnerabilities")
@@ -753,7 +796,12 @@ def vulnList():
 
 def vulnModify():
     print("\n")
-    vm = pd.read_csv(vulnsCsv)
+    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    try:
+        vm = pd.read_csv(vulnsFile)
+    except:
+        colorNotice('No vulnerabilities logged to modify.')
+        vuln()
     rowCount = len(vm.index)
     headings = list(vm.columns.values)
     colorList(vm.to_markdown())
@@ -776,7 +824,7 @@ def vulnModify():
     msg = f"Modified vulnerability {fieldId} to: {newValue} for {str(vm.at[vulnId, 'Name'])}"
     colorNotice(msg)
     sitrepAuto(msg)
-    with open(vulnsCsv, 'w', newline='') as f:
+    with open(vulnsFile, 'w', newline='') as f:
         vm.to_csv(f, index=False)
         f.close()
     time.sleep(3)
@@ -786,7 +834,12 @@ def vulnRemove():
     # Replace with modification of vulnModify
     i = 0
     print("\n")
-    r = csv.reader(open(vulnsCsv))
+    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    try:
+        r = csv.reader(open(vulnsFile))
+    except:
+        colorNotice('No vulnerabilities logged to remove.')
+        vuln()
     rows = list(r)
     for row in rows:
         colorList(str(i) + ") " + str(row))
@@ -798,7 +851,7 @@ def vulnRemove():
     msg = "Remove vulnerability: " + str(rows[vulnId])
     sitrepAuto(msg)
     del rows[vulnId]
-    with open(vulnsCsv, 'w', newline='') as f:
+    with open(vulnsFile, 'w', newline='') as f:
         writer = csv.writer(f, delimiter=',')
         writer.writerows(rows)
         f.close()
@@ -938,7 +991,7 @@ def settingsMenu():
         mainMenu()
 
 def mainMenu():
-    #clearScreen()
+    clearScreen()
     banner()
     colorHeader('[    Main Menu    ]')
     colorMenuItem('1. Startup')
@@ -950,8 +1003,6 @@ def mainMenu():
     picker = int(input('>  '))
 
     if 1 == picker:
-        picker = str(input('are you in the directory you want to create working report subdirectories?  [Y/N]  '))
-        colorVerificationFail('Warning!', 'No logic for validating Y or N.')
         startup()
     elif 2 == picker:
         vuln()
@@ -966,17 +1017,15 @@ def mainMenu():
     else:
         mainMenu()
 
-def params(argv, author, email, student_id, style_name):
+def params(argv):
     # Set routing action based on argument.  Otherwise, display help.
     action = sys.argv[1]
     if action == '-h' or action == '--help' or action == 'help':
         helper()
     elif action == '-s' or action == 'startup' or action == '--startup':
-        colorVerificationFail('[!]', 'Change parameters to correct appConfig variable')
-        startup(exam_name, author, email, student_id, style_name)
+        startup()
     elif action == '-f' or action == 'finalize' or action == '--finalize':
-        colorVerificationFail('[!]', 'Change parameters to correct appConfig variable')
-        finalize(exam_name, author, email, student_id, style_name)
+        finalize()
     elif action == '-v' or action == 'vuln' or action == '--vuln':
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
             vulnList()
@@ -1030,12 +1079,28 @@ def loadSessionConfig(appSessionFile):
 def saveConfig(appConfig):
     with open(appConfigFile, 'w') as configFile:
         appConfig.write(configFile)
-    settingsMenu()
 
-def saveEnagements(session):
+def saveEnagements():
     with open(sessionFile, 'w') as configFile:
         session.write(configFile)
-    settingsMenu()
+
+def debugConfig():
+    colorVerification('autorpt_runfrom', autorpt_runfrom)
+    colorVerification('main appConfig', appConfig.sections())
+    for key in appConfig['Paths']:
+        colorVerification('App working path for engagenments', appConfig['Paths'][key])
+    colorVerification('main session', session.sections())
+    colorVerification('Active Engagement', session['Current']['Active'])
+    colorVerification('Active Engagement Details for name', activeSessionDetails)
+    for key in session['Engagements']:
+        colorVerification(f'Engagement: {key}', session['Engagements'][key].split(','))
+    print('\n')
+    colorVerification('supported filetypes', supported_filetypes)
+    colorVerification('no templates', extentionsWithoutTemplate)
+    colorVerification('target file', targetsFile)
+    colorVerification('port XLSX', portsSpreadsheet)
+    colorVerification('vuln CSV', vulnsCsv)
+    colorVerification('sitrep Log', sitrepLog)
 
 # DisplayablePath from: 
 # https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
@@ -1135,47 +1200,25 @@ if __name__ == "__main__":
     sessionFile = pathConfig + '/' + appConfig['Files']['sessionFile']
     session = loadSessionConfig(sessionFile)
     # Details for the active engagement
-    activeSessionDetails = session['Engagements'][session['Current']['Active']].split(',')
+    try:
+        activeSessionDetails = session['Engagements'][session['Current']['active']].split(',')
+    except:
+        activeSessionDetails = ''
     # Should be supportedFiletypes
     supported_filetypes = appConfig['Settings']['output_formats']
     # Exclude filetypes that break report creation with pandoc
-    extentionsWithoutTemplate = appConfig['Settings']["no_template"]
+    extentionsWithoutTemplate = appConfig['Settings']['no_template']
     # File with list of target IP addresses
-    targetsFile = appConfig['Files']["targetFile"]
+    targetsFile = appConfig['Files']['targetFile']
     # Spreadsheet of all ports per IP address in targets file
-    portsSpreadsheet = appConfig['Files']["portFile"]
+    portsSpreadsheet = appConfig['Files']['portFile']
     # Validated list of vulnerabilities
-    vulnsCsv =  appConfig['Files']["vulnFile"]
+    vulnsCsv =  appConfig['Files']['vulnFile']
     # Situation report
-    sitrepLog =  appConfig['Files']["sitrepFile"]
-
-    # DEBUG >>>>
-    colorVerification('autorpt_runfrom', autorpt_runfrom)
-    colorVerification('main appConfig', appConfig.sections())
-    for key in appConfig['Paths']:
-        colorVerification('App working path for engagenments', appConfig['Paths'][key])
-    colorVerification('main session', session.sections())
-    colorVerification('Active Engagement', session['Current']['Active'])
-    colorVerification('Active Engagement Details for name', activeSessionDetails[3])
-    for key in session['Engagements']:
-        colorVerification(f'Engagement: {key}', session['Engagements'][key].split(','))
-    print('\n')
-    colorVerification('supported filetypes', supported_filetypes)
-    colorVerification('no templates', extentionsWithoutTemplate)
-    colorVerification('target file', targetsFile)
-    colorVerification('port XLSX', portsSpreadsheet)
-    colorVerification('vuln CSV', vulnsCsv)
-    colorVerification('sitrep Log', sitrepLog)
-    #sys.exit(255)
-    # DEBUG <<<<
+    sitrepLog =  appConfig['Files']['sitrepFile']
     
-    # Bug: Remove "exam" from the function
+    # Take action based on parameters
     if len(sys.argv) <= 1:
         mainMenu()
     else:
-        params(sys.argv[1:], 
-               #activeSessionDetails[2], # exam_name deprecated
-               activeSessionDetails[4], 
-               activeSessionDetails[5], 
-               activeSessionDetails[3], 
-               activeSessionDetails[6])
+        params(sys.argv[1:])

@@ -2,6 +2,8 @@
 ## What It Is
 Streamline report writing experience.  
 
+> Currently a work in progress.  There are rough edges.
+
 1. (**startup**) Prior to starting an exam, creates a base exam directory structure and populates it with a markdown report template.  Run this well in advance of the exam start time.
 
 2. (**ports**) 
