@@ -8,7 +8,6 @@ import re
 import requests
 import shutil
 import sys
-from tabulate import tabulate
 import urllib.request
 term = blessings.Terminal(kind='xterm-256color')
 

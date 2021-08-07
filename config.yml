@@ -1,46 +1,20 @@
-# Home for all generated content
-base_dir: ~/Documents/AutoRpt
-# Default template to deploy.  "None" or "trainng" are good options if not taking an exam.
-exam: None
-# Specific to exam use: enter your OS-ID or other student id if needed for the report.
-studentid:  Your OS-ID or the word NONE
-# Your Name
-your_name: Your Name
-# Your email
-email: a@b.c
-# Code style format for the final report
-style: haddock
-# Your default preference for finalize output report file format
-preferred_output_format: pdf and 7z
-#---
-#  DO NOT MODIFY BELOW THIS LINE  #
-outpuf_formats:
-  - pdf
-  - pdf and 7z
-  - docx
-  - OpenDocument
-  - xlsx
-  - gfm
-  - markdown-mmd
-  - jira
-  - plain
-  - pptx
-skeleton_csv_vulns:
-  - IpAddress
-  - Port
-  - Service
-  - Name
-  - AttackTactic
-  - AttackTechnique
-  - Probability
-  - Impact
-  - CvssSeverity
-  - CvssScore
-  - CvssVector
-  - Comment
-skeleton_csv_ports:
-  - IpAddress
-  - Port
-  - Service
-  - State
-  - Version
+[Paths]
+pathwork = /home/kali/Documents/AutoRpt
+
+[Settings]
+exam = training
+your_name = A. B.
+email = a@b.c
+studentid = OS-12345
+preferred_output_format = odt
+style = haddock
+output_formats = pdf, pdf+7z, docx, odt, jira, commonmark_x, gfm
+no_template = docx
+
+[Files]
+sessionfile = sessions.yml
+targetfile = targets.txt
+portfile = ports.xlsx
+vulnfile = vulns.csv
+sitrepfile = sitrep.log
+

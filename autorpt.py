@@ -3,11 +3,12 @@
 ---
 autorpt.py - Penetration testing report automatic generator
              Sets up a clean directory for note taking during 
-             an exam or training then compiles the final report.
+             a pentest, an exam, or training then compiles the final report.
 ---------------------------------------------------------------------------------------------
 """
 
 import blessings
+import configparser
 import csv
 from cvss import CVSS3
 import datetime
@@ -22,13 +23,12 @@ import re
 import shutil
 import subprocess
 import sys
-from tabulate import tabulate
 import time
 import yaml
 
 def helper():
     colorNotice("USAGE:")
-    colorNotice("autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize ]\n")
+    colorNotice("autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize | settings ]\n")
     colorNotice("WHERE:")
     colorNotice('  help:      Display this listing of usage and examples.')
     colorNotice('  startup:   Create a clean working directory for a new engagement.')
@@ -36,6 +36,7 @@ def helper():
     colorNotice('  ports:     (AutoRecon specific) Quick display of all open ports per target.')
     colorNotice('  sitrep:    Record a status update of your current progress or display the menu.')
     colorNotice('  finalize:  Compile markdown files into a desired output file format.')
+    colorNotice('  settings:  Configuration settings.')
 
     colorNotice("\nEXAMPLES:")
     colorNotice("When you are ready to start an exam or training:")
@@ -207,7 +208,6 @@ def getCvss3Score():
         cvssVector += cR + '/' + iR + '/' + aR
         c = CVSS3(cvssVector)
         returnStr = [str(c.severities()[2]), str(c.scores()[2]), cvssVector]
-    #colorDebug("Returning: " + str(returnStr))
     return returnStr
 
 def getCvssMetricValue(cvssDict, metricName):
@@ -408,7 +408,7 @@ def finalize(exam_name, author, email, student_id, style_name):
         try:
             os.remove(rpt_filename)
         except:
-            print("[!] Error removing existing report file: " + rpt_filename)
+            colorVerificationFail("Error", "removing existing report file: " + rpt_filename)
             sys.exit(6)
 
     # Merge markdown sections into a single mardown for pandoc later
@@ -440,24 +440,7 @@ def finalize(exam_name, author, email, student_id, style_name):
                 result.write(file_contents + '\n')
 
     if style_name == '':
-        print("\nFrom the following list, pick a syntax highlight style for code blocks?")
-        print("   Recommendation: lighter styles are easier to read and use less ink if printed.")
-        print("   Dark styles include: espresso, zenburn, and breezedark.")
-        print("   Light styles include: pygments, tango, kate, monochrome, haddock")
-        i = 0
-        style_list = {}
-        p = str(subprocess.run(["pandoc", "--list-highlight-styles"], 
-                                check=True, 
-                                universal_newlines=True, 
-                                capture_output=True).stdout)
-        output = p.splitlines(False)
-        for s in output:
-            print('\t' + str(i) + ". " + s)
-            style_list[i] = s
-            i += 1
-        
-        style_id = int(input('>  '))
-        style_name = style_list[style_id]
+        style_name = getPandocStyle()
     else:
         colorNotice("Style pulled from config file as " + style_name)
     
@@ -475,14 +458,7 @@ def finalize(exam_name, author, email, student_id, style_name):
     cmd += ' --highlight-style ' + style_name
     if rpt_extension in extentionsWithoutTemplate:
         cmd += ' --template' + ' eisvogel'
-    #if not rpt_extension in extentionsWithoutTemplate:
-    #    # if a template is used for certain output formats break pandoc creating the file
-    #    colorDebug("Do Not Use template for extension " + rpt_extension + " in list of exclusions: " + str(extentionsWithoutTemplate))
-    #else:
-    #    cmd += ' --template' + ' eisvogel'
     
-    #colorDebug("Pandoc command: " + cmd)
-
     try:
         p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
     except:
@@ -498,6 +474,28 @@ def finalize(exam_name, author, email, student_id, style_name):
         except:
             colorVerificationFail("[!]", "Failed to generate 7z archive")
             sys.exit(15)
+
+def getPandocStyle():
+    colorNotice("\nFrom the following list, pick a syntax highlight style for code blocks?")
+    colorNotice("   Recommendation: lighter styles are easier to read and use less ink if printed.")
+    colorNotice("   Dark styles include: espresso, zenburn, and breezedark.")
+    colorNotice("   Light styles include: pygments, tango, kate, monochrome, haddock")
+    i = 0
+    style_list = {}
+    p = str(subprocess.run(["pandoc", "--list-highlight-styles"], 
+                            check=True, 
+                            universal_newlines=True, 
+                            capture_output=True).stdout)
+    output = p.splitlines(False)
+    for s in output:
+        colorList('\t' + str(i) + ". " + s)
+        style_list[i] = s
+        i += 1
+    style_id = int(input('>  '))
+    if style_id > i or style_id < 0:
+        colorNotice('Invalid selection')
+        getPandocStyle()
+    return style_list[style_id]
 
 def ports():
     if os.path.isfile(portsSpreadsheet):
@@ -529,7 +527,6 @@ def ports():
                         state = fields[1]
                         service = fields[2]
                         #version = ' '.join(fields[4:])
-                        # if broken flip last option to version
                         version = re.sub(r'\(.*\)', '', ' '.join(fields[4:]))
                         newRow = {'IPADDRESS': ip,
                                 'PORT': port, 
@@ -539,10 +536,9 @@ def ports():
                         df = df.append(newRow, ignore_index = True)
                         allPorts = allPorts.append(newRow, ignore_index = True)
                 # Create worksheet per target
-                colorHeader(f'    {target} - Port Count: {str(len(df.index))}    ')
-                colorList(tabulate(df[['IPADDRESS', 'PORT', 'SERVICE', 'STATE', 'VERSION']], 
-                                    headers=df.columns))
-                
+                colorVerification(target, f'Port Count: {str(len(df.index))}')
+                #colorList(df.to_markdown())
+
                 with pd.ExcelWriter(portsSpreadsheet, engine='openpyxl') as writer:
                     if os.path.exists(portsSpreadsheet):
                         book = openpyxl.load_workbook(portsSpreadsheet)
@@ -562,8 +558,9 @@ def ports():
                         colorVerificationFail("[e]", "Unable to write to xlsx file.")
             else:
                 # Issue #13: No AutoRecon used.  Pull vulns into ports.xlsx.
-                print('[e] file does not exist: ' + nmapFile)
-        # Create single worksheet for all targets and ports
+                colorVerificationFail('[e]', 'file does not exist: ' + nmapFile)
+        colorList(allPorts.to_markdown())
+
         with pd.ExcelWriter(portsSpreadsheet, engine='openpyxl') as writer:
             if os.path.exists(portsSpreadsheet):
                 book = openpyxl.load_workbook(portsSpreadsheet)
@@ -593,17 +590,17 @@ def sitrepAuto(msg):
         with open('report/sitrep.log', 'w', encoding='utf-8', newline='') as f:
             f.write(f'{d} - {msg}\n')
             f.close()
+    colorNotice('sitrep logged')
 
 def sitrepList():
     if os.path.isfile(sitrepLog):
-        #clearScreen()
         colorHeader("    SITREP Log Entries    ")
         with open(sitrepLog) as f: 
             s = f.readlines()
             f.close()
         for l in s:
             fields = l.strip().split(" - ")
-            print(f'{term.bold_white_on_blue} {fields[0]} {term.normal} - {term.yellow}{fields[1]}{term.normal}')
+            colorVerification(fields[0], fields[1])
     else:
         print(f'{term.white}Sitrep file is empty.{term.normal}\n\n')
 
@@ -746,9 +743,7 @@ def vulnList():
     colorHeader("    List of Current Vulnerabilities    ")
     if os.path.exists(vulnsCsv):
         df = pd.read_csv('report/vulns.csv', sep=",", engine="python") # , index_col=False
-        colorList(tabulate(df[['IpAddress', 'Port', 'Name', 'Impact', 'CvssSeverity', 'CvssScore', 'Comment']], 
-                           headers=df.columns,
-                           showindex="never"))
+        colorList(df.to_markdown())
     else:
         print("0 vulnerabilities")
     if len(sys.argv) == 3 and 'list' == sys.argv[2]:
@@ -761,9 +756,7 @@ def vulnModify():
     vm = pd.read_csv(vulnsCsv)
     rowCount = len(vm.index)
     headings = list(vm.columns.values)
-    # Need a better method of displaying rows.
-    # Or just let pandas truncate for selection and display long-form details.
-    colorList(tabulate(vm[['Name', 'Impact', 'CvssSeverity', 'CvssScore', 'Comment']], headers=vm.columns))
+    colorList(vm.to_markdown())
     vulnId = int(input("\nPick an entry to modify or '99' to go back to the menu:  "))
     if 99 == vulnId:
         vuln()
@@ -786,7 +779,6 @@ def vulnModify():
     with open(vulnsCsv, 'w', newline='') as f:
         vm.to_csv(f, index=False)
         f.close()
-    colorDebug('Modified rows written to csv file.')
     time.sleep(3)
     vuln()
 
@@ -797,7 +789,7 @@ def vulnRemove():
     r = csv.reader(open(vulnsCsv))
     rows = list(r)
     for row in rows:
-        print(str(i) + ") " + str(row))
+        colorList(str(i) + ") " + str(row))
         i += 1
     vulnId = int(input("\nPick an entry to remove or '99' to go back to the menu:  "))
     if 99 == vulnId:
@@ -812,15 +804,149 @@ def vulnRemove():
         f.close()
     vuln()
 
+def listEngagements():
+    for e in session['Engagements']:
+        colorVerification(e, session['Engagements'][e].split(',')[0])
+    settingsMenu()
+
+def settingsMenu():
+    colorHeader('[    Settings    ]')
+    colorMenuItem('1. Application-level settings')
+    colorMenuItem('2. Engagement settings')
+    colorMenuItem('3. Back to main menu')
+    colorMenuItem('4. Quit')
+    picker = int(input('>  '))
+    
+    if 1 == picker:
+        picker = 0
+        colorSubHeading('Current Settings')
+        colorMenuItem(f"1) Engagements will be stored in {str(appConfig['Paths']['pathwork'])}")
+        colorMenuItem(f"2) Your name: {str(appConfig['Settings']['your_name'])}")
+        colorMenuItem(f"3) Your student ID: {str(appConfig['Settings']['studentid'])}")
+        colorMenuItem(f"4) Your email address: {str(appConfig['Settings']['email'])}")
+        colorMenuItem(f"5) Preferred report format: {str(appConfig['Settings']['preferred_output_format'])}")
+        colorMenuItem(f"6) Code block style: {str(appConfig['Settings']['style'])}")
+        colorMenuItem(f"7) Settings menu")
+        colorMenuItem(f"8) Main menu")
+        colorMenuItem(f"\nPick a number to modify its setting")
+        picker = int(input('>  '))
+
+        if 8 <= picker:
+            mainMenu()
+        elif 1 == picker:
+            colorNotice('What is the path to store future engagement subdirectories?')
+            picker = str(input('>  '))
+            if not os.path.isdir(picker):
+                colorVerificationFail('[!]', f'{picker} is not a valid directory.  Creating...')
+                try:
+                    # If umask is not set, incorrect permissions will be assigned on mkdir
+                    os.umask(0)
+                    os.mkdir(picker, 0o770)
+                except:
+                    colorVerificationFail('[e]', f'Unable to create directory: {picker} ')
+                    sys.exit(20)
+            appConfig['Paths']['pathwork'] = picker
+            saveConfig(appConfig)
+        elif 2 == picker:
+            colorMenuItem('What is your full name as the report author?')
+            picker = str(input('>  '))
+            appConfig['Settings']['your_name'] = picker
+            saveConfig(appConfig)
+        elif 3 == picker:
+            colorMenuItem('What is your student ID?')
+            picker = str(input('>  '))
+            appConfig['Settings']['studentid'] = picker
+            saveConfig(appConfig)
+        elif 4 == picker:
+            colorMenuItem('What is your email address?')
+            picker = str(input('>  '))
+            if (re.match(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', picker)):
+                appConfig['Settings']['email'] = picker
+                saveConfig(appConfig)
+            else:
+                colorNotice('Not an email formatted string.  Try again.')
+                settingsMenu()
+        elif 5 == picker:
+            colorMenuItem(f"What is your preferred report format?  {appConfig['Settings']['preferred_output_format']}")
+            i = 0
+            for filetype in supported_filetypes.split(','):
+                colorMenuItem(f'{i}) {filetype}')
+            picker = int(input('>  '))
+            if i <= picker:
+                appConfig['Settings']['your_name'] = picker
+                saveConfig(appConfig)
+            else:
+                colorNotice('Invalid option.')
+                settingsMenu()
+        elif 6 == picker:
+            appConfig['Settings']['style'] = getPandocStyle()
+            saveConfig(appConfig)
+        elif 7 == picker:
+            settingsMenu()
+        else:
+            colorDebug(str(picker))
+        settingsMenu()
+    elif 2 == picker:
+        colorSubHeading('[    Engagement Settings    ]')
+        colorNotice(f"Active engagement: {session['Current']['active']}")
+        colorNotice(f"Total engagement: {str(len(session['Engagements']))}\n")
+        colorMenuItem('1. Set a new active engagement')
+        colorMenuItem('2. List all engagements')
+        colorMenuItem('3. Back to main menu')
+        colorMenuItem('4. Quit')
+        picker = int(input('>  '))
+        if picker == 3:
+            mainMenu()
+        elif picker == 4:
+            sys.exit(0)
+        elif picker > 4:
+            settingsMenu()
+        elif picker == 1:
+            i = 0
+            engagements = {}
+            colorNotice('Pick a new active engagement')
+            for e in session['Engagements']:
+                colorMenuItem(f"{i}) {e} {session['Engagements'][e].split(',')[0]}")
+                engagements[i] = e
+                i += 1
+            picker = int(input('>  '))
+            if picker > i:
+                settingsMenu()
+            else:
+                session['Current']['active'] = engagements[picker]
+                saveEnagements(session)
+                settingsMenu()
+        elif picker == 2:
+            listEngagements()
+        sys.exit(255)
+
+        colorNotice('Pick an engagement to make it active:')
+        i = 0
+        for s in session['Engagements']:
+            colorMenuItem(f"{i}) {s} - {session['Engagements'][s].split(',')[0]}")
+            i += 1
+        picker = int(input('>  '))
+        if picker <= i:
+            colorNotice('set active, save')
+            saveEnagements(session)
+        else:
+            colorVerificationFail('[!]', 'Invalid selection.')
+            settingsMenu()
+    elif 4 == picker:
+        sys.exit(23)
+    else:
+        mainMenu()
+
 def mainMenu():
-    clearScreen()
+    #clearScreen()
     banner()
     colorHeader('[    Main Menu    ]')
     colorMenuItem('1. Startup')
     colorMenuItem('2. Vulnerabilities')
     colorMenuItem('3. SitRep Log')
     colorMenuItem('4. Finalize')
-    colorMenuItem('5. Quit')
+    colorMenuItem('5. Settings')
+    colorMenuItem('6. Quit')
     picker = int(input('>  '))
 
     if 1 == picker:
@@ -834,18 +960,22 @@ def mainMenu():
     elif 4 == picker:
         finalize()
     elif 5 == picker:
+        settingsMenu()
+    elif 6 == picker:
         sys.exit(0)
     else:
         mainMenu()
 
-def params(argv, exam_name, author, email, student_id, style_name):
+def params(argv, author, email, student_id, style_name):
     # Set routing action based on argument.  Otherwise, display help.
     action = sys.argv[1]
     if action == '-h' or action == '--help' or action == 'help':
         helper()
     elif action == '-s' or action == 'startup' or action == '--startup':
+        colorVerificationFail('[!]', 'Change parameters to correct appConfig variable')
         startup(exam_name, author, email, student_id, style_name)
     elif action == '-f' or action == 'finalize' or action == '--finalize':
+        colorVerificationFail('[!]', 'Change parameters to correct appConfig variable')
         finalize(exam_name, author, email, student_id, style_name)
     elif action == '-v' or action == 'vuln' or action == '--vuln':
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
@@ -864,6 +994,48 @@ def params(argv, exam_name, author, email, student_id, style_name):
         ports()
     else:
         mainMenu()
+
+def loadAppConfig(pathConfig, appConfigFile):
+    # Application-level settings configuration file
+    # Exit without configuration file
+    if not os.path.isdir(pathConfig):
+        try:
+            # If umask is not set, incorrect permissions will be assigned on mkdir
+            os.umask(0)
+            os.mkdir(pathConfig, 0o770)
+        except:
+            colorVerificationFail('[e]', f'Unable to create directory for AutoRpt settings: {pathConfig} ')
+            sys.exit(20)
+
+    if not os.path.isfile(appConfigFile):
+        try:
+            # copy configuration file from GitHub clone
+            shutil.copy(appConfigFile, pathConfig)
+        except:
+            colorVerificationFail('[e]', f'Unable to copy configuration file from the GitHub clone: {appConfigFile}')
+            sys.exit(20)
+
+    config = configparser.ConfigParser()
+    config.read(appConfigFile)
+    return config
+
+def loadSessionConfig(appSessionFile):
+    if os.path.isfile(appSessionFile):
+        config = configparser.ConfigParser()
+        config.read(appSessionFile)
+        return config
+    else:
+        colorNotice('The session file does not exist. It will be created on first use of startup.')
+
+def saveConfig(appConfig):
+    with open(appConfigFile, 'w') as configFile:
+        appConfig.write(configFile)
+    settingsMenu()
+
+def saveEnagements(session):
+    with open(sessionFile, 'w') as configFile:
+        session.write(configFile)
+    settingsMenu()
 
 # DisplayablePath from: 
 # https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
@@ -943,49 +1115,67 @@ class DisplayablePath(object):
         return ''.join(reversed(parts))
 
 if __name__ == "__main__":
-    # Global variables
-    autorpt_runfrom = ''
-    exam_name = ''
-    author = ''
-    email = ''
-    student_id = ''
-    style_name = ''
-    # current working directory
-    cwd = os.getcwd()
-    # Get the script home starting directory
-    autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
-    supported_filetypes = ["PDF", "PDF+7z", "DOCX", "ODT", "JIRA", "COMMONMARK_X", "GFM"]
-    extentionsWithoutTemplate = ["DOCX"]
+    # Define a terminal for color sugar
     term = blessings.Terminal(kind='xterm-256color')
-    targetsFile = 'targets.txt'
-    portsSpreadsheet = 'report/ports.xlsx'
-    vulnsCsv = 'report/vulns.csv'
-    sitrepLog = 'report/sitrep.log'
-    
+    # Display pretty ASCII art
     banner()
+    # OBSOLETE:  cwd = os.getcwd()
+    # Get the script home starting directory (eg. /opt/AutoRpt)
+    autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
+    # Directory for additional, supporting content.
+    # Currently only the Mitre ATT&CK Framwork.
+    pathIncludes: autorpt_runfrom + '/includes'
+    # Path to store configuration settings and sessions
+    pathConfig = os.path.expanduser("~/.config/AutoRpt")
+    # Configuration settings
+    appConfigFile = pathConfig + '/config.yml'
+    # Load configuration settings
+    appConfig = loadAppConfig(pathConfig, pathConfig + '/config.yml')
+    # Engagement sessions
+    sessionFile = pathConfig + '/' + appConfig['Files']['sessionFile']
+    session = loadSessionConfig(sessionFile)
+    # Details for the active engagement
+    activeSessionDetails = session['Engagements'][session['Current']['Active']].split(',')
+    # Should be supportedFiletypes
+    supported_filetypes = appConfig['Settings']['output_formats']
+    # Exclude filetypes that break report creation with pandoc
+    extentionsWithoutTemplate = appConfig['Settings']["no_template"]
+    # File with list of target IP addresses
+    targetsFile = appConfig['Files']["targetFile"]
+    # Spreadsheet of all ports per IP address in targets file
+    portsSpreadsheet = appConfig['Files']["portFile"]
+    # Validated list of vulnerabilities
+    vulnsCsv =  appConfig['Files']["vulnFile"]
+    # Situation report
+    sitrepLog =  appConfig['Files']["sitrepFile"]
+
+    # DEBUG >>>>
+    colorVerification('autorpt_runfrom', autorpt_runfrom)
+    colorVerification('main appConfig', appConfig.sections())
+    for key in appConfig['Paths']:
+        colorVerification('App working path for engagenments', appConfig['Paths'][key])
+    colorVerification('main session', session.sections())
+    colorVerification('Active Engagement', session['Current']['Active'])
+    colorVerification('Active Engagement Details for name', activeSessionDetails[3])
+    for key in session['Engagements']:
+        colorVerification(f'Engagement: {key}', session['Engagements'][key].split(','))
+    print('\n')
+    colorVerification('supported filetypes', supported_filetypes)
+    colorVerification('no templates', extentionsWithoutTemplate)
+    colorVerification('target file', targetsFile)
+    colorVerification('port XLSX', portsSpreadsheet)
+    colorVerification('vuln CSV', vulnsCsv)
+    colorVerification('sitrep Log', sitrepLog)
+    #sys.exit(255)
+    # DEBUG <<<<
     
-    if os.path.exists(cwd + '/config.yml'):
-        config_file = open(cwd + '/config.yml', 'r')
-        config_data = yaml.safe_load(config_file)
-    else:
-        config_data = None
-    for x in config_data:
-        msg = x + ' - [' + str(config_data[x]) + ']'
-    
-    # Verify configuration data entries
-    if config_data is not None:
-        if 'exam' in config_data.keys():
-            exam_name = config_data['exam']
-        if config_data['author'] != None:
-            author = config_data['author']
-        if config_data['email'] != None:
-            email = config_data['email']
-        if config_data['email'] != None:
-            student_id = str(config_data['studentid'])
-        if config_data['style'] != None:
-            style_name = config_data['style']
-    
+    # Bug: Remove "exam" from the function
     if len(sys.argv) <= 1:
         mainMenu()
     else:
-        params(sys.argv[1:], exam_name, author, email, student_id, style_name)
+        params(sys.argv[1:], 
+               #activeSessionDetails[2], # exam_name deprecated
+               activeSessionDetails[4], 
+               activeSessionDetails[5], 
+               activeSessionDetails[3], 
+               activeSessionDetails[6])
