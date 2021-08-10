@@ -621,73 +621,87 @@ def getPandocStyle():
         getPandocStyle()
     return style_list[style_id]
 
+def getNmapFile(target):
+    # A listing of known good nmap output files.
+    # In order: AutoRecon, nmapAutomator, and Reconnoitre
+    nmapFiles = [f"{getActivePath()}/results/{target}/scans/_full_tcp_nmap.txt",
+                 f"{getActivePath()}/results/{target}/scans/_quick_tcp_nmap.txt",
+                 f"{getActivePath()}/nmap/Full_{target}.nmap",
+                 f"{getActivePath()}/{target}.nmap"]
+    i = 0
+    while len(nmapFiles) > i:
+        if os.path.isfile(nmapFiles[i]):
+            return nmapFiles[i]
+        i += 1
+    return
+
 def ports():
     portsFile = f"{getActivePath()}/report/{portsSpreadsheet}"
     if os.path.isfile(portsFile):
         os.remove(portsFile)
-    # autorecon specific: scans/_full_*_nmap.txt
+    # Look for nmap output files associated with each target IP address
     with open(f"{getActivePath()}/targets.txt", 'r', encoding='utf-8', newline='') as t:
         allPorts = pd.DataFrame({})
         targets = t.readlines()
         for target in targets:
             target = target.strip()
-            nmapFile = f"{getActivePath()}/results/{target}/scans/_full_tcp_nmap.txt"
-            if os.path.isfile(nmapFile):
-                df = pd.DataFrame({})
-                ip = ''
-                port = '' 
-                state = ''
-                service = '' 
-                version = ''
-                with open(nmapFile, 'r', encoding='utf-8', newline='') as n:
-                    nmapContents = n.readlines()
-                    n.close()
-                for line in nmapContents:
-                    if re.match(r"^Nmap scan report for ", line):
-                        ip = line.strip().replace('Nmap scan report for ', '')
-                    elif re.match(r"^\d+.*$", line):
-                        fields = line.strip().split()
-                        # 0:port, 1:state, 2:service, 3:reason(skip), 4:version(glob)
-                        port = fields[0]
-                        state = fields[1]
-                        service = fields[2]
-                        #version = ' '.join(fields[4:])
-                        version = re.sub(r'\(.*\)', '', ' '.join(fields[4:]))
+            nmapFile = getNmapFile(target)
+            if nmapFile == None:
+                print('[!] Unable to find any nmap files.')
+                break
 
-                        if service == 'unrecognized':
-                            continue
-                        
-                        newRow = {'IPADDRESS': ip,
-                                'PORT': port, 
-                                'STATE': state, 
-                                'SERVICE': service, 
-                                'VERSION': version}
-                        df = df.append(newRow, ignore_index = True)
-                        allPorts = allPorts.append(newRow, ignore_index = True)
-                # Create worksheet per target
-                colorVerification(target, f'Port Count: {str(len(df.index))}')
-                #colorList(df.to_markdown())
+            df = pd.DataFrame({})
+            ip = ''
+            port = '' 
+            state = ''
+            service = '' 
+            version = ''
+            with open(nmapFile, 'r', encoding='utf-8', newline='') as n:
+                nmapContents = n.readlines()
+                n.close()
+            for line in nmapContents:
+                if re.match(r"^Nmap scan report for ", line):
+                    ip = line.strip().replace('Nmap scan report for ', '')
+                elif re.match(r"^\d+.*$", line):
+                    fields = line.strip().split()
+                    # 0:port, 1:state, 2:service, 3:reason(skip), 4:version(glob)
+                    port = fields[0]
+                    state = fields[1]
+                    service = fields[2]
+                    #version = ' '.join(fields[4:])
+                    version = re.sub(r'\(.*\)', '', ' '.join(fields[4:]))
 
-                with pd.ExcelWriter(portsFile, engine='openpyxl') as writer:
-                    if os.path.exists(portsFile):
-                        book = openpyxl.load_workbook(portsFile)
-                    else:
-                        book = openpyxl.Workbook()
+                    if service == 'unrecognized':
+                        continue
                     
-                    writer.book = book
-                    sheetActive = book.active
-                    if 'Sheet' in book.sheetnames:
-                        del book['Sheet']
+                    newRow = {'IPADDRESS': ip,
+                            'PORT': port, 
+                            'STATE': state, 
+                            'SERVICE': service, 
+                            'VERSION': version}
+                    df = df.append(newRow, ignore_index = True)
+                    allPorts = allPorts.append(newRow, ignore_index = True)
+            # Create worksheet per target
+            colorVerification(target, f'Port Count: {str(len(df.index))}')
+            #colorList(df.to_markdown())
 
-                    try:
-                        df.to_excel(writer, sheet_name=target, index=False)
-                        writer.save()
-                        writer.close()
-                    except:
-                        colorVerificationFail("[e]", "Unable to write to xlsx file.")
-            else:
-                # Issue #13: No AutoRecon used.  Pull vulns into ports.xlsx.
-                colorVerificationFail('[e599]', f'file does not exist: {nmapFile}')
+            with pd.ExcelWriter(portsFile, engine='openpyxl') as writer:
+                if os.path.exists(portsFile):
+                    book = openpyxl.load_workbook(portsFile)
+                else:
+                    book = openpyxl.Workbook()
+                
+                writer.book = book
+                sheetActive = book.active
+                if 'Sheet' in book.sheetnames:
+                    del book['Sheet']
+
+                try:
+                    df.to_excel(writer, sheet_name=target, index=False)
+                    writer.save()
+                    writer.close()
+                except:
+                    colorVerificationFail("[e]", "Unable to write to xlsx file.")
         colorList(allPorts.to_markdown())
 
         with pd.ExcelWriter(portsFile, engine='openpyxl') as writer:
