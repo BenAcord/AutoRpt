@@ -47,12 +47,14 @@ def helper():
     colorNotice("    autorpt.py vuln list")
     colorNotice("Log your current status:")
     colorNotice("    autorpt.py sitrep pwned buffer overflow")
-    colorNotice("Or")
+    colorNotice("...Or")
     colorNotice("    autorpt.py sitrep Stuck trying to exploit system X:8001/login.php via SQLi.  May be a rabbit trail.")
-    colorNotice("Or use the menu system:")
+    colorNotice("...Or use the menu system:")
     colorNotice("    autorpt.py sitrep")
     colorNotice("Display the sitrep log:")
     colorNotice("    autorpt.py sitrep list")
+    colorNotice("After AutoRecon completes, display the ports:")
+    colorNotice("    autorpt.py ports")
     sys.exit(1)
 
 def banner():
@@ -329,7 +331,7 @@ def startup():
         # Get the box name
         colorNotice('What is the box name?')
         colorNotice('(eg. waldo, kenobi, etc.')
-        engagementName = str(input('>  ')).replace('\s+', '').lower()
+        engagementName = str(input('>  ')).replace(" ", "").lower()
     elif 'bugbounty' == engagementType:
         # Get the platform
         colorNotice('Enter the platform or company name:')
@@ -339,14 +341,23 @@ def startup():
         # Get the program name
         colorNotice('What is the program name?')
         colorNotice('(eg. Tesla, Domain.com, etc.')
-        engagementName = str(input('>  ')).replace('\s+', '').lower()
+        rep = {"'": "", '"': "", '`': ''}
+        engagementName = str(input('>  ')).replace(rep).lower()
     elif 'ctf' == engagementType:
         # Get the engagement name
         colorNotice('What is the name of this CTF event?')
-        platform = str(input('>  ')).replace('\s+', '').lower()
+        platform = str(input('>  ')).lower()
+        platform = platform.replace("'", "")
+        platform = platform.replace('"', "")
+        platform = platform.replace('`', '')
+        platform = platform.replace(" ", "")
         # Get the engagement name
         colorNotice('What is the team name?')
-        engagementName = str(input('>  ')).replace('\s+', '').lower()
+        engagementName = str(input('>  ')).lower()
+        engagementName = engagementName.replace("'", "")
+        engagementName = engagementName.replace('"', "")
+        engagementName = engagementName.replace('`', '')
+        engagementName = engagementName.replace(' ', '')
     elif 'exam' == engagementType:
         # pick the exam
         colorNotice('Select the exam')
@@ -376,7 +387,6 @@ def startup():
     else:
         mainMenu()
     
-    colorDebug(f'Type: {engagementType} Provider: {platform} Box: {engagementName}')
     # Set timestamp for this engagement for uniqueness
     timestamp = datetime.datetime.now().strftime('%Y%m%d')
     
@@ -413,7 +423,8 @@ def startup():
     msg += f'{appConfig["Settings"]["studentid"]},'
     msg += f'{appConfig["Settings"]["your_name"]},'
     msg += f'{appConfig["Settings"]["email"]},'
-    msg += f'{appConfig["Settings"]["style"]}'
+    msg += f'{appConfig["Settings"]["style"]},'
+    msg += f'{engagementName}'
     session['Engagements'][thisEngagement] = msg
     saveEnagements()
 
@@ -430,26 +441,28 @@ def startup():
     mainMenu()
 
 def finalize():
-    
-    
-    
-    # GET ALL VALUES FROM appConfig
-    # Remove exam_name from parameters
-
-
-
+    activeAll = getActiveAll()
+    engagementType = activeAll.split(',')[1]
+    email = appConfig['Settings']['email']
+    author = appConfig['Settings']['your_name']
+    student_id = appConfig['Settings']['studentid']
+    rptFormat = appConfig['Settings']['preferred_output_format']
     toArchive = 'No'
-    rpt_base = './report/'
+    rpt_base = f"{activeAll.split(',')[0]}/report/"
     rpt_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    targetName = os.getcwd().split('/')[-1]
-    ports_table = pd.read_excel(portsSpreadsheet, sheet_name='All Ports').to_markdown()
-    vulns_table = 'FUTURE FEATURE IS TO AUTOMATICALLY ADD THE VULNS TABLE'
+    style_name = appConfig['Settings']['style']
+    targetName = activeAll.split(',')[6]
+    # ensure the latest ports file exists
+    ports()
+    portsFile = f"{rpt_base}{portsSpreadsheet}"
+    ports_table = pd.read_excel(portsFile, sheet_name='All Ports').to_markdown()
+    vulns_table = '' # FUTURE FEATURE IS TO AUTOMATICALLY ADD THE VULNS TABLE'
 
     # Student info only applies for exams and perhaps specific exams (eg OffSec)
-    if 'training' == exam_name:
+    if 'training' == engagementType:
         rpt_name = "training_" + targetName + "_Report"
     else:
-        rpt_name = "OSCP_" + student_id + "_Exam_Report"
+        rpt_name = f"{targetName.upper()}_" + student_id + "_Exam_Report"
 
         if student_id == '':
             colorNotice("\nWhat is your student ID, if required?\n(eg. OS-12345, N/A)")
@@ -472,17 +485,21 @@ def finalize():
     # Rename as rptMarkdownFile
     rpt_filename = rpt_base + rpt_name + ".md"
     
-    print("From these options, Pick an output format:")
-    for (i, ext) in enumerate(supported_filetypes):
-        colorList("\t" + str(i) + ") " + ext)
-    picked = int(input('>  '))
-    rptFormat = supported_filetypes[picked].lower()
+    # Set output file format
+    if rptFormat == '':
+        i = 0
+        print("From these options, Pick an output format:")
+        for ext in supported_filetypes.split(','):
+            colorMenuItem(f"{str(i)} ) {ext}")
+            i += 1
+        picked = int(input('>  '))
+        rptFormat = supported_filetypes[picked].lower()
 
     if rptFormat in ["commonmark_x", "jira", "gfm"]:
         rpt_extension = 'md'
     else:
         rpt_extension = rptFormat
-    
+    # Is archive needed?
     if '7z' in rpt_extension:
         toArchive = 'yes'
         rpt_extension = rpt_extension.split("+")[0]
@@ -493,7 +510,8 @@ def finalize():
     msg = f'Creating final report.  toArchive? {toArchive}  Ext: {str(rpt_extension)}  File: {rptFullPath}'
     sitrepAuto(msg)
     
-    # Remove merged rpt md file if it already exists. Previous failed attempt.
+    # The merged, unified markdown file is not a primary source.
+    # Remove of it already exists. Previous failed attempt.
     if os.path.exists(rpt_filename):
         try:
             os.remove(rpt_filename)
@@ -512,7 +530,7 @@ def finalize():
             file_contents = re.sub('BOILERPLATE_DATE', rpt_date, file_contents)
             file_contents = re.sub('BOILERPLATE_PORTS', ports_table, file_contents)
             file_contents = re.sub('BOILERPLATE_VULNS', vulns_table, file_contents)
-            if "training" == exam_name:
+            if "training" == engagementType:
                 file_contents = re.sub('BOILERPLATE_HOSTNAME', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_OSID', '', file_contents)
             else:
@@ -520,19 +538,19 @@ def finalize():
                 
             # Some markdown for pasted images are incompatable with Pandoc 
             # and results in no images reaching the final report.
-            # Rewrite all pasted screenshots "![[Pasted_image_A.png]]" 
-            # in the format "![Pasted_image_A.png](Pasted_image_A.png)"
+            # Rewrite all pasted screenshots from this "![[Pasted_image_A.png]]" 
+            # to this format "![Pasted_image_A.png](Pasted_image_A.png)"
             file_contents = re.sub(r'\!\[\[Pasted_image_(\w+).png\]\]', 
                                    r'![Pasted_image_\1.png](Pasted_image_\1.png)', 
                                    file_contents)
-
+            # Write modifed contents with boilerplate value replacements
             with open(rpt_filename, 'a') as result:
                 result.write(file_contents + '\n')
 
     if style_name == '':
         style_name = getPandocStyle()
     else:
-        colorNotice("Style pulled from config file as " + style_name)
+        colorNotice("Code block style pulled from config file as " + style_name)
     
     colorNotice("Generating report " + rptFullPath)
     # Hack.  Use OS install of pandoc.
@@ -546,7 +564,7 @@ def finalize():
     cmd += ' --top-level-division=chapter'
     cmd += ' --wrap=auto '
     cmd += ' --highlight-style ' + style_name
-    if rpt_extension in extentionsWithoutTemplate:
+    if rpt_extension in appConfig['Settings']['no_template']:
         cmd += ' --template' + ' eisvogel'
     
     try:
@@ -566,7 +584,20 @@ def finalize():
             sys.exit(15)
 
 def getActivePath():
-    return f"{session['Engagements'][session['Current']['active']].split(',')[0]}"
+    active = session['Current']['active']
+    if 'None' == active:
+        colorNotice('No active engagement exists.  Use startup to create a new engagement.')
+        sys.exit(30)
+    else:
+        return f"{session['Engagements'][active].split(',')[0]}"
+
+def getActiveAll():
+    active = session['Current']['active']
+    if 'None' == active:
+        colorNotice('No active engagement exists.  Use startup to create a new engagement.')
+        sys.exit(30)
+    else:
+        return f"{session['Engagements'][active]}"
 
 def getPandocStyle():
     colorNotice("\nFrom the following list, pick a syntax highlight style for code blocks?")
@@ -591,16 +622,16 @@ def getPandocStyle():
     return style_list[style_id]
 
 def ports():
-    portsFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{portsSpreadsheet}"
+    portsFile = f"{getActivePath()}/report/{portsSpreadsheet}"
     if os.path.isfile(portsFile):
         os.remove(portsFile)
     # autorecon specific: scans/_full_*_nmap.txt
-    with open(f"{session['Engagements'][session['Current']['active']].split(',')[0]}/targets.txt", 'r', encoding='utf-8', newline='') as t:
+    with open(f"{getActivePath()}/targets.txt", 'r', encoding='utf-8', newline='') as t:
         allPorts = pd.DataFrame({})
         targets = t.readlines()
         for target in targets:
             target = target.strip()
-            nmapFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/results/{target}/scans/_full_tcp_nmap.txt"
+            nmapFile = f"{getActivePath()}/results/{target}/scans/_full_tcp_nmap.txt"
             if os.path.isfile(nmapFile):
                 df = pd.DataFrame({})
                 ip = ''
@@ -622,6 +653,10 @@ def ports():
                         service = fields[2]
                         #version = ' '.join(fields[4:])
                         version = re.sub(r'\(.*\)', '', ' '.join(fields[4:]))
+
+                        if service == 'unrecognized':
+                            continue
+                        
                         newRow = {'IPADDRESS': ip,
                                 'PORT': port, 
                                 'STATE': state, 
@@ -676,7 +711,7 @@ def ports():
 
 def sitrepAuto(msg):
     d = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-    sitrepFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{sitrepLog}"
+    sitrepFile = f"{getActivePath()}/report/{sitrepLog}"
     #colorDebug(f"sitrepFile: {sitrepFile}")
     if os.path.exists(sitrepFile):
         with open(sitrepFile, 'a', encoding='utf-8', newline='') as f:
@@ -751,7 +786,7 @@ def vuln():
 def vulnAdd():
     colorHeader("    Add Vulnerability    ")
     i = 0
-    targetFile = f"{session['Engagements'][session['Current']['active']].split(',')[0]}/{targetsFile}"
+    targetFile = f"{getActivePath()}/{targetsFile}"
     if os.path.isfile(targetFile):
         colorNotice("For which target?\nOr '99' to go back to the menu.")
         with open(targetFile) as f: 
@@ -821,7 +856,7 @@ def vulnAdd():
     vuln()
 
 def vulnCsvNewRow(row):
-    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     if not os.path.isfile(vulnsFile):
         headings = 'IpAddress,Port,'
         headings += 'Name,Impact,Comment'
@@ -840,7 +875,7 @@ def vulnCsvNewRow(row):
 
 def vulnList():
     colorHeader("    List of Current Vulnerabilities    ")
-    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     if os.path.exists(vulnsFile):
         df = pd.read_csv(vulnsFile, sep=",", engine="python") # , index_col=False
         colorList(df.to_markdown())
@@ -853,7 +888,7 @@ def vulnList():
 
 def vulnModify():
     print("\n")
-    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     try:
         vm = pd.read_csv(vulnsFile)
     except:
@@ -891,7 +926,7 @@ def vulnRemove():
     # Replace with modification of vulnModify
     i = 0
     print("\n")
-    vulnsFile =  f"{session['Engagements'][session['Current']['active']].split(',')[0]}/report/{vulnsCsv}"
+    vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     try:
         r = csv.reader(open(vulnsFile))
     except:
@@ -1053,10 +1088,11 @@ def mainMenu():
     colorHeader('[    Main Menu    ]')
     colorMenuItem('1. Startup')
     colorMenuItem('2. Vulnerabilities')
-    colorMenuItem('3. SitRep Log')
-    colorMenuItem('4. Finalize')
-    colorMenuItem('5. Settings')
-    colorMenuItem('6. Quit')
+    colorMenuItem('3. Ports')
+    colorMenuItem('4. SitRep Log')
+    colorMenuItem('5. Finalize')
+    colorMenuItem('6. Settings')
+    colorMenuItem('7. Quit')
     picker = int(input('>  '))
 
     if 1 == picker:
@@ -1064,12 +1100,14 @@ def mainMenu():
     elif 2 == picker:
         vuln()
     elif 3 == picker:
-        sitrepMenu()
+        ports()
     elif 4 == picker:
-        finalize()
+        sitrepMenu()
     elif 5 == picker:
-        settingsMenu()
+        finalize()
     elif 6 == picker:
+        settingsMenu()
+    elif 7 == picker:
         sys.exit(0)
     else:
         mainMenu()
@@ -1241,7 +1279,6 @@ if __name__ == "__main__":
     term = blessings.Terminal(kind='xterm-256color')
     # Display pretty ASCII art
     banner()
-    # OBSOLETE:  cwd = os.getcwd()
     # Get the script home starting directory (eg. /opt/AutoRpt)
     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
     # Directory for additional, supporting content.
@@ -1264,7 +1301,6 @@ if __name__ == "__main__":
     # Should be supportedFiletypes
     supported_filetypes = appConfig['Settings']['output_formats']
     # Exclude filetypes that break report creation with pandoc
-    extentionsWithoutTemplate = appConfig['Settings']['no_template']
     # File with list of target IP addresses
     targetsFile = appConfig['Files']['targetFile']
     # Spreadsheet of all ports per IP address in targets file
