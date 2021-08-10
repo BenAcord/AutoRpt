@@ -624,19 +624,20 @@ def getPandocStyle():
 def getNmapFile(target):
     # A listing of known good nmap output files.
     # In order: AutoRecon, nmapAutomator, and Reconnoitre
-    nmapFiles = [f"{getActivePath()}/results/{target}/scans/_full_tcp_nmap.txt",
-                 f"{getActivePath()}/results/{target}/scans/_quick_tcp_nmap.txt",
-                 f"{getActivePath()}/nmap/Full_{target}.nmap",
-                 f"{getActivePath()}/{target}.nmap"]
-    i = 0
-    while len(nmapFiles) > i:
-        if os.path.isfile(nmapFiles[i]):
-            return nmapFiles[i]
-        i += 1
-    return
+    nmapFiles = [f"_full_tcp_nmap.txt",
+                 f"_quick_tcp_nmap.txt",
+                 f"Full_{target}.nmap",
+                 f"{target}.quick.nmap",
+                 f"{target}.nmap"]
+    
+    for name in nmapFiles:
+        for root, dirs, files in os.walk():
+            if name in files:
+                nmapFile = os.path.join(root, name)
+                return nmapFile
 
 def ports():
-    portsFile = f"{getActivePath()}/report/{portsSpreadsheet}"
+    portsFile = f"{getActivePath}/report/{portsSpreadsheet}"
     if os.path.isfile(portsFile):
         os.remove(portsFile)
     # Look for nmap output files associated with each target IP address
