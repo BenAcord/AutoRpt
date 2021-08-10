@@ -631,13 +631,13 @@ def getNmapFile(target):
                  f"{target}.nmap"]
     
     for name in nmapFiles:
-        for root, dirs, files in os.walk():
+        for root, dirs, files in os.walk(getActivePath()):
             if name in files:
                 nmapFile = os.path.join(root, name)
                 return nmapFile
 
 def ports():
-    portsFile = f"{getActivePath}/report/{portsSpreadsheet}"
+    portsFile = f"{getActivePath()}/report/{portsSpreadsheet}"
     if os.path.isfile(portsFile):
         os.remove(portsFile)
     # Look for nmap output files associated with each target IP address
