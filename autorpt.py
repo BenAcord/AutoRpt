@@ -55,6 +55,8 @@ def helper():
     colorNotice("    autorpt.py sitrep list")
     colorNotice("After AutoRecon completes, display the ports:")
     colorNotice("    autorpt.py ports")
+    colorNotice("Compile the markdown into a polished report document")
+    colorNotice("    autorpt.py finalize")
     sys.exit(1)
 
 def banner():

@@ -98,6 +98,8 @@ Display the sitrep log:
     autorpt.py sitrep list
 After AutoRecon completes, display the ports:
     autorpt.py ports
+Compile the markdown into a polished report document
+    autorpt.py finalize
 ```
 
 ### Settings
