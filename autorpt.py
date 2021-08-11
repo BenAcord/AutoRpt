@@ -437,7 +437,7 @@ def startup():
     paths = DisplayablePath.make_tree(Path(thisDir))
     for path in paths:
         print(path.displayable())
-    time.sleep(3)
+    time.sleep(10)
     mainMenu()
 
 def finalize():

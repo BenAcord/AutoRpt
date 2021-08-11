@@ -1,18 +1,16 @@
 # AutoRpt
 ## What It Is
-Streamline report writing experience.  
+Streamline the report writing experience.  AutoRpt enforces consistent organization of directory structure and note taking to facilitate a smooth report writing process.
 
-> Currently a work in progress.  There are rough edges.
+1. (**startup**) Prior to starting an exam or training, startup creates a base directory structure and populates it with a markdown report template.  Run this well in advance of the exam start time.  During the exam or training update the markdown files for the targets.
 
-1. (**startup**) Prior to starting an exam, creates a base exam directory structure and populates it with a markdown report template.  Run this well in advance of the exam start time.
+2. (**ports**) Quickly scans for known recon tool nmap output and displays a summary of the ports and services.  Also creates a spreadsheet with a tab for each target and its ports.
 
-2. (**ports**) 
-
-3. (**vuln**) A submenu for logging confirmed vulnerabilities
+3. (**vuln**) A submenu for logging confirmed vulnerabilities and assigning a CVSS 3 score and MITRE ATT&CK Framework tactic and technique.
 
 4. (**sitrep**) Track your status and activity throughout the engagement.  You can quickly add a status or review the log to see the history of activities.  Yes, I realize this isn't a real sitrep report.
 
-5. (**finalize**) During the exam autorpt generates a final report PDF and 7z archive from your markdown files.
+5. (**finalize**) During the exam report window AutoRpt generates a final report PDF and 7z archive from your markdown files.  Other file formats are supported: Jira, odt, docx, and common markdown.
 
 **TBD: Insert video or GIF here**
 
@@ -30,13 +28,15 @@ Happy writing!
 
 ## Install
 ### Dependencies & Caveats
-AutoRpt has only been tested on Linux, specifically, Kali Linux.
+AutoRpt has only been tested on Kali Linux.
 - p7zip
 - pandoc
 - pandoc-data
 - texlive-xetex
 ```Bash
 sudo apt-get install -y p7zip pandoc pandoc-data texlive-xetex
+
+pip install cvss blessings colorama
 ```
 
 ### Clone the Repo
@@ -52,10 +52,10 @@ autorpt help
 ---
 
 ## Usage:
-`autorpt.py [ help | startup | finalize ]`
+`autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize | settings ]`
 
 
-### Example #0: Displaying help
+### Displaying help
 Sometimes it is good to read a man page or a bit of documentation.  autorpt will display help if any of the following options are submitted: `-h`, `help`, `--help`.
 
 ```
@@ -69,35 +69,48 @@ $ autorpt.py help
               Tag your work
 
 
-[!] Use at your own risk.
+USAGE:
+autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize | settings ]
+                                                                                                                          
+WHERE:
+  help:      Display this listing of usage and examples.
+  startup:   Create a clean working directory for a new engagement.
+  vuln:      Record a confirmed vulnerability with CVSS scoring and MITRE ATT&CK attributes.
+  ports:     (AutoRecon specific) Quick display of all open ports per target.
+  sitrep:    Record a status update of your current progress or display the menu.
+  finalize:  Compile markdown files into a desired output file format.
+  settings:  Configuration settings.
 
-AutoRpt is an exam preparation aid accomplishing two main reporting tasks:
-1. (startup) Prior to starting an exam, it creates a base exam directory
-   structure with markdown report templates.
-   It is a good idea to run this well in advance of the exam start.
-
-2. (finalize) During the exam and after the VPN drops, autorpt generates 
-   a final PDF and 7z.
-
-Usage: autorpt.py [ help | startup | finalize ]
-
-Examples:
-
-  1. when you are ready to start an exam:
+EXAMPLES:                                                                                                                 
+When you are ready to start an exam or training:
     autorpt.py startup
-
-  2. after the report is written:
-    autorpt.py finalize
+Log a verified vulnerability:
+    autorpt.py vuln
+Display vulnerability list:
+    autorpt.py vuln list
+Log your current status:
+    autorpt.py sitrep pwned buffer overflow
+...Or
+    autorpt.py sitrep Stuck trying to exploit system X:8001/login.php via SQLi.  May be a rabbit trail.
+...Or use the menu system:
+    autorpt.py sitrep
+Display the sitrep log:
+    autorpt.py sitrep list
+After AutoRecon completes, display the ports:
+    autorpt.py ports
 ```
 
-### Example #1: Startup
+### Settings
+...
+
+
+### Startup
 **Scafold Exam Report Structure**
-Similar to how tools like autorecon and nmapAutomator create subdirectories for organizing enumeration output files during the pentest, autorpt does something similar for reporting.  The startup option creates a directory for the selected exam and a report subdirectory.  It then populates a barebones targets.txt file for recon scripts.  Then it copies a markdown template file for each major section of the final report.  These files are numbered similar to chapters and named with the respective system point value.  A tree structure is displayed showing the new exam home.
+Similar to how tools like autorecon and nmapAutomator create subdirectories for organizing enumeration output files during the pentest, autorpt does something similar for reporting.  The startup option creates a working directory for the selected training or exam along with a report subdirectory.  
 
-Change directory to the location where you want the exam directory to be created.  Then run `autorpt.py startup`.
+By default this working subdirectory is created in /home/kali/Documents/AutoRpt but can be changed in the the settings menu or directly in the /home/kali/.config/AutoRpt/config.yml.  
 
-If you created a symbolic link as shown in the "Install, Clone the Repo" section of this readme the command can be shortened to `autorpt startup`.
-
+Startup then populates a barebones targets.txt file for recon scripts and copies a markdown template file for each major section of the final report.  These files are numbered similar to chapters and named with the respective system point value.  A tree structure is displayed showing the new exam home.
 
 After running `autorpt startup` change to the newly created exam directory (eg. `cd oscp`) before running any scan tools.  This will keep all recon output subdirectories in the exam directory.
 
@@ -112,41 +125,225 @@ $ autorpt.py startup
               Tag your work
 
 
-Available exam templates:
-        0.  ejpt
-        1.  oscp
-        2.  osed
-        3.  osee
-        4.  osep
-        5.  oswe
-        6.  oswp
-        7.  training
-[+] Pick a number for the exam are you taking: 1
+[    Startup    ]
 
-[i] Copying templates directory for the selected exam.
-[i] Templates successfully copied to report directory.  Here's the new structure:
+Startup will first create a directory structure for the engagement.
+(eg. training/hackthebox/waldo)
 
-oscp/
+Select the type of engagement:
+  0.  training
+  1.  ctf
+  2.  exam
+  3.  bugbounty
+  4.  pentest
+  99 for main menu
+>  0
+Enter the platform or company name:
+  0.  hackthebox
+  1.  tryhackme
+  2.  vulnhub
+  3.  provinggrounds
+  4.  virtualhackinglabs
+  5.  sansnetwars
+  6.  websecurityacademy
+  99 for main menu
+>  0
+What is the box name?
+(eg. waldo, kenobi, etc.
+>  granny
+sitrep logged
+Templates successfully copied to report directory.  Here's the new structure:
+                                                                                                                          
+granny-20210811/
+├── config.yml
 ├── README
 ├── report/
 │   ├── 0-execsummary.md
-│   ├── 1-10pt.md
-│   ├── 2-20ptA.md
-│   ├── 3-20ptB.md
-│   ├── 4-25ptA.md
-│   ├── 5-25pt-bufferoverflow.md
-│   └── 6-closing.md
+│   ├── 1-granny.md
+│   ├── 6-closing.md
+│   └── sitrep.log
 └── targets.txt
 ```
 
-### Example #2: Writing the Pentest Report
-The exam/report subdirectory contains a markdown file for each major section of the pentest report.  Notably, a markdown file exists for each point-value system.  During the exam use your favorite markdown editor of choice to document findings and evidence for each system.  I use Obsidian, so in my case I'd open a new vault in the oscp/report directory.  The markdown files contain guidance from the sample reports provided by Offensive Security.  I can write, modify, and delete in markdown without the need for any other tool.  Well, Flameshot too but you get the gist.
+### Situation Report
+The sitrep parameter is an on-the-fly status logger of what you are thinking at that moment.  It's a means of keeping track of interesting findings, recognition of a rabbit trail, a quick note about taking a break, or anything else important to you at the time.
 
-When the systems markdown are fully documented move on to edit the executive summary and closing markdown files.  There are several boilerplate variables in these documents that are automatically updated by autorpt with its finalize option.  Just ignore any "BOILERPLATE_" items, they are important.
+This type of stream of conscious logging is helpful for lessons learned after the event ends.
 
-## Example #3: Generate Submission Files
+A sitrep can be logged from any location at any time.  There's no need to keep the file open as AutoRpt will log with the active engagement.  AutoRpt also writes to this log for its own functionality so a coherent timeline of its activity and your own is kept.  For example, if a new sitrep is logged now it will appear after the sitrep created by AutoRpt's startup above.
+`$ autorpt sitrep Kicking off AutoRecon scans`
+
+Contents of the log are available for review through three means: 
+- `autorpt sitrep list` - displays the log and exits AutoRpt
+- the sitrep menu
+- or opening the plaintext file in report/sitrep.log.
+
+```Bash
+$ autorpt sitrep
+
+  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄ 
+ ▐█ ▀█ █▪██▌•██  ▪     ▀▄ █·▐█ ▄█•██   
+ ▄█▀▀█ █▌▐█▌ ▐█.▪ ▄█▀▄ ▐▀▀▄  ██▀· ▐█.▪ 
+ ▐█ ▪▐▌▐█▄█▌ ▐█▌·▐█▌.▐▌▐█•█▌▐█▪·• ▐█▌· 
+  ▀  ▀  ▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀.▀    ▀▀▀  
+             Tag your work
+
+
+[    SITREP  (Situation Report)    ]
+
+  1. List all sitrep entries
+  2. Add new sitrep log entry
+
+  3. Main Menu
+  4. Quit
+>  1
+
+    SITREP Log Entries    
+
+ 2021-08-11 18:54   Startup initiated new working directory for granny: /home/kali/Documents/AutoRpt/training/hackthebox/granny-20210811
+ 2021-08-11 18:56   Kicking off AutoRecon scans
+```
+
+Manually looking at the sitrep.log from the terminal.
+```Bash
+(kali㉿kali)-[~/…/training/hackthebox/granny-20210811/report]
+└─$ cat sitrep.log 
+2021-08-11 18:54 - Startup initiated new working directory for granny: /home/kali/Documents/AutoRpt/training/hackthebox/granny-20210811
+2021-08-11 18:56 - Kicking off AutoRecon scans
+```
+
+### Ports
+Tools like AutoRecon, nmapAutomator, and Reconnoitre should be run from the directory created with startup.  This will store its output where AutoRpt can reference plus helps with organization.
+
+After the recon tools complete the output files can be quickly mined for a list of ports.  The ports parameter will search for known nmap files from these tools and display a summary of the ports to the screen.  AutoRpt will also create a report/ports.xlsx spreadsheet with a worksheet for each target and an "All Ports" tab as a master list for every target and its ports.  It does this every time `ports` is run.
+
+
+### Vulnerabilty Log
+The vuln parameter is used to log validated vulnerabilities to a CSV file in the report directory.  This menu driven process prompts for key attributes.  A few key things to note.  
+
+If the CVSS 3 score is known it can be entered as shown in the example below.  If the score is not known it will prompt for every calculating field and use the CVSS module to calculate the score for you.
+
+The final piece of the vulnerability is to associate it with the MITRE ATT&CK Framework tactic and technique.  The first prompt will select the correct ATT&CK framework from: mobile, pre, ics, and enterprise.  The second associates the tactic and the final displays the techniques associated with the selected tactic.
+
+The values entered are shown for verification and, if approved, are written to the report/vulns.csv file.
+
+Example of logging a _dummy_ vulnerability.
+```Bash
+$ autorpt vuln                                                                                                      1 ⨯
+
+  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄ 
+ ▐█ ▀█ █▪██▌•██  ▪     ▀▄ █·▐█ ▄█•██   
+ ▄█▀▀█ █▌▐█▌ ▐█.▪ ▄█▀▄ ▐▀▀▄  ██▀· ▐█.▪ 
+ ▐█ ▪▐▌▐█▄█▌ ▐█▌·▐█▌.▐▌▐█•█▌▐█▪·• ▐█▌· 
+  ▀  ▀  ▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀.▀    ▀▀▀  
+             Tag your work
+
+
+[    Vulnerabilities    ]
+
+  1. Add a new vulnerability
+  2. List all vulnerabilities
+  3. Modify an existing vulnerability
+  4. Remove a vulnerability
+                                                                                                                          
+  5. Main Menu
+  6. quit
+> 1
+
+    Add Vulnerability    
+
+For which target?
+Or '99' to go back to the menu.                                                                                           
+0.  192.168.x.x
+>  0
+What is the port number [0-65535]?
+>  443
+What is the name for this vulnerability?
+(eg. Remote code injection in Vendor_Product_Component)                                                                   
+>  RCE in search form train/search.php 
+Describe the business impact: 
+>  Initial compromise
+Do you have a comment for where you left off? 
+>  Exploring the limits of what will execute and checking web directories 
+sitrep logged
+
+    CVSS 3 Scoring    
+
+Do you know the Overall CVSS v3 Score? [Y|N]
+>  y
+What is the score?
+>  5.6
+If known, paste the CVSS Vector string here or hit Enter to skip (eg. AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N 
+>  
+
+    MITRE ATT&CK    
+
+Which MITRE ATT&CK Framework applies?
+Press 99 for main menu.                                                                                                   
+  0. mobile
+  1. pre
+  2. ics
+  3. enterprise
+>  3
+What is the Tactic?
+Or 99 to return to the ATT&CK menu.                                                                                       
+  0. collection
+  1. command-and-control
+  2. credential-access
+  3. defense-evasion
+  4. discovery
+  5. execution
+  6. exfiltration
+  7. impact
+  8. initial-access
+  9. lateral-movement
+  10. persistence
+  11. privilege-escalation
+  12. reconnaissance
+  13. resource-development
+>  8
+Pick a Technique?
+Or 99 to return to the tactic menu.                                                                                       
+  0. Drive-by Compromise
+  1. Exploit Public-Facing Application
+  2. External Remote Services
+  3. Hardware Additions
+  4. Phishing
+  5. Replication Through Removable Media
+  6. Supply Chain Compromise
+  7. Trusted Relationship
+  8. Valid Accounts
+>  1
+
+-----------------------------                                                                                             
+  Verify the data entered.                                                                                                
+-----------------------------                                                                                             
+ [Target]                   192.168.x.x
+ [Port]                     443
+ [Name]                     RCE in search form train/search.php
+ [CVSS Overall Score]       5.6
+ [CVSS Severity]            Medium
+ [Business Impact]          Initial compromise
+ [Comment]                  Exploring the limits of what will execute and checking web directories
+ [MITRE ATT&CK Tactic]      initial-access
+ [MITRE ATT&CK Technique]   Exploit Public-Facing Application
+
+Are these values correct? [Y|N]  > y
+sitrep logged
+```
+
+
+### Writing the Pentest Report
+The exam report subdirectory contains a markdown file for each major section of the pentest report.  Notably, a markdown file exists for each point-value system.  During the exam use your favorite markdown editor of choice to document findings and evidence for each system.  I use Obsidian, so in my case I'd open a new vault in the report directory.  The markdown files contain guidance from the sample reports provided by Offensive Security.  I can write, modify, and delete in markdown without the need for any other tool.  Well, Flameshot too but you get the gist.
+
+When the systems markdown are fully documented move on to edit the executive summary and closing markdown files.  There are several boilerplate variables in these documents that are automatically updated by autorpt with its finalize option.  It pulls these values from settings or prompts for them if they haven't been set.  
+
+Just ignore any "BOILERPLATE_" items in the markdown files, they are important.
+
+## Generate Submission Files
 Once all the report markdown files are content complete it is time to finalize them into a PDF file and 7z archive.  The `finalize` option does this automatically and updates boilerplate values from the template to reflect your input.
 
+This example will compile a report for the OSCP.
 ```
 $ autorpt.py finalize
 
@@ -176,11 +373,4 @@ $ autorpt.py finalize
 [i] Style set to pygments
 [i] Generating PDF report ./report/OSCP_OS-12345_exam_report.pdf
 [i] Generating 7z archive ./report/OSCP_OS-12345_exam_report.7z
-```
-
-
-### Example #4: No Prompts for Input
-Add your detais to the config.yml file and autorpt will not prompt for those values.
-```
-TBD
 ```
