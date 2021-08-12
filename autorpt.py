@@ -329,11 +329,14 @@ def startup():
         colorNotice('Enter the platform or company name:')
         providers = configSectionToMenu(appConfig['Training'])
         platform = providers[int(input('>  '))]
-        # No means to custom add a platform
+        # Future: No means to custom add a platform
         # Get the box name
         colorNotice('What is the box name?')
         colorNotice('(eg. waldo, kenobi, etc.')
         engagementName = str(input('>  ')).replace(" ", "").lower()
+        # Get target IP address
+        colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
+        targetIp = str(input('>  ')).replace(" ", "").lower()
     elif 'bugbounty' == engagementType:
         # Get the platform
         colorNotice('Enter the platform or company name:')
@@ -379,7 +382,8 @@ def startup():
         # No means to custom add a platform
         templates_path = f'{autorpt_runfrom}/templates/{engagementName}/'
     elif 'pentest' == engagementType:
-         # Company performing the test
+        # Least tested option
+        # Company performing the test
         colorNotice('What is the penetration testing company name?')
         providers = configSectionToMenu(appConfig['Bug Bounty'])
         platform = str(input('>  '))
@@ -415,6 +419,9 @@ def startup():
     
     if "training" == engagementType:
         os.rename(f'{thisDir}/report/1-renameme.md', f'{thisDir}/report/1-{engagementName}.md')
+        if len(targetIp) >= 7
+            with open(f'{thisDir}/targets.txt', 'w') as t:
+                t.write(targetIp + '\n')
     
     # Update sessions file
     # Set active

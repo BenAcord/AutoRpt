@@ -1,4 +1,4 @@
-# AutoRpt
+# AutoRpt Overview
 ## What It Is
 Streamline the report writing experience.  AutoRpt enforces consistent organization of directory structure and note taking to facilitate a smooth report writing process.
 
@@ -23,6 +23,24 @@ Streamline the report writing experience.  AutoRpt enforces consistent organizat
 :warning: Finally, with that said... :exclamation: use at your own risk.
 
 Happy writing!
+
+---
+
+# Table of Contents
+
+* [Overview](#AutoRpt)
+* [Install](#Install)
+   * [Dependencies & Caveats](#Dependencies & Caveats)
+   * [Clone the Repo](#Clone the Repo)
+* [Usage](#Usage)
+   * [Displaying help](#Displaying help)
+* [Settings](#Settings)
+* [Startup - Scafold Working Directory Structure](#Startup - Scafold Working Directory Structure)
+* [Situation Report](#Situation Report)
+* [Ports](#Ports)
+* [Vulnerabilty Log](#Vulnerabilty Log)
+* [Writing the Pentest Report](#Writing the Pentest Report)
+* [Finalize - Generate Submission Files](#Finalize - Generate Submission Files)
 
 ---
 
@@ -53,7 +71,6 @@ autorpt help
 
 ## Usage:
 `autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize | settings ]`
-
 
 ### Displaying help
 Sometimes it is good to read a man page or a bit of documentation.  autorpt will display help if any of the following options are submitted: `-h`, `help`, `--help`.
@@ -130,8 +147,7 @@ Pick a number to modify its setting
 ```
 
 
-### Startup
-**Scafold Exam Report Structure**
+### Startup - Scafold Working Directory Structure
 Similar to how tools like autorecon and nmapAutomator create subdirectories for organizing enumeration output files during the pentest, autorpt does something similar for reporting.  The startup option creates a working directory for the selected training or exam along with a report subdirectory.  
 
 By default this working subdirectory is created in /home/kali/Documents/AutoRpt but can be changed in the the settings menu or directly in the /home/kali/.config/AutoRpt/config.yml.  
@@ -366,7 +382,7 @@ When the systems markdown are fully documented move on to edit the executive sum
 
 Just ignore any "BOILERPLATE_" items in the markdown files, they are important.
 
-## Generate Submission Files
+### Finalize - Generate Submission Files
 Once all the report markdown files are content complete it is time to finalize them into a PDF file and 7z archive.  The `finalize` option does this automatically and updates boilerplate values from the template to reflect your input.
 
 This example will compile a report for the OSCP.
