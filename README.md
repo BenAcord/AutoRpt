@@ -20,7 +20,7 @@
 ---
 
 ## Install
-A work-in-progress shell script is included which is intended to automate the dependencies and .
+A work-in-progress shell script is included which is intended to automate the dependencies and setup.
 
 ### Dependencies & Caveats
 AutoRpt has only been tested on Kali Linux.
@@ -34,7 +34,7 @@ AutoRpt has only been tested on Kali Linux.
 cd /opt
 git clone https://github.com/BenAcord/AutoRpt.git
 ```
-
+### Setup
 Either execute setup.sh or perform these manual steps:
 1. Execute setup.sh
 ```Bash
