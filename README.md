@@ -103,7 +103,31 @@ Compile the markdown into a polished report document
 ```
 
 ### Settings
-...
+AutoRpt configuration settings are stored in ~/.config/AutoRpt/config.yml.  Setting changes can either be through the menu as shown in the next example or by directly editing the file.
+
+Example of listing settings in the menu.
+```Bash
+[    Settings    ]
+
+  1. Application-level settings
+  2. Engagement settings
+  3. Back to main menu
+  4. Quit
+>  1
+Current Settings
+  1) Engagements will be stored in /home/kali/Documents/AutoRpt
+  2) Your name: A. B.
+  3) Your student ID: OS-12345
+  4) Your email address: a@b.c
+  5) Preferred report format: odt
+  6) Code block style: haddock
+  7) Settings menu
+  8) Main menu
+  
+Pick a number to modify its setting
+>  
+
+```
 
 
 ### Startup

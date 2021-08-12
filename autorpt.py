@@ -980,6 +980,7 @@ def settingsMenu():
     picker = int(input('>  '))
     
     if 1 == picker:
+        # Application-level settings
         picker = 0
         colorSubHeading('Current Settings')
         colorMenuItem(f"1) Engagements will be stored in {str(appConfig['Paths']['pathwork'])}")
@@ -994,8 +995,10 @@ def settingsMenu():
         picker = int(input('>  '))
 
         if 8 <= picker:
+            # return to main menu
             mainMenu()
         elif 1 == picker:
+            # Set new engagements working directory
             colorNotice('What is the path to store future engagement subdirectories?')
             picker = str(input('>  '))
             if not os.path.isdir(picker):
@@ -1010,16 +1013,19 @@ def settingsMenu():
             appConfig['Paths']['pathwork'] = picker
             saveConfig(appConfig)
         elif 2 == picker:
+            # Set author name
             colorMenuItem('What is your full name as the report author?')
             picker = str(input('>  '))
             appConfig['Settings']['your_name'] = picker
             saveConfig(appConfig)
         elif 3 == picker:
+            # Set student ID
             colorMenuItem('What is your student ID?')
             picker = str(input('>  '))
             appConfig['Settings']['studentid'] = picker
             saveConfig(appConfig)
         elif 4 == picker:
+            # Set email address
             colorMenuItem('What is your email address?')
             picker = str(input('>  '))
             if (re.match(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', picker)):
@@ -1029,6 +1035,7 @@ def settingsMenu():
                 colorNotice('Not an email formatted string.  Try again.')
                 settingsMenu()
         elif 5 == picker:
+            # Set preferred report format
             colorMenuItem(f"What is your preferred report format?  {appConfig['Settings']['preferred_output_format']}")
             i = 0
             for filetype in supported_filetypes.split(','):
@@ -1041,14 +1048,17 @@ def settingsMenu():
                 colorNotice('Invalid option.')
                 settingsMenu()
         elif 6 == picker:
+            # Set code block style
             appConfig['Settings']['style'] = getPandocStyle()
             saveConfig(appConfig)
         elif 7 == picker:
+            # return to settings menu
             settingsMenu()
         else:
-            colorDebug(str(picker))
-        settingsMenu()
+            # Unknown selection, return to settings menu
+            settingsMenu()
     elif 2 == picker:
+        # Engagement settings
         colorSubHeading('[    Engagement Settings    ]')
         colorNotice(f"Active engagement: {session['Current']['active']}")
         colorNotice(f"Total engagement: {str(len(session['Engagements']))}\n")
@@ -1076,7 +1086,7 @@ def settingsMenu():
                 settingsMenu()
             else:
                 session['Current']['active'] = engagements[picker]
-                saveEnagements(session)
+                saveEnagements()
                 settingsMenu()
         elif picker == 2:
             listEngagements()
@@ -1090,13 +1100,15 @@ def settingsMenu():
         picker = int(input('>  '))
         if picker <= i:
             colorNotice('set active, save')
-            saveEnagements(session)
+            saveEnagements()
         else:
             colorVerificationFail('[!]', 'Invalid selection.')
             settingsMenu()
     elif 4 == picker:
+        # quit
         sys.exit(23)
     else:
+        # return to main menu
         mainMenu()
 
 def mainMenu():
