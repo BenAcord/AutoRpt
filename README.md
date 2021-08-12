@@ -1,6 +1,6 @@
 # AutoRpt Overview
 
-
+![startup](https://github.com/BenAcord/AutoRpt/raw/main/includes/2-startup.png "AutoRpt startup screenshot for Metasploitable2")
 
 :trophy: Mad props and respect to noraj for the "Offensive Security Exam Report Template in Markdown".
 
