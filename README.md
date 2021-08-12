@@ -14,8 +14,6 @@
 
 * [Overview](#AutoRpt)
 * [Install](#Install)
-   * [Dependencies & Caveats](#Dependencies & Caveats)
-   * [Clone the Repo](#Clone the Repo)
 * [Usage](#Usage)
 * [Contributing](#Contributing)
 
