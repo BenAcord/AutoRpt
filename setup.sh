@@ -5,7 +5,6 @@ sudo apt-get install -y p7zip pandoc pandoc-data texlive-xetex
 
 pip install cvss blessings colorama
 
-cd /opt
-git clone https://github.com/BenAcord/AutoRpt.git
+cd /opt/AutoRpt
 chmod 700 /opt/AutoRpt/autorpt.py
 ln -s /opt/AutoRpt/autorpt.py ~/.local/bin/autorpt

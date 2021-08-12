@@ -419,7 +419,7 @@ def startup():
     
     if "training" == engagementType:
         os.rename(f'{thisDir}/report/1-renameme.md', f'{thisDir}/report/1-{engagementName}.md')
-        if len(targetIp) >= 7
+        if len(targetIp) >= 7:
             with open(f'{thisDir}/targets.txt', 'w') as t:
                 t.write(targetIp + '\n')
     
