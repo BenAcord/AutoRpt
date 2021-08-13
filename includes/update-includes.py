@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 
 import blessings
+import configparser
+import fnmatch
+import hashlib
 import json
 import os
 import pandas as pd
@@ -45,15 +48,9 @@ def colorNotice(msg):
     print(f"{term.yellow}{msg}{term.normal}")
 
 def helper():
-    print("[i] AutoRpt Proof Of Concept Functionality\n")
-    print("Usage: poc.py parameter")
-    print("Where parameter is one of: ")
-    print("     startup or -s or --startup")
-    print("     vuln or -v or --vuln")
-    print("     sitrep or -r or --sitrep")
-    print("     ports or -p or --ports")
-    print("     finalize or -f or -f")
-    sys.exit(1)
+    print("Update the local MITRE ATT&CK framwork files from MITRE CTI GitHub\n")
+    print("Usage: update-includes.py")
+    sys.exit(0)
 
 def attackGetTechniques(thesrc, include="techniques"):
     # Taken from: 
@@ -94,14 +91,24 @@ def attackRemoveRevokedDeprecated(stix_objects):
     )
 
 def parseAttackJson():
-    colorHeader('    Parse JSON Files from MITRE ATT&CK    ')
-    fileEnterprise = 'enterprise-attack.json'
-    fileMobile = 'mobile-attack.json'
-    fileIcs = 'ics-attack.json'
-    filePreAttack = 'pre-attack.json'
-    allFiles = [fileEnterprise, fileMobile, fileIcs, filePreAttack]
+    colorHeader('[    Parse JSON Files from MITRE ATT&CK    ]')
+    # Get the list of downloaded JSON files
+    allFiles = []
+    frameworkNames = []
+    attackJson = []
+    for root, dirs, files in os.walk(autorpt_runfrom):
+        for name in files:
+            if re.search("json", name):
+                allFiles.append(name)
+                frameworkNames.append(name.replace('-attack.json', ''))
+    
+    if len(allFiles) == 0:
+        colorNotice('Current files are latest.')
+        sys.exit(50)
+
+    # Process each JSON file
     for file in allFiles:
-        colorSubHeading(f'Parsing {file}')
+        colorNotice(f'Parsing {file}')
         if not os.path.isfile(file):
             colorNotice(f'Cannot find file {file}')
             sys.exit(2)
@@ -111,7 +118,6 @@ def parseAttackJson():
             except:
                 colorNotice(f'Unable to read file {file}')
         autorptFilename = 'autorpt-' + (file).replace('.json', '.csv')
-        colorNotice(autorptFilename)
         df = pd.DataFrame({})
         tId = ''
         # ICS does not have x_mitre_is_subtechnique
@@ -139,20 +145,65 @@ def parseAttackJson():
                                 df = df.append(newRow, ignore_index = True)
                 else:
                     colorDebug('Type not in item')
-        
         df.sort_values(['TACTIC','TECHNIQUE'], inplace=True)
+        colorNotice(f"Creating {autorptFilename}")
         try:
+            # Write the new CSV file
             with open(autorptFilename, 'w', newline='') as f:
                 df.to_csv(f, index=False)
+            # Set the latest sha256sum as current
+            for url in allUrls:
+                framework = os.path.basename(url).replace('-attack.json', '')
+                config['Current'][framework] = config['Latest'][framework]
+            # Save the new update file
+            with open(updateConfigFile, 'w') as configFile:
+                config.write(configFile)
         except:
             colorNotice(f'Unable to write to {autorptFilename}')
     return None
+
+def autoVerifyAttackCsv():
+    # A spot test to verify the content and query for each attack csv file.
+    tactic = ''
+    technique = ''
+    colorHeader("    Verifying AutoRpt Attack CSV Files    ")
+    files = [f for f in os.listdir('.') if os.path.isfile(f)]
+    csvFiles = []
+    for name in files:
+        if name.endswith(".csv") and re.match(r'autorpt-.*-attack.csv', str(name)):
+            csvFiles.append(name)
+    if 0 == (len(csvFiles)):
+        colorNotice('No files found')
+        sys.exit(10)
+    # Get Enterprise framework
+    picker = 3
+    file = csvFiles[picker]
+    
+    try:
+        if re.search(r"^autorpt-enterprise-attack.csv$", str(file)):
+            matrix = re.match(r"^autorpt-(\W+)-attack.csv$", str(file))
+            df = pd.read_csv(file, index_col=False, engine="python")
+
+            tactics = df.TACTIC.unique()
+            picker = 8 # initial access
+            tactic = tactics[picker]
+
+            techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
+            picker = 1 # Exploit Public-Facing Application
+            technique = techniques.iloc[picker, 0]
+
+            colorVerificationPass('Verification PASS ', f"Tactic: {tactic} Technique: {technique}")
+        else:
+            colorNotice('Unable to find autorpt-enterprise-attack.csv!')
+    except:
+        colorVerificationFail('Verification Failed ', f"Tactic: {tactic} Technique: {technique}")
+    return tactic, technique
 
 def verifyAttackCsv():
     # A spot test to verify the content and query for each attack csv file.
     tactic = ''
     technique = ''
-    colorHeader("    Verifying AutoRpt Attack CSV Files    ")
+    colorHeader("[    Verifying AutoRpt Attack CSV Files    ]")
     files = [f for f in os.listdir('.') if os.path.isfile(f)]
     csvFiles = []
     for name in files:
@@ -213,30 +264,48 @@ def verifyAttackCsv():
     return tactic, technique
 
 def downloadMitreAttackJsonFiles():
-    colorHeader('    Downloading Latest JSON Files From MITRE ATT&CK GitHub    ')
+    colorHeader('[    Downloading Latest JSON Files From MITRE ATT&CK GitHub    ]')
     for url in allUrls:
         localFilename = os.path.basename(url)
-        colorSubHeading(f'Local Filename: {localFilename}')
-        with open (localFilename, 'wb') as jsonToDisk:
-            try:
-                r = requests.get(url)
-            except:
-                msg = 'Unable to download {url}'
-                colorNotice(msg)
-                sys.exit(1)
-            try:
-                jsonToDisk.write(r.content)
-            except:
-                msg = 'Unable to write to {localFileName}'
-                colorNotice(msg)
-                sys.exit(1)
-    parseAttackJson()
+        framework = localFilename.replace('-attack.json', '')
+        colorNotice(f'Local Filename: {localFilename}\tframework: {framework}')
+
+        # Get the latest JSON file from GitHub
+        try:
+            r = requests.get(url)
+        except:
+            msg = 'Unable to download {url}'
+            colorNotice(msg)
+            sys.exit(1)
+        
+        # Calculate sha256sum for the downloaded file
+        # and store the digest in the latest config value
+        config['Latest'][framework] = hashlib.sha256(r.content).hexdigest()
+
+        # If latest sum is different than current parse latest to update current
+        if config['Current'][framework] != config['Latest'][framework]:
+            with open (localFilename, 'wb') as jsonToDisk:
+                # Write the json file to disk for parsing
+                try:
+                    jsonToDisk.write(r.content)
+                except:
+                    msg = 'Unable to write to {localFileName}'
+                    colorNotice(msg)
+                    sys.exit(1)
     return None
-    
+
+def removeMitreAttackJsonFiles():
+    colorHeader('[    Removing JSON Files    ]')
+    for name in os.listdir('.'):
+        if fnmatch.fnmatch(name, '*-attack.json'):
+            colorNotice(f'Removing: {name}')
+            os.remove(name)
+
 def mainMenu():
     colorHeader('    MITRE ATT&CK    ')
-    colorMenuItem('1. Update local master JSON master files from MITRE GitHub')
-    colorMenuItem('2. Generate updated tactics and techniques files')
+    colorMenuItem('0. Auto run.  Download latest JSON master files and parse.  Does 1, 2, and 3.')
+    colorMenuItem('1. Only update local master JSON master files from MITRE GitHub')
+    colorMenuItem('2. Only generate updated tactics and techniques files')
     colorMenuItem('3. Verify local files included with AutoRpt')
     colorMenuItemBold('4. Back to main menu')
     colorMenuItemBold('5. Quit')
@@ -261,7 +330,17 @@ if __name__ == "__main__":
     urlEnterprise = 'https://github.com/mitre/cti/raw/master/enterprise-attack/enterprise-attack.json'
     urlMobile = 'https://github.com/mitre/cti/raw/master/mobile-attack/mobile-attack.json'
     urlIcs = 'https://github.com/mitre/cti/raw/master/ics-attack/ics-attack.json'
-    urlPreAttack = 'https://raw.githubusercontent.com/mitre/cti/master/pre-attack/pre-attack.json'
-    allUrls = [urlEnterprise, urlMobile, urlIcs, urlPreAttack]
-    
-    mainMenu()
+    #urlPreAttack = 'https://raw.githubusercontent.com/mitre/cti/master/pre-attack/pre-attack.json'
+    allUrls = [urlEnterprise, urlMobile, urlIcs]
+    updateConfigFile = f'{autorpt_runfrom}/update.toml'
+    config = configparser.ConfigParser()
+    config.read(updateConfigFile)
+
+    # Download the latest MITRE CTI GitHub JSON files
+    downloadMitreAttackJsonFiles()
+    # If the files are new, create new CSV files for AutoRpt
+    parseAttackJson()
+    # Validate the new CSV files
+    autoVerifyAttackCsv()
+    # Remove local JSON files.  Too big.
+    removeMitreAttackJsonFiles()

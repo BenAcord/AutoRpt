@@ -15,6 +15,7 @@
 * [Overview](#AutoRpt)
 * [Install](#Install)
 * [Usage](#Usage)
+* [Getting Started](#Getting Started)
 * [Contributing](#Contributing)
 
 ---
@@ -76,6 +77,9 @@ Streamline the report writing experience.  AutoRpt enforces consistent organizat
 4. (**sitrep**) Track your status and activity throughout the engagement.  You can quickly add a status or review the log to see the history of activities.  Yes, I realize this isn't a real sitrep report.
 
 5. (**finalize**) During the exam report window AutoRpt generates a final report PDF and 7z archive from your markdown files.  Other file formats are supported: Jira, odt, docx, and common markdown.
+
+## Getting Started
+After installation...this example will use Metasploitable2 running as a guest VM.
 
 ## Contributing
 If you find an bug or have an idea for an enhancement enter an issue here on GitHub.  Pull requests will take longer to evaluate.
