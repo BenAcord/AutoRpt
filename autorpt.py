@@ -305,6 +305,13 @@ def configSectionToMenu(section):
     colorMenuItem('99 for main menu')
     return items
 
+def addTarget():
+    # Update targets.txt with a new IP address
+    # Get target IP address
+    colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
+    targetIp = str(input('>  ')).replace(" ", "").lower()
+    colorDebug('Adding a new target is a future feature.')
+
 def startup():
     colorHeader('[    Startup    ]')
 
@@ -326,9 +333,16 @@ def startup():
     templates_path = f'{autorpt_runfrom}/templates/training/'
     if 'training' == engagementType:
         # Get the platform
-        colorNotice('Enter the platform or company name:')
+        colorNotice('Enter the platform or company name (or 10 to add a custom platform):')
         providers = configSectionToMenu(appConfig['Training'])
-        platform = providers[int(input('>  '))]
+        picker = int(input('>  '))
+        if picker == 99:
+            mainMenu()
+        elif picker == 10:
+            colorNotice('Enter the name of the custom platform')
+            platform = str(input('>  '))
+        else:
+            platform = providers[picker]
         # Future: No means to custom add a platform
         # Get the box name
         colorNotice('What is the box name?')
@@ -446,8 +460,8 @@ def startup():
     paths = DisplayablePath.make_tree(Path(thisDir))
     for path in paths:
         print(path.displayable())
-    time.sleep(10)
-    mainMenu()
+    time.sleep(3)
+    #mainMenu()
 
 def finalize():
     activeAll = getActiveAll()
