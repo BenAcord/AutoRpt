@@ -476,10 +476,17 @@ def finalize():
     style_name = appConfig['Settings']['style']
     targetName = activeAll.split(',')[6]
     # ensure the latest ports file exists
-    ports()
     portsFile = f"{rpt_base}{portsSpreadsheet}"
+    if not os.path.isfile(portsFile):
+        ports()
+    # Read in the ports spreadsheet
     ports_table = pd.read_excel(portsFile, sheet_name='All Ports').to_markdown()
-    vulns_table = '' # FUTURE FEATURE IS TO AUTOMATICALLY ADD THE VULNS TABLE'
+    # FUTURE FEATURE IS TO AUTOMATICALLY ADD THE VULNS TABLE'
+    portsFile = f"{rpt_base}{vulnsCsv}"
+    if os.path.isfile(portsFile):
+        vulns_table = pd.read_csv(portsFile, sep=",", engine="python").to_markdown()
+    else:
+        vulns_table = 'No vulnerabilities were discovered.'
 
     # Student info only applies for exams and perhaps specific exams (eg OffSec)
     if 'training' == engagementType:
@@ -575,7 +582,7 @@ def finalize():
     else:
         colorNotice("Code block style pulled from config file as " + style_name)
     
-    colorNotice("Generating report " + rptFullPath)
+    colorVerification("[i]", f"Generating report {rptFullPath}")
     # Hack.  Use OS install of pandoc.
     # Need to figure out Pythonic pandoc module use.
     cmd = 'pandoc ' + rpt_filename
@@ -851,6 +858,7 @@ def vulnAdd():
     colorNotice("What is the name for this vulnerability?\n(eg. Remote code injection in Vendor_Product_Component)")
     vulnName = str(input('>  '))
     
+    # Change this to or add Remediation
     colorNotice("Describe the business impact: ")
     vulnImpact = str(input('>  '))
     
@@ -1061,9 +1069,11 @@ def settingsMenu():
             i = 0
             for filetype in supported_filetypes.split(','):
                 colorMenuItem(f'{i}) {filetype}')
+                i += 1
             picker = int(input('>  '))
-            if i <= picker:
-                appConfig['Settings']['your_name'] = picker
+            if picker <= i:
+                colorDebug(f"Setting > preferred report format: {supported_filetypes.split(',')[picker]}")
+                appConfig['Settings']['preferred_output_format'] = supported_filetypes.split(',')[picker]
                 saveConfig(appConfig)
             else:
                 colorNotice('Invalid option.')
@@ -1131,6 +1141,7 @@ def settingsMenu():
     else:
         # return to main menu
         mainMenu()
+    settingsMenu()
 
 def mainMenu():
     clearScreen()
