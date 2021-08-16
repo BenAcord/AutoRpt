@@ -858,9 +858,11 @@ def vulnAdd():
     colorNotice("What is the name for this vulnerability?\n(eg. Remote code injection in Vendor_Product_Component)")
     vulnName = str(input('>  '))
     
-    # Change this to or add Remediation
     colorNotice("Describe the business impact: ")
     vulnImpact = str(input('>  '))
+    
+    colorNotice("What is the remediation?")
+    remediation = str(input('>  '))
     
     colorNotice("Do you have a comment for where you left off? ")
     vulnComment = str(input('>  '))
@@ -882,18 +884,20 @@ def vulnAdd():
     colorVerification("[CVSS Overall Score]    ", str(cvssScore))
     colorVerification("[CVSS Severity]         ", cvssSeverity)
     colorVerification("[Business Impact]       ", vulnImpact)
+    colorVerification("[Remediation    ]       ", remediation)
     colorVerification("[Comment]               ", vulnComment)
     colorVerification('[MITRE ATT&CK Tactic]   ', vulnMitreTactic)
     colorVerification('[MITRE ATT&CK Technique]', vulnMitreTechnique)
     
     checkPoint = str(input("\nAre these values correct? [Y|N]  > ")).upper()
     if checkPoint == "Y":
-        row = f'{target},{port},{vulnName},{vulnImpact},{vulnComment},{cvssScore},{cvssSeverity},{cvssVector},{vulnMitreTactic},{vulnMitreTechnique}'
+        row = f'{target},{port},{vulnName},{vulnImpact},{remediation},{vulnComment},{cvssScore},{cvssSeverity},{cvssVector},{vulnMitreTactic},{vulnMitreTechnique}'
         vulnCsvNewRow(row)
     else:
         print("[!] Reseting values")
         vulnName = ''
         vulnImpact = ''
+        remediation = ''
         vulnCvss = ''
         vulnMitreTactic = ''
         vulnMitreTechnique = ''
@@ -905,7 +909,7 @@ def vulnCsvNewRow(row):
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     if not os.path.isfile(vulnsFile):
         headings = 'IpAddress,Port,'
-        headings += 'Name,Impact,Comment'
+        headings += 'Name,Impact,Remediation,Comment'
         headings += ',CvssScore,CvssSeverity,CvssVector'
         headings += ',MitreTactic,MitreTechnique'
         with open(vulnsFile, 'a', encoding='utf-8') as f:
