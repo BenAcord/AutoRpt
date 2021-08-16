@@ -257,7 +257,7 @@ def getMitreAttack():
             i = i + 1
         picker = int(input('>  '))
         if 99 == picker:
-            getTactic(df)
+            #getTactic(df)  # Possible bug causing the loss of technique on re-selection
             getMitreAttack()
         elif picker > len(techniques):
             colorNotice('Selection out of range')
