@@ -1,20 +1,4 @@
----
-title: "BOILERPLATE_HOSTNAME Write-Up"
-author: ["BOILERPLATE_EMAIL"]
-date: "BOILERPLATE_DATE"
-subject: "Markdown"
-keywords: [Markdown, Example]
-subtitle: "BOILERPLATE_HOSTNAME Write-Up"
-lang: "en"
-titlepage: true
-titlepage-color: "1E90FF"
-titlepage-text-color: "FFFAFA"
-titlepage-rule-color: "FFFAFA"
-titlepage-rule-height: 2
-book: true
-classoption: oneside
-code-block-font-size: \scriptsize
----
+
 # BOILERPLATE_HOSTNAME Write-Up
 
 ## Introduction
@@ -31,7 +15,7 @@ Reasoning behind the approach to remediation recommendations.
 4. D
 5. Fifth
 
-## System: 192.168.x.x - Hostname
+## System: BOILERPLATE_TARGET
 
 ### Service Enumeration
 
@@ -39,10 +23,7 @@ The service enumeration portion of a penetration test focuses on gathering infor
 
 **Nmap Scan Results**
 
-Protocol | Ports Open
----|---
-**TCP** | 1433,3389
-**UDP** | 1434,161
+BOILERPLATE_PORTS
 
 **Vulnerability Analysis**
 

@@ -477,14 +477,19 @@ def finalize():
     targetName = activeAll.split(',')[6]
     # ensure the latest ports file exists
     portsFile = f"{rpt_base}{portsSpreadsheet}"
-    if not os.path.isfile(portsFile):
+    if not os.path.exists(portsFile):
         ports()
     # Read in the ports spreadsheet
     ports_table = pd.read_excel(portsFile, sheet_name='All Ports').to_markdown()
     # FUTURE FEATURE IS TO AUTOMATICALLY ADD THE VULNS TABLE'
     portsFile = f"{rpt_base}{vulnsCsv}"
     if os.path.isfile(portsFile):
-        vulns_table = pd.read_csv(portsFile, sep=",", engine="python").to_markdown()
+        fields = ['CvssSeverity','IpAddress','Port','Name','Remediation']
+        vulns_table = pd.read_csv(portsFile, 
+                                  usecols=fields, 
+                                  sep=",", 
+                                  engine="python").to_markdown()
+        vulns_all = pd.read_csv(portsFile, sep=",", engine="python")
     else:
         vulns_table = 'No vulnerabilities were discovered.'
 
@@ -561,6 +566,7 @@ def finalize():
             file_contents = re.sub('BOILERPLATE_PORTS', ports_table, file_contents)
             file_contents = re.sub('BOILERPLATE_VULNS', vulns_table, file_contents)
             if "training" == engagementType:
+                file_contents = re.sub('BOILERPLATE_TARGET', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_HOSTNAME', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_OSID', '', file_contents)
             else:
@@ -589,14 +595,15 @@ def finalize():
     cmd += ' --output=' + rptFullPath
     cmd += ' --from markdown+yaml_metadata_block+raw_html'
     cmd += ' --table-of-contents' 
-    cmd += ' --toc-depth' + ' 6' 
-    cmd += ' --number-sections'
+    cmd += ' --toc-depth' + ' 6'
     cmd += ' --top-level-division=chapter'
-    cmd += ' --wrap=auto '
+    cmd += ' --wrap=auto'
     cmd += ' --highlight-style ' + style_name
     if rpt_extension in appConfig['Settings']['no_template']:
         cmd += ' --template' + ' eisvogel'
     
+    #colorDebug(f"cmd:\n{cmd}")
+
     try:
         p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
     except:
@@ -1223,7 +1230,7 @@ def loadAppConfig(pathConfig, appConfigFile):
         except:
             colorVerificationFail('[e]', f'Unable to copy configuration file from the GitHub clone: {appConfigFile}')
             sys.exit(20)
-
+    
     config = configparser.ConfigParser()
     config.read(appConfigFile)
     return config

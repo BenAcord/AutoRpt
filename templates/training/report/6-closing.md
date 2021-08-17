@@ -1,5 +1,4 @@
 
-
 # Additional Items
 
 ## Appendix - Proof and Local Contents
