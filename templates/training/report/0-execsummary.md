@@ -1,10 +1,10 @@
 ---
-title: "BOILERPLATE_TARGET Report"
-author: ["BOILERPLATE_EMAIL"]
+title: "BOILERPLATE_TARGET"
+subtitle: "Write-Up"
+author: ["BOILERPLATE_AUTHOR"]
 date: "BOILERPLATE_DATE"
 subject: "Markdown"
 keywords: [Markdown, Example]
-subtitle: "BOILERPLATE_TARGET Report"
 lang: "en"
 titlepage: true
 titlepage-color: "1E90FF"

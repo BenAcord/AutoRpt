@@ -562,6 +562,7 @@ def finalize():
             file_contents = re.sub('BOILERPLATE_DATE', rpt_date, file_contents)
             file_contents = re.sub('BOILERPLATE_PORTS', ports_table, file_contents)
             file_contents = re.sub('BOILERPLATE_VULNS', vulns_table, file_contents)
+            # Future feature: auto add keywords from directory: hackthebox,popcorn,write-up,training
             if "training" == engagementType:
                 file_contents = re.sub('BOILERPLATE_TARGET', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_HOSTNAME', targetName, file_contents)
@@ -599,7 +600,7 @@ def finalize():
     if rpt_extension in appConfig['Settings']['no_template']:
         cmd += ' --template' + ' eisvogel'
     
-    colorDebug(f"cmd:\n{cmd}")
+    #colorDebug(f"cmd:\n{cmd}")
 
     try:
         p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
