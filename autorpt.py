@@ -227,46 +227,6 @@ def getMitreAttack():
     path_includes = autorpt_runfrom + '/includes'
     csvFiles = glob(path_includes + '/autorpt-*-attack.csv')
     
-    def getTactic(df):
-        tactics = df.TACTIC.unique()
-        i = 0
-        picker = 0
-        tactic = ''
-        colorNotice('What is the Tactic?\nOr 99 to return to the ATT&CK menu.')
-        for tactic in tactics:
-            colorMenuItem(f'{i}. {tactic}')
-            i = i + 1
-        picker = int(input('>  '))
-        if 99 == picker:
-            getMitreAttack()
-        elif picker > len(tactics):
-            colorNotice('Selection out of range.')
-            mainMenu()
-        else:
-            tactic = tactics[picker]
-        return tactic
-    
-    def getTechnique(df, tactic):
-        techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
-        colorNotice('Pick a Technique?\nOr 99 to return to the tactic menu.')
-        i = 0
-        picker = 0
-        technique = ''
-        for t in techniques.iterrows():
-            colorMenuItem(str(i) + '. ' + str(techniques.iloc[i,0]))
-            i = i + 1
-        picker = int(input('>  '))
-        if 99 == picker:
-            #getTactic(df)  # Possible bug causing the loss of technique on re-selection
-            getMitreAttack()
-        elif picker > len(techniques):
-            colorNotice('Selection out of range')
-            time.sleep(2)
-            getMitreAttack()
-        else:
-            technique = techniques.iloc[picker, 0]
-        return technique
-    
     i = 0
     colorNotice('Which MITRE ATT&CK Framework applies?\nPress 99 for main menu.')
     for file in csvFiles:
@@ -283,8 +243,45 @@ def getMitreAttack():
     
     matrix = re.match(r"^autorpt-(\W+)-attack.csv$", str(file))
     df = pd.read_csv(file, index_col=False, engine="python")
-    tactic = getTactic(df)
-    technique = getTechnique(df, tactic)
+
+    # Get the tactic
+    i = 0
+    picker = 0
+    tactics = df.TACTIC.unique()
+    colorNotice('What is the Tactic?\nOr 99 to return to the ATT&CK menu.')
+    for tactic in tactics:
+        colorMenuItem(f'{i}. {tactic}')
+        i = i + 1
+    picker = int(input('>  '))
+    if 99 == picker:
+        getMitreAttack()
+    elif picker > len(tactics):
+        colorNotice('Selection out of range.')
+        mainMenu()
+    else:
+        tactic = tactics[picker]
+    
+    # Get the technique
+    i = 0
+    picker = 0
+    techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
+    colorNotice('Pick a Technique?')
+    for index, row in techniques.iterrows():
+        colorMenuItem(f"{str(i)}.  row: {str(row.TECHNIQUE)} vs iloc: {techniques.iloc[i,0]}")
+        i = i + 1
+    picker = int(input('>  '))
+    technique = techniques.iloc[picker, 0]
+
+    # Bug: Upon repeat will not set the correct value for either value.
+    # Returns the first selection for both tactic and technique.
+    #colorDebug(f"Final values from getMitreAttack() are Tactic {tactic} & Technique: {technique}")
+    #colorNotice(f'Is this correct?   Tactic {tactic} & Technique: {technique}')
+    #colorMenuItem('1. Yes')
+    #colorMenuItem('2. No')
+    #picker = int(input('>  '))
+    #if 2 == picker:
+    #    getMitreAttack()
+    
     return [tactic, technique]
 
 def dictToMenu(dictionary):
@@ -602,7 +599,7 @@ def finalize():
     if rpt_extension in appConfig['Settings']['no_template']:
         cmd += ' --template' + ' eisvogel'
     
-    #colorDebug(f"cmd:\n{cmd}")
+    colorDebug(f"cmd:\n{cmd}")
 
     try:
         p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
@@ -881,6 +878,7 @@ def vulnAdd():
     cvssScore = rawCvss[1]
     cvssVector = rawCvss[2]
     mitreAttack = getMitreAttack()
+    colorDebug(f"getMitreAttack returned: {str(mitreAttack)}")
     vulnMitreTactic = mitreAttack[0]
     vulnMitreTechnique = mitreAttack[1]
     
