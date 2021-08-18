@@ -562,8 +562,9 @@ def finalize():
             file_contents = re.sub('BOILERPLATE_DATE', rpt_date, file_contents)
             file_contents = re.sub('BOILERPLATE_PORTS', ports_table, file_contents)
             file_contents = re.sub('BOILERPLATE_VULNS', vulns_table, file_contents)
-            # Future feature: auto add keywords from directory: hackthebox,popcorn,write-up,training
             if "training" == engagementType:
+                # Future feature: auto add keywords from directory: hackthebox,popcorn,write-up,training
+                # get platform
                 file_contents = re.sub('BOILERPLATE_TARGET', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_HOSTNAME', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_OSID', '', file_contents)
