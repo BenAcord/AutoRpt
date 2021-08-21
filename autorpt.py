@@ -588,25 +588,29 @@ def finalize():
         colorNotice("Code block style pulled from config file as " + style_name)
     
     colorVerification("[i]", f"Generating report {rptFullPath}")
-    # Hack.  Use OS install of pandoc.
-    # Need to figure out Pythonic pandoc module use.
-    cmd = 'pandoc ' + rpt_filename
+    # Build the Pandoc command to 
+    cmd = '/usr/bin/pandoc ' + rpt_filename
     cmd += ' --output=' + rptFullPath
     cmd += ' --from markdown+yaml_metadata_block+raw_html'
+    if rpt_extension not in appConfig['Settings']['no_template']:
+        cmd += ' --template' + ' eisvogel'
     cmd += ' --table-of-contents' 
     cmd += ' --toc-depth' + ' 6'
     cmd += ' --top-level-division=chapter'
+    cmd += ' --number-sections'
     cmd += ' --wrap=auto'
     cmd += ' --highlight-style ' + style_name
-    if rpt_extension in appConfig['Settings']['no_template']:
-        cmd += ' --template' + ' eisvogel'
     
     #colorDebug(f"cmd:\n{cmd}")
 
     try:
-        p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
+        p = subprocess.getoutput(cmd)
+        #colorNotice(f'cmd output: {p}')
+        # OBSOLETE >>>>
+        # subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
+        # OBSOLETE <<<<
     except:
-        colorVerificationFail("[!]", "Failed to generate PDF using pandoc.")
+        colorVerificationFail("[!]", f"Failed to generate PDF using pandoc. {p}")
         sys.exit(10)
     
     if 'yes' == toArchive:

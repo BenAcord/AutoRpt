@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 # AutoRpt setup script
 # Author: Ben Acord (Overcast)
-sudo apt-get install -y p7zip pandoc pandoc-data texlive-xetex
+sudo apt-get install -y p7zip pandoc pandoc-data texlive texlive-xetex texlive-fonts-recommended texlive-fonts-extra
 
 pip install cvss blessings colorama
 
