@@ -2,8 +2,8 @@
 title: "Demo Company"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
-subject: "Markdown"
-keywords: [Markdown, PNPT]
+subject: "Practical Network Penetration Tester"
+keywords: [network penetration testing, osint, PNPT]
 subtitle: "Security Assessment Findings Report"
 lang: "en"
 titlepage: false
@@ -78,7 +78,7 @@ Phases of penetration testing activities include the following:
     
 -   Reporting – Document all found vulnerabilities and exploits, failed attempts, and company strengths and weaknesses.
 
-![[Pasted image 20210811071012.png]]
+![Methodology Phases](images/phases.png)
 
 # Assessment Components
 ## External Penetration Test
@@ -88,6 +88,14 @@ An external penetration test emulates the role of an attacker attempting to gain
 
 # Finding Severity Ratings
 The following table defines levels of severity and corresponding CVSS score range that are used throughout the document to assess vulnerability and risk impact.
+
+<table>
+<tr>
+<th>SOMETHING</th>
+<td style="background: red;">Test</td>
+</tr>
+</table>
+
 
 | Severity | CVSS V3 Score Range | Definition |
 | :---: | :---: | :---: |

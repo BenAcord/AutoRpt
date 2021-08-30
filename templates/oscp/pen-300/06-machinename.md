@@ -58,10 +58,6 @@ Rewrite all pasted images from this
 "\![[Pasted image 20210510161424.png]]" to this 
 "\"![Pasted image 20210510161424.png](Pasted image 20210510161424.png)""
 
-PDF generation may not size images correctly and you may need to force the width.
-![sample default resolution](images/placeholder-image-300x225.png)
-![sample 600px wide, full page width](images/placeholder-image-300x225.png){ width="600px" }
-
 **Contents**
 
 > local.txt
@@ -110,10 +106,6 @@ Screenshot must show proof.txt contents with `cat` or `type` command and output 
 Rewrite all pasted images from this 
 "\![[Pasted image 20210510161424.png]]" to this 
 "\"![Pasted image 20210510161424.png](Pasted image 20210510161424.png)""
-
-PDF generation may not size images correctly and you may need to force the width.
-![sample default resolution](images/placeholder-image-300x225.png)
-![sample 600px wide, full page width](images/placeholder-image-300x225.png){ width="600px" }
 
 **Contents**
 

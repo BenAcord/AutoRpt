@@ -34,13 +34,13 @@ SynAck = synack
 
 [Exams]
 oscp = offensivesecurity,Offensive Security Certified Professional
-osep = offensivesecurity,Offensive Security Experienced Penetration Tester
-osed = offensivesecurity,Offensive Security Exploit Developer
-oswe = offensivesecurity,Offensive Security Web Expert
-osee = offensivesecurity,Offensive Security Exploitation Expert
-pnpt = tcmsecurity,Practical Network Penetration Tester
-ejpt = elearnsecurity,Junior Penetration Tester
-ecppt = elearnsecurity,Certified Penetration Tester
-ewpt = elearnsecurity,Web Application Penetration Tester
-ewptx = elearnsecurity,Web Application Penetration Tester eXtreme
-bscp = portswigger,Burp Suite Certified Practitioner
+#osep = offensivesecurity,Offensive Security Experienced Penetration Tester
+#osed = offensivesecurity,Offensive Security Exploit Developer
+#oswe = offensivesecurity,Offensive Security Web Expert
+#osee = offensivesecurity,Offensive Security Exploitation Expert
+#pnpt = tcmsecurity,Practical Network Penetration Tester
+#ejpt = elearnsecurity,Junior Penetration Tester
+#ecppt = elearnsecurity,Certified Penetration Tester
+#ewpt = elearnsecurity,Web Application Penetration Tester
+#ewptx = elearnsecurity,Web Application Penetration Tester eXtreme
+#bscp = portswigger,Burp Suite Certified Practitioner

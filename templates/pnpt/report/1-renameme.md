@@ -20,7 +20,7 @@ During the assessment, TCMS performed multiple brute-force attacks against login
 
 The following chart illustrates the vulnerabilities found by impact:
 
-![[chart-vulnerabilities-by-impact.png]]
+![chart-vulnerabilities-by-impact](images/chart-vulnerabilities-by-impact.png)
 \pagebreak
 ## External Penetration Test Findings
 ### Insufficient Lockout Policy – Outlook Web App (Critical)
@@ -35,18 +35,18 @@ The following chart illustrates the vulnerabilities found by impact:
 TCMS gathered historical breached data found in credentials dumps.  The data amounted to 868 total account credentials (**Note:** A full list of compromised accounts can be found in “**Demo Company-867-19 Full Findings.xslx**”.).
 
 
-![[Pasted image 20210811075126.png]]
+![Sample List of breached user credentials](images/samplebreachedusercreds.png)
 *<center>Figure 1: Sample List of breached user credentials</center>*
 
 TCMS used the gathered credentials to perform a credential stuffing attack against the OWA login page. Credential stuffing attacks take previously known credentials and attempt to use them on login forms to gain access to company resources. TCMS was unsuccessful in the attack but was able to gather additional sensitive information from the OWA server in the form of username enumeration.
 
 
-![[Pasted image 20210811073933.png]]
+![OWA username enumeration](images/owaenumeration.png.png)
 *<center>Figure 2: OWA username enumeration</center>*
 
 TCMS gathered the valid usernames and performed a password spraying attack. A password spraying attack attempts to use common passwords against known usernames in hopes of gaining access to company resources. TCMS attempted to use the common Summer2018! (season + year + special character) against all known valid usernames. A username returned as a successful login:
 
-![[Pasted image 20210811074017.png]]
+![successful OWA login](images/owalogin.png)
 *<center>Figure 3: Successful OWA Login</center>*
 
 TCMS leveraged the valid credentials to log into the client VPN portal and gain access to the internal network.

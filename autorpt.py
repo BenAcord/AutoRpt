@@ -267,7 +267,7 @@ def getMitreAttack():
     techniques = df.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
     colorNotice('Pick a Technique?')
     for index, row in techniques.iterrows():
-        colorMenuItem(f"{str(i)}.  row: {str(row.TECHNIQUE)} vs iloc: {techniques.iloc[i,0]}")
+        colorMenuItem(f"{str(i)}.  {str(row.TECHNIQUE)}")
         i = i + 1
     picker = int(input('>  '))
     technique = techniques.iloc[picker, 0]
@@ -404,6 +404,18 @@ def startup():
     else:
         mainMenu()
     
+    # Set the preferred output format or set to null
+    engagementFormat = ''
+    colorNotice('Do you have a preferred output format for the final report?  Enter for none.')
+    dictLen = int(dictToMenu(appConfig['Settings']['output_formats']))
+    picker = int(input('>  '))
+    if 99 == picker:
+        mainMenu()
+    elif picker >= dictLen:
+        mainMenu()
+    else:
+        engagementFormat = appConfig['Settings']['output_formats'].split(',')[picker]
+
     # Set timestamp for this engagement for uniqueness
     timestamp = datetime.datetime.now().strftime('%Y%m%d')
     
@@ -444,7 +456,8 @@ def startup():
     msg += f'{appConfig["Settings"]["your_name"]},'
     msg += f'{appConfig["Settings"]["email"]},'
     msg += f'{appConfig["Settings"]["style"]},'
-    msg += f'{engagementName}'
+    msg += f'{engagementName},'
+    msg += f'{engagementFormat}'
     session['Engagements'][thisEngagement] = msg
     saveEnagements()
 
@@ -539,6 +552,14 @@ def finalize():
     else:
         rptFullPath = rpt_base + rpt_name + "." + rpt_extension
     
+    # FUTURE: Merge and build lab report
+    # The report title, other metadata, and closing require changes
+    # Since there are two directories needing reports loop over each or function call with an object.
+    # if type == "exam":
+    #     for dir in lab_dir, exam_dir:
+    #         cd dir # hopefully this will pick up relative image locations
+
+    # Create exam report
     msg = f'Creating final report.  toArchive? {toArchive}  Ext: {str(rpt_extension)}  File: {rptFullPath}'
     sitrepAuto(msg)
     
@@ -601,16 +622,16 @@ def finalize():
     cmd += ' --wrap=auto'
     cmd += ' --highlight-style ' + style_name
     
-    #colorDebug(f"cmd:\n{cmd}")
+    colorDebug(f"cmd:\n{cmd}")
 
     try:
         p = subprocess.getoutput(cmd)
-        #colorNotice(f'cmd output: {p}')
+        colorNotice(f'cmd output: {p}')
         # OBSOLETE >>>>
         # subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
         # OBSOLETE <<<<
     except:
-        colorVerificationFail("[!]", f"Failed to generate PDF using pandoc. {p}")
+        colorVerificationFail("[!]", f"Failed to generate PDF using pandoc.\n{p}")
         sys.exit(10)
     
     if 'yes' == toArchive:
@@ -618,9 +639,13 @@ def finalize():
         colorVerification("[i]", "Generating 7z archive " + archive_file)
         cmd = '/usr/bin/7z a ' + archive_file + ' ' + rptFullPath
         try:
-            p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
+            p = subprocess.getoutput(cmd)
+            #colorNotice(f'cmd output: {p}')
+            # OBSOLETE >>>>
+            # p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
+            # OBSOLETE <<<<
         except:
-            colorVerificationFail("[!]", "Failed to generate 7z archive")
+            colorVerificationFail("[!]", f"Failed to generate 7z archive\n{p}")
             sys.exit(15)
 
 def getActivePath():
@@ -884,7 +909,7 @@ def vulnAdd():
     cvssScore = rawCvss[1]
     cvssVector = rawCvss[2]
     mitreAttack = getMitreAttack()
-    colorDebug(f"getMitreAttack returned: {str(mitreAttack)}")
+    #colorDebug(f"getMitreAttack returned: {str(mitreAttack)}")
     vulnMitreTactic = mitreAttack[0]
     vulnMitreTechnique = mitreAttack[1]
     
@@ -914,7 +939,7 @@ def vulnAdd():
         vulnMitreTechnique = ''
         vulnComment = ''
         vulnAdd()
-    vuln()
+    # vuln()
 
 def vulnCsvNewRow(row):
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
