@@ -16,7 +16,7 @@ AutoRpt manages a base directory structure with note and report templates for se
 * [Overview](#AutoRpt)
 * [Install](#Install)
 * [Usage](#Usage)
-* [Getting\ Started](#Getting\ Started)
+* [Getting Started](#Getting-Started)
 * [Contributing](#Contributing)
 
 ---
