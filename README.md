@@ -1,5 +1,7 @@
 # AutoRpt Overview
-AutoRpt manages a base directory structure with note and report templates for several penetration testing use cases.  The main focus is easing the process associated with InfoSec certification exams such as the OSCP or PNPT, though many others are supported.  It also covers CTF and training on common InfoSec platform like Hack the Box, Try Hack Me, or Proving grounds to name but a few.  Bug bounty hunting and penetration tests are use case options but are considered work in progress.
+AutoRpt manages a base directory structure with note and report templates for several penetration testing use cases.  The main focus is easing the process associated with InfoSec certification exams such as the OSCP or PNPT, though many others are supported.  It also covers CTF and training on common InfoSec platforms like Hack the Box, Try Hack Me, or Proving grounds to name but a few.  Bug bounty hunting and penetration tests are use case options but are considered work in progress.
+
+All wrapped in a sleak 1980's menu system.
 
 ![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup.png "AutoRpt startup screenshot for Metasploitable2")
 
