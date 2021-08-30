@@ -1,10 +1,11 @@
 # AutoRpt Overview
+AutoRpt manages a base directory structure with note and report templates for several penetration testing use cases.  The main focus is easing the process associated with InfoSec certification exams such as the OSCP or PNPT, though many others are supported.  It also covers CTF and training on common InfoSec platform like Hack the Box, Try Hack Me, or Proving grounds to name but a few.  Bug bounty hunting and penetration tests are use case options but are considered work in progress.
 
-![startup](https://github.com/BenAcord/AutoRpt/raw/main/includes/2-startup.png "AutoRpt startup screenshot for Metasploitable2")
+![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup.png "AutoRpt startup screenshot for Metasploitable2")
 
-:trophy: Mad props and respect to noraj for the "Offensive Security Exam Report Template in Markdown".
+:trophy: Mad props and respect to [noraj for the "Offensive Security Exam Report Template in Markdown"](https://github.com/noraj/OSCP-Exam-Report-Template-Markdown).
 
-:hammer_and_wrench: If you are looking for a solid markdown tool, take a look at Obsidian.
+:hammer_and_wrench: If you are looking for a solid markdown tool, take a look at [Obsidian](https://obsidian.md/).
 
 :warning: use at your own risk.
 
@@ -15,7 +16,7 @@
 * [Overview](#AutoRpt)
 * [Install](#Install)
 * [Usage](#Usage)
-* [Getting Started](#Getting Started)
+* [Getting\ Started](#Getting\ Started)
 * [Contributing](#Contributing)
 
 ---
