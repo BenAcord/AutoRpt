@@ -27,62 +27,62 @@ import time
 import yaml
 
 def helper():
-    colorNotice("USAGE:")
-    colorNotice("autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize | settings ]\n")
-    colorNotice("WHERE:")
-    colorNotice('  help:      Display this listing of usage and examples.')
-    colorNotice('  startup:   Create a clean working directory for a new engagement.')
-    colorNotice('  vuln:      Record a confirmed vulnerability with CVSS scoring and MITRE ATT&CK attributes.')
-    colorNotice('  ports:     (AutoRecon specific) Quick display of all open ports per target.')
-    colorNotice('  sitrep:    Record a status update of your current progress or display the menu.')
-    colorNotice('  finalize:  Compile markdown files into a desired output file format.')
-    colorNotice('  settings:  Configuration settings.')
+    print(f"{term.bold_bright_blue}USAGE:{term.normal}")
+    print(f"{term.bold}autorpt.py [ help | startup | add [IP Address] | vuln | ports | sitrep [message] | finalize | settings ]\n{term.normal}")
+    print(f"{term.bold_bright_blue}WHERE:{term.normal}")
+    print(f'  {term.bright_blue}help{term.normal}      Display this listing of usage and examples.')
+    print(f'  {term.bright_blue}startup{term.normal}   Create a clean working directory for a new engagement.')
+    print(f'  {term.bright_blue}add{term.normal}       Add a newly discovered IP address to targets.txt and create its markdown file.')
+    print(f'  {term.bright_blue}vuln{term.normal}      Record a confirmed vulnerability with CVSS scoring and MITRE ATT&CK attributes.')
+    print(f'  {term.bright_blue}ports{term.normal}     (AutoRecon specific) Quick display of all open ports per target.')
+    print(f'  {term.bright_blue}sitrep{term.normal}    Record a status update of your current progress or display the menu.')
+    print(f'  {term.bright_blue}finalize{term.normal}  Compile markdown files into a desired output file format.')
+    print(f'  {term.bright_blue}settings{term.normal}  Configuration settings.')
 
-    colorNotice("\nEXAMPLES:")
-    colorNotice("When you are ready to start an exam or training:")
-    colorNotice("    autorpt.py startup")
-    colorNotice("Log a verified vulnerability:")
-    colorNotice("    autorpt.py vuln")
-    colorNotice("Display vulnerability list:")
-    colorNotice("    autorpt.py vuln list")
-    colorNotice("Log your current status:")
-    colorNotice("    autorpt.py sitrep pwned buffer overflow")
-    colorNotice("...Or")
-    colorNotice("    autorpt.py sitrep Stuck trying to exploit system X:8001/login.php via SQLi.  May be a rabbit trail.")
-    colorNotice("...Or use the menu system:")
-    colorNotice("    autorpt.py sitrep")
-    colorNotice("Display the sitrep log:")
-    colorNotice("    autorpt.py sitrep list")
-    colorNotice("After AutoRecon completes, display the ports:")
-    colorNotice("    autorpt.py ports")
-    colorNotice("Compile the markdown into a polished report document")
-    colorNotice("    autorpt.py finalize")
+    print(f"\n{term.bold_bright_blue}EXAMPLES:{term.normal}")
+    print("When you are ready to start an exam or training:")
+    print(f"    {term.bright_blue}autorpt.py startup{term.normal}")
+    print("Log a verified vulnerability:")
+    print(f"    {term.bright_blue}autorpt.py vuln{term.normal}")
+    print("Display vulnerability list:")
+    print(f"    {term.bright_blue}autorpt.py vuln list{term.normal}")
+    print("Log your current status:")
+    print(f"    {term.bright_blue}autorpt.py sitrep pwned buffer overflow{term.normal}")
+    print("...Or")
+    print(f"    {term.bright_blue}autorpt.py sitrep Stuck trying to exploit system X:8001/login.php via SQLi.  May be a rabbit trail.{term.normal}")
+    print("...Or use the menu system:")
+    print(f"    {term.bright_blue}autorpt.py sitrep{term.normal}")
+    print("Display the sitrep log:")
+    print(f"    {term.bright_blue}autorpt.py sitrep list{term.normal}")
+    print("After AutoRecon completes, display the ports:")
+    print(f"    {term.bright_blue}autorpt.py ports{term.normal}")
+    print("Compile the markdown into a polished report document")
+    print(f"    {term.bright_blue}autorpt.py finalize{term.normal}")
     sys.exit(1)
 
 def banner():
-    print(f'{term.bright_red}{term.normal}')
-    print(f'{term.bright_red}  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄ {term.normal}')
-    print(f'{term.bright_red} ▐█ ▀█ █▪██▌•██  ▪     ▀▄ █·▐█ ▄█•██   {term.normal}')
-    print(f'{term.bright_red} ▄█▀▀█ █▌▐█▌ ▐█.▪ ▄█▀▄ ▐▀▀▄  ██▀· ▐█.▪ {term.normal}')
-    print(f'{term.bright_red} ▐█ ▪▐▌▐█▄█▌ ▐█▌·▐█▌.▐▌▐█•█▌▐█▪·• ▐█▌· {term.normal}')
-    print(f'{term.bright_red}  ▀  ▀  ▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀.▀    ▀▀▀  {term.normal}')
-    #print(f'{term.bright_red}                                       {term.normal}')
-    print(f'{term.bright_red}             Tag your work{term.normal}\n')
+    print(f'')
+    print(f'  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄ ')
+    print(f' ▐█ ▀█ █▪██▌•██  ▪     ▀▄ █·▐█ ▄█•██   ')
+    print(f' ▄█▀▀█ █▌▐█▌ ▐█.▪ ▄█▀▄ ▐▀▀▄  ██▀· ▐█.▪ ')
+    print(f' ▐█ ▪▐▌▐█▄█▌ ▐█▌·▐█▌.▐▌▐█•█▌▐█▪·• ▐█▌· ')
+    print(f'  ▀  ▀  ▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀.▀    ▀▀▀  ')
+    print(f'{term.bright_blue}             Tag your work{term.normal}\n')
     
 def clearScreen():
     _ = subprocess.call('clear' if os.name == 'posix' else 'cls')
 
 def colorHeader(msg):
-    print(f"\n{term.bold}{term.bright_black}{term.on_bright_white}{msg}{term.normal}\n")
+    print(f"\n{term.bold_bright_blue}{msg}{term.normal}\n")
 
 def colorSubHeading(msg):
-    print(f"{term.on_bright_blue}{msg}{term.normal}")
+    print(f"{term.bold_bright_blue}{msg}{term.normal}")
 
 def colorMenuItem(msg):
-    print(f"  {term.bold_bright_green}{msg}{term.normal}")
+    print(f"  {term.yellow}{msg}{term.normal}")
 
 def colorList(msg):
-    print(f"{term.bright_yellow}{msg}{term.normal}")
+    print(f"{term.bold_bright}{msg}{term.normal}")
 
 def colorDebug(msg):
     print(f"{term.on_yellow}{term.black}[d]{term.normal}  {term.yellow}{msg}{term.normal}")
@@ -90,20 +90,34 @@ def colorDebug(msg):
 def colorTableHeader(msg):
     print(f"{term.on_blue_underline_bold}{term.bright_white}{msg}{term.normal}")
 
+# OBSOLETE >>>> Pending migration
 def colorVerification(field, msg):
-    print(f'{term.bright_white_bold_on_blue} {field} {term.normal}  {term.yellow}{msg}{term.normal}')
+    colorVerify(field, msg)
 
 def colorVerificationPass(field, msg):
-    print(f'{term.bright_white_bold_on_bright_green} {field} {term.normal}  {term.bright_green}{msg}{term.normal}')
+    colorPass(field, msg)
 
 def colorVerificationFail(field, msg):
-    print(f'{term.bright_white_bold_on_bright_red} {field} {term.normal}  {term.bright_red}{msg}{term.normal}')
+    colorFail(field, msg)
+# OBSOLETE <<<<
+
+def colorVerify(field, msg):
+    print(f'{term.red}{field}{term.normal}  {term.bold_bright}{msg}{term.normal}')
+
+def colorWarn(msg):
+    print(f"{term.bold_on_bright_yellow}[W]{term.normal}  {term.bold_bright_yellow}{msg}{term.normal}")
+
+def colorPass(field, msg):
+    print(f'{term.bold_on_bright_green}[P]{term.normal}  {term.bold_bright_green}{field} {msg}{term.normal}')
+
+def colorFail(field, msg):
+    print(f'{term.bold_on_bright_red}[E]{term.normal}  {term.bold_bright_red}{field} {msg}{term.normal}')
 
 def colorNotice(msg):
-    print(f"{term.yellow}{msg}{term.normal}")
+    print(f"{term.bright}{msg}{term.normal}")
 
 def getCvss3Score():
-    colorHeader("    CVSS 3 Scoring    ")
+    colorHeader("CVSS 3 Scoring")
     print("Do you know the Overall CVSS v3 Score? [Y|N]")
     picker = str(input(">  ")).upper()
     if "Y" == picker:
@@ -223,7 +237,7 @@ def getCvssMetricValue(cvssDict, metricName):
 def getMitreAttack():
     tactic = ''
     technique = ''
-    colorHeader("    MITRE ATT&CK    ")
+    colorHeader("MITRE ATT&CK")
     path_includes = autorpt_runfrom + '/includes'
     csvFiles = glob(path_includes + '/autorpt-*-attack.csv')
     
@@ -302,18 +316,53 @@ def configSectionToMenu(section):
     colorMenuItem('99 for main menu')
     return items
 
-def addTarget():
+def addTarget(ipAddress):
+    if ipAddress == '':
+        # Prompt for target IP address
+        colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
+        ipAddress = str(input('>  ')).replace(" ", "").lower()
+        if ipAddress == 'n':
+            colorVerificationFail('No IP Address provided', "An IP Address is required.")
+            sys.exit(22)
     # Update targets.txt with a new IP address
-    # Get target IP address
-    colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
-    targetIp = str(input('>  ')).replace(" ", "").lower()
-    colorDebug('Adding a new target is a future feature.')
+    print(f'Injecting {ipAddress} into targets.txt file.')
+    with open(f'{activeSessionDetails[0]}/targets.txt', 'a') as f:
+        f.write(f'{ipAddress}\n')
+    # Copy machine markdown to active report directory
+    rptPath = glob(f'{activeSessionDetails[0]}/report/[0-9]-closing.md')[0]
+    filename = rptPath.split('/')[-1]
+    filenameBase = filename.split('-')[1]
+    filenameOld = f"{activeSessionDetails[0]}/report/{filename}"
+    filenameNew = f"{activeSessionDetails[0]}/report/"
+    filenameNew += f"{str(int(filename.split('-')[0]) + 1)}"
+    filenameNew += f"-{filenameBase}"
+    try:
+        os.rename(filenameOld, filenameNew)
+    except:
+        colorVerificationFail(f'Failed to rename {filenameOld} to {filenameNew}')
+        sys.exit(24)
+    # Rename filename to match IP address
+    machineFile = f"{str(int(filename.split('-')[0]))}-{ipAddress}.md"
+    destMachineMd = f"{activeSessionDetails[0]}/report/{machineFile}"
+    sourceMachineMd = f"{autorpt_runfrom}/templates/training/report/1-renameme.md"
+    print(f'Copying machine markdown and renaming to {machineFile}')
+    shutil.copyfile(sourceMachineMd, destMachineMd)
+    # Log action
+    sitrepAuto(f'Added new target: {ipAddress}')
 
 def startup():
-    colorHeader('[    Startup    ]')
+    colorHeader('Startup')
 
     colorNotice('Startup will first create a directory structure for the engagement.')
     colorNotice('(eg. training/hackthebox/waldo)\n')
+
+    # Clear defaults
+    targetIp = ''
+    studentId = ''
+    studentEmail = ''
+    studentName = ''
+    style = ''
+    outputFormat = ''
 
     # Get the engagement type: training, ctf, exam, bugbounty, pentest
     colorNotice('Select the type of engagement:')
@@ -327,27 +376,32 @@ def startup():
         engagementType = appConfig['Settings']['types'].split(',')[picker]
 
     # Set default path for templates. Only exams are unique.
-    templates_path = f'{autorpt_runfrom}/templates/training/'
+    templates_path = f'{autorpt_runfrom}/templates/training/plain/'
     if 'training' == engagementType:
         # Get the platform
-        colorNotice('Enter the platform or company name (or 10 to add a custom platform):')
+        colorNotice('Select the training platform or 80 to add a custom platform or 99 for main menu')
         providers = configSectionToMenu(appConfig['Training'])
         picker = int(input('>  '))
         if picker == 99:
             mainMenu()
-        elif picker == 10:
+        elif picker == 80:
             colorNotice('Enter the name of the custom platform')
-            platform = str(input('>  '))
+            engagementName = str(input('>  '))
+            platform = 'other'
+            templates_path = f"{templates_path}plain/"
+        elif picker <= 6:
+            # Get the box name
+            colorNotice('What is the box name?')
+            colorNotice('(eg. waldo, kenobi, etc.')
+            templates_path = f"{templates_path}plain/"
+            engagementName = str(input('>  ')).replace(" ", "").lower()
+            # Get target IP address
+            colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
+            targetIp = str(input('>  ')).replace(" ", "").lower()
         else:
-            platform = providers[picker]
-        # Future: No means to custom add a platform
-        # Get the box name
-        colorNotice('What is the box name?')
-        colorNotice('(eg. waldo, kenobi, etc.')
-        engagementName = str(input('>  ')).replace(" ", "").lower()
-        # Get target IP address
-        colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
-        targetIp = str(input('>  ')).replace(" ", "").lower()
+            platform = 'offensivesecurity'
+            engagementName = providers[picker]
+            templates_path = f"{templates_path}/{engagementName}"
     elif 'bugbounty' == engagementType:
         # Get the platform
         colorNotice('Enter the platform or company name:')
@@ -374,6 +428,7 @@ def startup():
         engagementName = engagementName.replace('"', "")
         engagementName = engagementName.replace('`', '')
         engagementName = engagementName.replace(' ', '')
+        templates_path = f'{autorpt_runfrom}/templates/training/plain/'
     elif 'exam' == engagementType:
         # pick the exam
         colorNotice('Select the exam')
@@ -390,8 +445,9 @@ def startup():
             mainMenu()
         platform = appConfig['Exams'][exams[picker]].split(',')[0]
         engagementName = exams[picker]
-        # No means to custom add a platform
         templates_path = f'{autorpt_runfrom}/templates/{engagementName}/'
+        # Prompt for student ID, email, name, etc.
+
     elif 'pentest' == engagementType:
         # Least tested option
         # Company performing the test
@@ -431,21 +487,23 @@ def startup():
 
     # Copy the template to the engagement directory
     try:
-        shutil.copytree(templates_path, f'{thisDir}/')
+        err = shutil.copytree(templates_path, f'{thisDir}/')
     except OSError as exc: # python >2.5
-        colorVerificationFail("[!]", "Copytree templates failed.  Trying copy.")
+        colorVerificationFail("[!]", f"Copytree templates failed. {err}")
         try:
-            shutil.copy(templates_path, f'{thisDir}/')
+            err = shutil.copy(templates_path, f'{thisDir}/')
         except OSError as exc:
-            colorVerificationFail("[!]", "Copy templates failed. Done.")
+            colorVerificationFail("[!]", f"Copy templates failed. {err}")
             sys.exit(5)
     
-    if "training" == engagementType:
+    #colorDebug(f'regex serarch for plain in {templates_path}')
+    if "training" == engagementType and re.search('plain', templates_path, flags=0):
         os.rename(f'{thisDir}/report/1-renameme.md', f'{thisDir}/report/1-{engagementName}.md')
         if len(targetIp) >= 7:
             with open(f'{thisDir}/targets.txt', 'w') as t:
                 t.write(targetIp + '\n')
     
+    # Original formula.
     # Update sessions file
     # Set active
     session['Current']['active'] = thisEngagement
@@ -461,8 +519,22 @@ def startup():
     session['Engagements'][thisEngagement] = msg
     saveEnagements()
 
+    # New recipe.
+    #session[thisEngagement] = {}
+    #session[thisEngagement]['path'] = thisDir
+    #session[thisEngagement]['type'] = engagementType
+    #session[thisEngagement]['student_id'] = studentId
+    #session[thisEngagement]['student_name'] = studentName
+    #session[thisEngagement]['student_email'] = studentEmail
+    #session[thisEngagement]['style'] = style
+    #session[thisEngagement]['engagement_name'] = engagementName
+    #session[thisEngagement]['output_format'] = outputFormat
+    #colorDebug('New Recipe session entry:\n{session[{thisEngagement}]}')
+
     # Journal entry in sitrep
-    msg = f'Startup initiated new working directory for {engagementName}: {thisDir}'
+    msg = f'Startup initiated for {engagementType} as {engagementName}'
+    sitrepAuto(msg)
+    msg = f'New working directory is {thisDir}'
     sitrepAuto(msg)
 
     # Display directory tree
@@ -806,7 +878,7 @@ def sitrepAuto(msg):
 def sitrepList():
     sitrepFile = f"{getActivePath()}/report/{sitrepLog}"
     if os.path.isfile(sitrepFile):
-        colorHeader("    SITREP Log Entries    ")
+        colorHeader("SITREP Log Entries")
         with open(sitrepFile) as f: 
             s = f.readlines()
             f.close()
@@ -823,7 +895,7 @@ def sitrepNew():
 
 def sitrepMenu():
     # A stream of status journal.
-    colorHeader('[    SITREP  (Situation Report)    ]')
+    colorHeader('SITREP  (Situation Report)')
     colorMenuItem('1. List all sitrep entries')
     colorMenuItem('2. Add new sitrep log entry\n')
     colorMenuItem('3. Main Menu')
@@ -840,7 +912,7 @@ def sitrepMenu():
     sitrepMenu()
 
 def vuln():
-    colorHeader('[    Vulnerabilities    ]')
+    colorHeader('Vulnerabilities')
     colorMenuItem("1. Add a new vulnerability")
     colorMenuItem("2. List all vulnerabilities")
     colorMenuItem("3. Modify an existing vulnerability")
@@ -864,7 +936,7 @@ def vuln():
         vuln()
 
 def vulnAdd():
-    colorHeader("    Add Vulnerability    ")
+    colorHeader("Add Vulnerability")
     i = 0
     targetFile = f"{getActivePath()}/{targetsFile}"
     if os.path.isfile(targetFile):
@@ -874,7 +946,8 @@ def vulnAdd():
             f.close()
         for target in targets:
             target = target.strip()
-            print(f'{i}.  {term.yellow}{target}{term.normal}')
+            #print(f'  {i}.  {term.yellow}{target}{term.normal}')
+            colorMenuItem(f"{i}.  {target}")
             i = i + 1
         targetId = int(input(">  "))
         if 99 == targetId:
@@ -939,7 +1012,8 @@ def vulnAdd():
         vulnMitreTechnique = ''
         vulnComment = ''
         vulnAdd()
-    # vuln()
+    # Return to the vulnerability menu
+    vuln()
 
 def vulnCsvNewRow(row):
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
@@ -960,7 +1034,7 @@ def vulnCsvNewRow(row):
     sitrepAuto(msg)
 
 def vulnList():
-    colorHeader("    List of Current Vulnerabilities    ")
+    colorHeader("List of Current Vulnerabilities")
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     if os.path.exists(vulnsFile):
         df = pd.read_csv(vulnsFile, sep=",", engine="python") # , index_col=False
@@ -1041,7 +1115,7 @@ def listEngagements():
     settingsMenu()
 
 def settingsMenu():
-    colorHeader('[    Settings    ]')
+    colorHeader('Settings')
     colorMenuItem('1. Application-level settings')
     colorMenuItem('2. Engagement settings')
     colorMenuItem('3. Back to main menu')
@@ -1130,7 +1204,7 @@ def settingsMenu():
             settingsMenu()
     elif 2 == picker:
         # Engagement settings
-        colorSubHeading('[    Engagement Settings    ]')
+        colorSubHeading('Engagement Settings')
         colorNotice(f"Active engagement: {session['Current']['active']}")
         colorNotice(f"Total engagement: {str(len(session['Engagements']))}\n")
         colorMenuItem('1. Set a new active engagement')
@@ -1186,7 +1260,7 @@ def settingsMenu():
 def mainMenu():
     clearScreen()
     banner()
-    colorHeader('[    Main Menu    ]')
+    colorHeader('Main Menu')
     colorMenuItem('1. Startup')
     colorMenuItem('2. Vulnerabilities')
     colorMenuItem('3. Ports')
@@ -1216,7 +1290,13 @@ def mainMenu():
 def params(argv):
     # Set routing action based on argument.  Otherwise, display help.
     action = sys.argv[1]
-    if action == '-h' or action == '--help' or action == 'help':
+    if action == '-a' or action == '--add' or action == 'add':
+        if len(sys.argv) == 3:
+            msg = sys.argv[2]
+        else:
+            msg = ''
+        addTarget(msg)
+    elif action == '-h' or action == '--help' or action == 'help':
         helper()
     elif action == '-s' or action == 'startup' or action == '--startup':
         startup()
@@ -1388,9 +1468,9 @@ if __name__ == "__main__":
     # Path to store configuration settings and sessions
     pathConfig = os.path.expanduser("~/.config/AutoRpt")
     # Configuration settings
-    appConfigFile = pathConfig + '/config.yml'
+    appConfigFile = pathConfig + '/config.toml'
     # Load configuration settings
-    appConfig = loadAppConfig(pathConfig, pathConfig + '/config.yml')
+    appConfig = loadAppConfig(pathConfig, appConfigFile)
     # Engagement sessions
     sessionFile = pathConfig + '/' + appConfig['Files']['sessionFile']
     session = loadSessionConfig(sessionFile)

@@ -18,19 +18,21 @@ All wrapped in a sleak 1980's menu system.
 * [Overview](#AutoRpt)
 * [Install](#Install)
 * [Usage](#Usage)
-* [Getting Started](#Getting-Started)
 * [Contributing](#Contributing)
 
 ---
 
 ## Install
-A work-in-progress shell script is included which is intended to automate the dependencies and setup.
+A work-in-progress shell script is included which is intended to automate the dependencies and setup.  The example here uses /opt as AutoRpt's home.
 
 ### Dependencies & Caveats
 AutoRpt has only been tested on Kali Linux.
 - p7zip
 - pandoc
 - pandoc-data
+- texlive
+- texlive-fonts-recommended
+- texlive-fonts-extra
 - texlive-xetex
 
 ### Clone the Repo
@@ -39,50 +41,32 @@ cd /opt
 git clone https://github.com/BenAcord/AutoRpt.git
 ```
 ### Setup
-Either execute setup.sh or perform these manual steps:
-1. Execute setup.sh
+Execute setup.sh or perform its steps manually.
+
 ```Bash
 chmod 700 /opt/AutoRpt/setup.sh
 /opt/AutoRpt/setup.sh
 ```
 
-2. Manual setup
-```Bash
-cd AutoRpt
-
-sudo apt-get install -y p7zip pandoc pandoc-data texlive-xetex
-
-pip install cvss blessings colorama
-
-sudo ln -s /opt/AutoRpt/autorpt.py /usr/bin/autorpt
-chmod 700 autorpt.py
-autorpt help
-```
-
-## Usage:
+## Usage
 `autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize | settings ]`
 
-Settings can be run at any time.  Though if startup has not yet been run its engagements functionality will be limited.
+AutoRpt enforces consistent organization of directory structure and note taking to facilitate a smooth report writing process.  For details on each parameter's functionality please see the [wiki](https://github.com/BenAcord/AutoRpt/wiki).
 
-Startup is required before using any other parameters, excluding help and settings.  This is because startup creates the engagement working directory and registers the session.  Every other parameter references the active session.
+### Examples
+1. `autorpt.py startup` Prior to starting an exam or training, startup creates a base directory structure and populates it with a markdown report template.  Run this well in advance of the exam start time.  During the exam or training edit the markdown files for the targets.  
 
-For details on each parameter's functionality please see the wiki.
+Startup is required before using any other parameters, excluding help and settings.  This is because startup creates the engagement working directory and registers the session.  Every other parameter references the active engagement session.
 
-What It Is
-Streamline the report writing experience.  AutoRpt enforces consistent organization of directory structure and note taking to facilitate a smooth report writing process.
+2. `autorpt.py ports` Quickly scans for known recon tool nmap output and displays a summary of the ports and services.  Also creates a spreadsheet with a tab for each target and its ports.  It creates the summary from [AutoRecon](https://github.com/Tib3rius/AutoRecon), [nmapAutomator](https://github.com/21y4d/nmapAutomator), and [Reconoitre](https://github.com/codingo/Reconnoitre).
 
-1. (**startup**) Prior to starting an exam or training, startup creates a base directory structure and populates it with a markdown report template.  Run this well in advance of the exam start time.  During the exam or training update the markdown files for the targets.
+3. `autorpt.py vuln` A submenu for logging confirmed vulnerabilities and assigning a CVSS 3 score and MITRE ATT&CK Framework tactic and technique.
 
-2. (**ports**) Quickly scans for known recon tool nmap output and displays a summary of the ports and services.  Also creates a spreadsheet with a tab for each target and its ports.
+4. `autorpt.py sitrep` Track your status and activity throughout the engagement.  You can quickly add a status or review the log to see the history of activities.  Yes, I realize this isn't a real sitrep report.
 
-3. (**vuln**) A submenu for logging confirmed vulnerabilities and assigning a CVSS 3 score and MITRE ATT&CK Framework tactic and technique.
+5. `autorpt.py finalize` During the exam report window AutoRpt generates a final report PDF and 7z archive from your markdown files.  Other file formats are supported: Jira, odt, docx, and common markdown.
 
-4. (**sitrep**) Track your status and activity throughout the engagement.  You can quickly add a status or review the log to see the history of activities.  Yes, I realize this isn't a real sitrep report.
-
-5. (**finalize**) During the exam report window AutoRpt generates a final report PDF and 7z archive from your markdown files.  Other file formats are supported: Jira, odt, docx, and common markdown.
-
-## Getting Started
-After installation...this example will use Metasploitable2 running as a guest VM.
+6. `autorpt.py settings` can be run at any time to set application level and engagement session configuration values.  If startup has not yet been run its engagements functionality will be limited.
 
 ## Contributing
-If you find an bug or have an idea for an enhancement enter an issue here on GitHub.  Pull requests will take longer to evaluate.
+Enter an issue here on GitHub if you find a bug or have an enhancement idea.
