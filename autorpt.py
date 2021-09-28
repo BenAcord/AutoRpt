@@ -388,12 +388,11 @@ def startup():
             colorNotice('Enter the name of the custom platform')
             engagementName = str(input('>  '))
             platform = 'other'
-            templates_path = f"{templates_path}plain/"
         elif picker <= 6:
+            platform = providers[picker]
             # Get the box name
             colorNotice('What is the box name?')
             colorNotice('(eg. waldo, kenobi, etc.')
-            templates_path = f"{templates_path}plain/"
             engagementName = str(input('>  ')).replace(" ", "").lower()
             # Get target IP address
             colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
@@ -401,7 +400,7 @@ def startup():
         else:
             platform = 'offensivesecurity'
             engagementName = providers[picker]
-            templates_path = f"{templates_path}/{engagementName}"
+            templates_path = f"{autorpt_runfrom}/templates/training/{engagementName}"
     elif 'bugbounty' == engagementType:
         # Get the platform
         colorNotice('Enter the platform or company name:')
@@ -447,7 +446,6 @@ def startup():
         engagementName = exams[picker]
         templates_path = f'{autorpt_runfrom}/templates/{engagementName}/'
         # Prompt for student ID, email, name, etc.
-
     elif 'pentest' == engagementType:
         # Least tested option
         # Company performing the test
@@ -496,40 +494,27 @@ def startup():
             colorVerificationFail("[!]", f"Copy templates failed. {err}")
             sys.exit(5)
     
-    #colorDebug(f'regex serarch for plain in {templates_path}')
     if "training" == engagementType and re.search('plain', templates_path, flags=0):
         os.rename(f'{thisDir}/report/1-renameme.md', f'{thisDir}/report/1-{engagementName}.md')
         if len(targetIp) >= 7:
             with open(f'{thisDir}/targets.txt', 'w') as t:
                 t.write(targetIp + '\n')
     
-    # Original formula.
     # Update sessions file
     # Set active
     session['Current']['active'] = thisEngagement
-    # Set new details record
-    msg = f'{thisDir},'
-    msg += f'{engagementType},'
-    msg += f'{appConfig["Settings"]["studentid"]},'
-    msg += f'{appConfig["Settings"]["your_name"]},'
-    msg += f'{appConfig["Settings"]["email"]},'
-    msg += f'{appConfig["Settings"]["style"]},'
-    msg += f'{engagementName},'
-    msg += f'{engagementFormat}'
-    session['Engagements'][thisEngagement] = msg
+    
+    # Set engagement settings
+    session[thisEngagement] = {}
+    session[thisEngagement]['path'] = thisDir
+    session[thisEngagement]['type'] = engagementType
+    session[thisEngagement]['student_id'] = studentId
+    session[thisEngagement]['student_name'] = studentName
+    session[thisEngagement]['student_email'] = studentEmail
+    session[thisEngagement]['style'] = style
+    session[thisEngagement]['engagement_name'] = engagementName
+    session[thisEngagement]['output_format'] = outputFormat
     saveEnagements()
-
-    # New recipe.
-    #session[thisEngagement] = {}
-    #session[thisEngagement]['path'] = thisDir
-    #session[thisEngagement]['type'] = engagementType
-    #session[thisEngagement]['student_id'] = studentId
-    #session[thisEngagement]['student_name'] = studentName
-    #session[thisEngagement]['student_email'] = studentEmail
-    #session[thisEngagement]['style'] = style
-    #session[thisEngagement]['engagement_name'] = engagementName
-    #session[thisEngagement]['output_format'] = outputFormat
-    #colorDebug('New Recipe session entry:\n{session[{thisEngagement}]}')
 
     # Journal entry in sitrep
     msg = f'Startup initiated for {engagementType} as {engagementName}'
@@ -538,12 +523,12 @@ def startup():
     sitrepAuto(msg)
 
     # Display directory tree
-    colorNotice("Templates successfully copied to report directory.  Here's the new structure:\n")
+    colorNotice("Templates successfully copied to report directory.  Here's the new structure:")
+    colorNotice(thisDir)
     paths = DisplayablePath.make_tree(Path(thisDir))
     for path in paths:
         print(path.displayable())
     time.sleep(3)
-    #mainMenu()
 
 def finalize():
     activeAll = getActiveAll()
@@ -726,7 +711,7 @@ def getActivePath():
         colorNotice('No active engagement exists.  Use startup to create a new engagement.')
         sys.exit(30)
     else:
-        return f"{session['Engagements'][active].split(',')[0]}"
+        return session[active]["path"]
 
 def getActiveAll():
     active = session['Current']['active']
@@ -864,7 +849,6 @@ def ports():
 def sitrepAuto(msg):
     d = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     sitrepFile = f"{getActivePath()}/report/{sitrepLog}"
-    #colorDebug(f"sitrepFile: {sitrepFile}")
     if os.path.exists(sitrepFile):
         with open(sitrepFile, 'a', encoding='utf-8', newline='') as f:
             f.write(f'{d} - {msg}\n')
@@ -1474,7 +1458,7 @@ if __name__ == "__main__":
     # Engagement sessions
     sessionFile = pathConfig + '/' + appConfig['Files']['sessionFile']
     session = loadSessionConfig(sessionFile)
-    # Details for the active engagement
+    # Details for the active engagement or blank if none
     try:
         activeSessionDetails = session['Engagements'][session['Current']['active']].split(',')
     except:
