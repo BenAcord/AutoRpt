@@ -16,7 +16,7 @@ classoption: oneside
 code-block-font-size: \scriptsize
 ---
 
-![[Pasted image 20210811065423.png]]
+INSERT LOGO HERE
 
 
 

@@ -7,9 +7,9 @@ subject: "Markdown"
 keywords: [BOILERPLATE_KEYWORDS]
 lang: "en"
 titlepage: true
-titlepage-color: "#1E90FF"
-titlepage-text-color: "#FFFAFA"
-titlepage-rule-color: "#FFFAFA"
+titlepage-color: "1E90FF"
+titlepage-text-color: "FFFAFA"
+titlepage-rule-color: "FFFAFA"
 titlepage-rule-height: 2
 book: true
 classoption: oneside
@@ -107,6 +107,13 @@ If you have modified an exploit, you should include:
 - Highlighted changes you have made
 - An explanation of why those changes were made
 
+---
+
+```Bash
+echo Code goes here.
+```
+
+---
 
 ### Local.txt
 
@@ -114,8 +121,7 @@ If you have modified an exploit, you should include:
 
 > Screenshot must show proof.txt contents with `cat` or `type` command and output from `ipconfig` or `ip`.  Additionally, search the system for local.txt to cover all bases.  
 
-Ensure all pasted images are in this markdown format
-"\"![Pasted image 20210510161424.png](Pasted image 20210510161424.png)""
+![Alt text](images/placeholder-image-300x225.png "title"){ width=50%}
 
 **Contents**
 
@@ -155,6 +161,13 @@ If you have modified an exploit, you should include:
 - Highlighted changes you have made
 - An explanation of why those changes were made
 
+---
+
+```Bash
+echo Code goes here.
+```
+
+---
 
 ### Proof.txt
 
@@ -162,8 +175,7 @@ If you have modified an exploit, you should include:
 
 Screenshot must show proof.txt contents with `cat` or `type` command and output from `ipconfig` or `ip`.  Additionally, search the system for local.txt to cover all bases.  
 
-Ensure all pasted images are in this markdown format
-"\"![Pasted image 20210510161424.png](Pasted image 20210510161424.png)""
+![Alt text](images/placeholder-image-300x225.png "title"){ width=50%}
 
 **Contents**
 

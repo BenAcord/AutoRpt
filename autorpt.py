@@ -353,16 +353,36 @@ def addTarget(ipAddress):
 def startup():
     colorHeader('Startup')
 
-    colorNotice('Startup will first create a directory structure for the engagement.')
+    colorNotice('Startup creates a directory structure for the engagement.')
     colorNotice('(eg. training/hackthebox/waldo)\n')
 
     # Clear defaults
     targetIp = ''
-    studentId = ''
-    studentEmail = ''
-    studentName = ''
-    style = ''
-    outputFormat = ''
+
+    # Get Settings.
+    # Future: Replace variables throughout with the direct appConfig reference
+    studentName = appConfig['Settings']['your_name']
+    studentId = appConfig['Settings']['studentid']
+    studentEmail = appConfig['Settings']['email']
+    style = appConfig['Settings']['style']
+    outputFormat = appConfig['Settings']['preferred_output_format']
+
+    #  If blank settings prompt for value.  Write out config before proceeding.
+    if '' == studentName:
+        colorNotice(f'What is your name?')
+        studentName = (str(input('>  ')))
+        appConfig['Settings']['your_name'] = studentName
+    if '' == studentId:
+        colorNotice(f'What is your student ID?')
+        studentId = (str(input('>  ')))
+        appConfig['Settings']['studentid'] = studentId
+    if '' == studentEmail:
+        colorNotice(f'What is your email?')
+        studentEmail = (str(input('>  ')))
+        appConfig['Settings']['email'] = studentEmail
+
+    # Write new config.toml
+    saveConfig(appConfig)
 
     # Get the engagement type: training, ctf, exam, bugbounty, pentest
     colorNotice('Select the type of engagement:')
@@ -507,11 +527,12 @@ def startup():
     # Set engagement settings
     session[thisEngagement] = {}
     session[thisEngagement]['path'] = thisDir
+    session[thisEngagement]['platform'] = platform
     session[thisEngagement]['type'] = engagementType
     session[thisEngagement]['student_id'] = studentId
     session[thisEngagement]['student_name'] = studentName
     session[thisEngagement]['student_email'] = studentEmail
-    session[thisEngagement]['style'] = style
+    session[thisEngagement]['style'] = engagementFormat
     session[thisEngagement]['engagement_name'] = engagementName
     session[thisEngagement]['output_format'] = outputFormat
     saveEnagements()
@@ -531,23 +552,27 @@ def startup():
     time.sleep(3)
 
 def finalize():
-    activeAll = getActiveAll()
-    engagementType = activeAll.split(',')[1]
-    email = appConfig['Settings']['email']
-    author = appConfig['Settings']['your_name']
-    student_id = appConfig['Settings']['studentid']
-    rptFormat = appConfig['Settings']['preferred_output_format']
     toArchive = 'No'
-    rpt_base = f"{activeAll.split(',')[0]}/report/"
-    rpt_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    active = session['Current']['active']
+    engagementType = session[active]["type"]
+    email = session[active]['student_email']
+    author = session[active]['student_name']
+    student_id = session[active]['student_id']
     style_name = appConfig['Settings']['style']
-    targetName = activeAll.split(',')[6]
-    # ensure the latest ports file exists
+    rptFormat = session[active]['output_format']
+    activePath = session[active]["path"]
+    rpt_base = f"{activePath}/report/"
+    rpt_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    targetName = active.split('-')[0]
+    platformName = rpt_base.split('/')[-4]
+    
+    # Ensure the latest ports file exists
     portsFile = f"{rpt_base}{portsSpreadsheet}"
     if not os.path.exists(portsFile):
         ports()
     # Read in the ports spreadsheet
     ports_table = pd.read_excel(portsFile, sheet_name='All Ports').to_markdown()
+
     # FUTURE FEATURE IS TO AUTOMATICALLY ADD THE VULNS TABLE'
     portsFile = f"{rpt_base}{vulnsCsv}"
     if os.path.isfile(portsFile):
@@ -560,7 +585,7 @@ def finalize():
     else:
         vulns_table = 'No vulnerabilities were discovered.'
 
-    # Student info only applies for exams and perhaps specific exams (eg OffSec)
+    # Student info only applies for some exams (eg OffSec)
     if 'training' == engagementType:
         rpt_name = "training_" + targetName + "_Report"
     else:
@@ -643,6 +668,7 @@ def finalize():
             if "training" == engagementType:
                 # Future feature: auto add keywords from directory: hackthebox,popcorn,write-up,training
                 # get platform
+                file_contents = re.sub('BOILERPLATE_PLATFORM', platformName, file_contents)
                 file_contents = re.sub('BOILERPLATE_TARGET', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_HOSTNAME', targetName, file_contents)
                 file_contents = re.sub('BOILERPLATE_OSID', '', file_contents)
@@ -665,8 +691,8 @@ def finalize():
     else:
         colorNotice("Code block style pulled from config file as " + style_name)
     
-    colorVerification("[i]", f"Generating report {rptFullPath}")
-    # Build the Pandoc command to 
+    colorNotice(f"Generating report {rptFullPath}")
+    # Build the Pandoc command for generating the report
     cmd = '/usr/bin/pandoc ' + rpt_filename
     cmd += ' --output=' + rptFullPath
     cmd += ' --from markdown+yaml_metadata_block+raw_html'
@@ -678,31 +704,23 @@ def finalize():
     cmd += ' --number-sections'
     cmd += ' --wrap=auto'
     cmd += ' --highlight-style ' + style_name
-    
-    colorDebug(f"cmd:\n{cmd}")
+    #colorDebug(f"cmd:\n{cmd}")
 
     try:
         p = subprocess.getoutput(cmd)
-        colorNotice(f'cmd output: {p}')
-        # OBSOLETE >>>>
-        # subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
-        # OBSOLETE <<<<
+        colorNotice(p)
     except:
-        colorVerificationFail("[!]", f"Failed to generate PDF using pandoc.\n{p}")
+        colorFail("[!]", f"Failed to generate PDF using pandoc.\n{p}")
         sys.exit(10)
     
     if 'yes' == toArchive:
         archive_file = rpt_base + rpt_name + ".7z"
-        colorVerification("[i]", "Generating 7z archive " + archive_file)
+        colorNotice("Generating 7z archive " + archive_file)
         cmd = '/usr/bin/7z a ' + archive_file + ' ' + rptFullPath
         try:
             p = subprocess.getoutput(cmd)
-            #colorNotice(f'cmd output: {p}')
-            # OBSOLETE >>>>
-            # p = subprocess.run([cmd], shell=True, universal_newlines=True, capture_output=True)
-            # OBSOLETE <<<<
         except:
-            colorVerificationFail("[!]", f"Failed to generate 7z archive\n{p}")
+            colorFail("[!]", f"Failed to generate 7z archive\n{p}")
             sys.exit(15)
 
 def getActivePath():
@@ -824,7 +842,7 @@ def ports():
                     writer.save()
                     writer.close()
                 except:
-                    colorVerificationFail("[e]", "Unable to write to xlsx file.")
+                    colorFail("[e]", "Unable to write to xlsx file.")
         colorList(allPorts.to_markdown())
 
         with pd.ExcelWriter(portsFile, engine='openpyxl') as writer:
@@ -843,7 +861,7 @@ def ports():
                 writer.save()
                 writer.close()
             except:
-                colorVerificationFail("[e]", "Unable to write to xlsx file.")
+                colorFail("[e]", "Unable to write to xlsx file.")
     return allPorts
 
 def sitrepAuto(msg):
@@ -966,7 +984,6 @@ def vulnAdd():
     cvssScore = rawCvss[1]
     cvssVector = rawCvss[2]
     mitreAttack = getMitreAttack()
-    #colorDebug(f"getMitreAttack returned: {str(mitreAttack)}")
     vulnMitreTactic = mitreAttack[0]
     vulnMitreTechnique = mitreAttack[1]
     
@@ -1094,8 +1111,9 @@ def vulnRemove():
     vuln()
 
 def listEngagements():
-    for e in session['Engagements']:
-        colorVerification(e, session['Engagements'][e].split(',')[0])
+    for e in session.sections():
+        if e not in ['DEFAULT', 'Current']:
+            colorVerification(e, session[e]['path'])
     settingsMenu()
 
 def settingsMenu():
@@ -1135,7 +1153,7 @@ def settingsMenu():
                     os.umask(0)
                     os.mkdir(picker, 0o770)
                 except:
-                    colorVerificationFail('[e]', f'Unable to create directory: {picker} ')
+                    colorFail('[e]', f'Unable to create directory: {picker} ')
                     sys.exit(20)
             appConfig['Paths']['pathwork'] = picker
             saveConfig(appConfig)
@@ -1170,7 +1188,6 @@ def settingsMenu():
                 i += 1
             picker = int(input('>  '))
             if picker <= i:
-                colorDebug(f"Setting > preferred report format: {supported_filetypes.split(',')[picker]}")
                 appConfig['Settings']['preferred_output_format'] = supported_filetypes.split(',')[picker]
                 saveConfig(appConfig)
             else:
@@ -1190,7 +1207,7 @@ def settingsMenu():
         # Engagement settings
         colorSubHeading('Engagement Settings')
         colorNotice(f"Active engagement: {session['Current']['active']}")
-        colorNotice(f"Total engagement: {str(len(session['Engagements']))}\n")
+        #colorNotice(f"Total engagement: {str(len(session['Engagements']))}\n")
         colorMenuItem('1. Set a new active engagement')
         colorMenuItem('2. List all engagements')
         colorMenuItem('3. Back to main menu')
@@ -1206,10 +1223,11 @@ def settingsMenu():
             i = 0
             engagements = {}
             colorNotice('Pick a new active engagement')
-            for e in session['Engagements']:
-                colorMenuItem(f"{i}) {e} {session['Engagements'][e].split(',')[0]}")
-                engagements[i] = e
-                i += 1
+            for e in session.sections():
+                if e not in ['DEFAULT', 'Current']:
+                    colorMenuItem(f"{i}) {e}")
+                    engagements[i] = e
+                    i += 1
             picker = int(input('>  '))
             if picker > i:
                 settingsMenu()
@@ -1313,7 +1331,7 @@ def loadAppConfig(pathConfig, appConfigFile):
             os.umask(0)
             os.mkdir(pathConfig, 0o770)
         except:
-            colorVerificationFail('[e]', f'Unable to create directory for AutoRpt settings: {pathConfig} ')
+            colorFail('[e]', f'Unable to create directory for AutoRpt settings: {pathConfig} ')
             sys.exit(20)
 
     if not os.path.isfile(appConfigFile):
@@ -1321,7 +1339,7 @@ def loadAppConfig(pathConfig, appConfigFile):
             # copy configuration file from GitHub clone
             shutil.copy(appConfigFile, pathConfig)
         except:
-            colorVerificationFail('[e]', f'Unable to copy configuration file from the GitHub clone: {appConfigFile}')
+            colorFail('[e]', f'Unable to copy configuration file from the GitHub clone: {appConfigFile}')
             sys.exit(20)
     
     config = configparser.ConfigParser()
