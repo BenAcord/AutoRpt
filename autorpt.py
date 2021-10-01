@@ -400,7 +400,16 @@ def startup():
     if 'training' == engagementType:
         # Get the platform
         colorNotice('Select the training platform or 80 to add a custom platform or 99 for main menu')
+        
+        # List easy to read names
+        platformList = []
+        for key in appConfig['Training']:
+            platformList.append(key)
+        
+        # List directory friendly names (eg. no spaces)
         providers = configSectionToMenu(appConfig['Training'])
+        
+        # Get section of the platform
         picker = int(input('>  '))
         if picker == 99:
             mainMenu()
@@ -408,8 +417,13 @@ def startup():
             colorNotice('Enter the name of the custom platform')
             engagementName = str(input('>  '))
             platform = 'other'
-        elif picker <= 6:
-            platform = providers[picker]
+        elif picker <= 6:    
+            # Set the easy to read platform name
+            platformName = platformList[picker]
+
+            # Set the directory friendly platform name
+            platform = appConfig["Training"][platformName]
+            
             # Get the box name
             colorNotice('What is the box name?')
             colorNotice('(eg. waldo, kenobi, etc.')
@@ -418,6 +432,11 @@ def startup():
             colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
             targetIp = str(input('>  ')).replace(" ", "").lower()
         else:
+            # Set the easy to read platform name
+            platformName = platformList[picker]
+
+            # Set the directory friendly platform name
+            #platform = appConfig["Training"][platformName]
             platform = 'offensivesecurity'
             engagementName = providers[picker]
             templates_path = f"{autorpt_runfrom}/templates/training/{engagementName}"
@@ -458,11 +477,12 @@ def startup():
             colorMenuItem(str(i) + ".  " + examName)
             exams.append(item)
             i += 1
-        colorMenuItem('99 for main menu')
+        colorMenuItem('99. for main menu')
         picker = int(input('>  '))
         if 99 == picker:
             mainMenu()
         platform = appConfig['Exams'][exams[picker]].split(',')[0]
+        platformName = appConfig['Exams'][exams[picker]].split(',')[1]
         engagementName = exams[picker]
         templates_path = f'{autorpt_runfrom}/templates/{engagementName}/'
         # Prompt for student ID, email, name, etc.
@@ -479,16 +499,17 @@ def startup():
         mainMenu()
     
     # Set the preferred output format or set to null
-    engagementFormat = ''
-    colorNotice('Do you have a preferred output format for the final report?  Enter for none.')
-    dictLen = int(dictToMenu(appConfig['Settings']['output_formats']))
-    picker = int(input('>  '))
-    if 99 == picker:
-        mainMenu()
-    elif picker >= dictLen:
-        mainMenu()
-    else:
-        engagementFormat = appConfig['Settings']['output_formats'].split(',')[picker]
+    if '' == outputFormat:
+        engagementFormat = ''
+        colorNotice('Do you have a preferred output format for the final report?  Enter for none.')
+        dictLen = int(dictToMenu(appConfig['Settings']['output_formats']))
+        picker = int(input('>  '))
+        if 99 == picker:
+            mainMenu()
+        elif picker >= dictLen:
+            mainMenu()
+        else:
+            outputFormat = appConfig['Settings']['output_formats'].split(',')[picker]
 
     # Set timestamp for this engagement for uniqueness
     timestamp = datetime.datetime.now().strftime('%Y%m%d')
@@ -527,14 +548,17 @@ def startup():
     # Set engagement settings
     session[thisEngagement] = {}
     session[thisEngagement]['path'] = thisDir
-    session[thisEngagement]['platform'] = platform
+    session[thisEngagement]['platform'] = platformName
     session[thisEngagement]['type'] = engagementType
     session[thisEngagement]['student_id'] = studentId
     session[thisEngagement]['student_name'] = studentName
     session[thisEngagement]['student_email'] = studentEmail
-    session[thisEngagement]['style'] = engagementFormat
+    session[thisEngagement]['style'] = style
     session[thisEngagement]['engagement_name'] = engagementName
     session[thisEngagement]['output_format'] = outputFormat
+    session[thisEngagement]['status'] = 'Started'
+    session[thisEngagement]['start'] = str(datetime.datetime.now())
+    session[thisEngagement]['end'] = ''
     saveEnagements()
 
     # Journal entry in sitrep
@@ -693,10 +717,13 @@ def finalize():
     
     colorNotice(f"Generating report {rptFullPath}")
     # Build the Pandoc command for generating the report
+    extentionsWithoutTemplate = []
+    extentionsWithoutTemplate = appConfig['Settings']['no_template'].split(',')
+
     cmd = '/usr/bin/pandoc ' + rpt_filename
     cmd += ' --output=' + rptFullPath
     cmd += ' --from markdown+yaml_metadata_block+raw_html'
-    if rpt_extension not in appConfig['Settings']['no_template']:
+    if not rptFormat in extentionsWithoutTemplate:
         cmd += ' --template' + ' eisvogel'
     cmd += ' --table-of-contents' 
     cmd += ' --toc-depth' + ' 6'
@@ -704,7 +731,7 @@ def finalize():
     cmd += ' --number-sections'
     cmd += ' --wrap=auto'
     cmd += ' --highlight-style ' + style_name
-    #colorDebug(f"cmd:\n{cmd}")
+    colorDebug(f"cmd:\n{cmd}")
 
     try:
         p = subprocess.getoutput(cmd)
@@ -722,6 +749,15 @@ def finalize():
         except:
             colorFail("[!]", f"Failed to generate 7z archive\n{p}")
             sys.exit(15)
+    # Log the action taken
+    msg = f"Report finalized as {rptFullPath}"
+    sitrepAuto(msg)
+
+    # Update the engagement status
+    active = session['Current']['active']
+    session[active]['end'] = str(datetime.datetime.now())
+    session[active]['status'] = 'Finalized'
+    saveEnagements()
 
 def getActivePath():
     active = session['Current']['active']
@@ -862,6 +898,11 @@ def ports():
                 writer.close()
             except:
                 colorFail("[e]", "Unable to write to xlsx file.")
+    
+    # Update the engagement status
+    active = session['Current']['active']
+    session[active]['status'] = 'In-process'
+    saveEnagements()
     return allPorts
 
 def sitrepAuto(msg):
@@ -875,7 +916,7 @@ def sitrepAuto(msg):
         with open(sitrepFile, 'w', encoding='utf-8', newline='') as f:
             f.write(f'{d} - {msg}\n')
             f.close()
-    colorNotice('sitrep logged')
+    #colorNotice('sitrep logged')
 
 def sitrepList():
     sitrepFile = f"{getActivePath()}/report/{sitrepLog}"
@@ -1033,6 +1074,10 @@ def vulnCsvNewRow(row):
             f.close()
     msg = f'Added new vulnerability: {str(row)}'
     sitrepAuto(msg)
+    # Update the engagement status
+    active = session['Current']['active']
+    session[active]['status'] = 'In-process'
+    saveEnagements()
 
 def vulnList():
     colorHeader("List of Current Vulnerabilities")
@@ -1304,6 +1349,8 @@ def params(argv):
         startup()
     elif action == '-f' or action == 'finalize' or action == '--finalize':
         finalize()
+    elif action == 'whathaveidone':
+        whathaveidone()
     elif action == '-v' or action == 'vuln' or action == '--vuln':
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
             vulnList()
@@ -1379,6 +1426,21 @@ def debugConfig():
     colorVerification('port XLSX', portsSpreadsheet)
     colorVerification('vuln CSV', vulnsCsv)
     colorVerification('sitrep Log', sitrepLog)
+
+def whathaveidone():
+    # Super secret functionality.
+    # Still need to properly format as a table.
+    print("{0:12}{1:10}{2:50}{3:20}{4:30}{5:30}".format(f"STATUS", "TYPE", "PLATFORM", "CLIENT", "STARTED", "ENDED"))
+    for key in session.sections():
+        if key not in ['DEFAULT', 'Current']:
+            msg = "{0:12}".format(session[key]['status'])
+            msg += "{0:10}".format(session[key]['type'])
+            msg += "{0:50}".format(session[key]['platform'])
+            msg += "{0:20}".format(session[key]['engagement_name'])
+            msg += "{0:30}".format(session[key]['start'])
+            msg += "{0:30}".format(session[key]['end'])
+            print(msg)
+
 
 # DisplayablePath from: 
 # https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
