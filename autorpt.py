@@ -90,7 +90,8 @@ def colorDebug(msg):
 def colorTableHeader(msg):
     print(f"{term.on_blue_underline_bold}{term.bright_white}{msg}{term.normal}")
 
-# OBSOLETE >>>> Pending migration
+# OBSOLETE >>>> 
+# Pending migration
 def colorVerification(field, msg):
     colorVerify(field, msg)
 
@@ -354,7 +355,7 @@ def startup():
     colorHeader('Startup')
 
     colorNotice('Startup creates a directory structure for the engagement.')
-    colorNotice('(eg. training/hackthebox/waldo)\n')
+    colorNotice('(eg. /home/kali/Documents/AutoRpt/training/hackthebox/box-yyyymmdd)\n')
 
     # Clear defaults
     targetIp = ''
@@ -367,19 +368,20 @@ def startup():
     style = appConfig['Settings']['style']
     outputFormat = appConfig['Settings']['preferred_output_format']
 
-    #  If blank settings prompt for value.  Write out config before proceeding.
+    # If blank settings prompt for value.  Write out config before proceeding.
+    # Prompt to reuse or enter new psuedonym
     if '' == studentName:
         colorNotice(f'What is your name?')
         studentName = (str(input('>  ')))
-        appConfig['Settings']['your_name'] = studentName
+        #appConfig['Settings']['your_name'] = studentName
     if '' == studentId:
         colorNotice(f'What is your student ID?')
         studentId = (str(input('>  ')))
-        appConfig['Settings']['studentid'] = studentId
+        #appConfig['Settings']['studentid'] = studentId
     if '' == studentEmail:
         colorNotice(f'What is your email?')
         studentEmail = (str(input('>  ')))
-        appConfig['Settings']['email'] = studentEmail
+        #appConfig['Settings']['email'] = studentEmail
 
     # Write new config.toml
     saveConfig(appConfig)
@@ -444,20 +446,37 @@ def startup():
         # Get the platform
         colorNotice('Enter the platform or company name:')
         providers = configSectionToMenu(appConfig['Bug Bounty'])
-        platform = providers[int(input('>  '))]
-        # No means to custom add a platform
-        # Get the program name
-        colorNotice('What is the program name?')
-        colorNotice('(eg. Tesla, Domain.com, etc.')
-        rep = {"'": "", '"': "", '`': ''}
-        engagementName = str(input('>  ')).replace(rep).lower()
-    elif 'ctf' == engagementType:
-        # Get the engagement name
-        colorNotice('What is the name of this CTF event?')
-        platform = str(input('>  ')).lower()
+        picker = int(input('>  '))
+        if 3 == picker: 
+            platformName = str(input('What is your penetration testing company name?  '))
+        else:
+            platformName = providers[picker]
+        platform = platformName.lower()
         platform = platform.replace("'", "")
         platform = platform.replace('"', "")
         platform = platform.replace('`', '')
+        platform = platform.replace('/', '')
+        platform = platform.replace('\\', '')
+        platform = platform.replace(" ", "")
+        # Get the program name
+        colorNotice('What is the program name?')
+        colorNotice('(eg. Tesla, Domain.com, etc.')
+        engagementName = str(input('>  ')).replace('\s+', '').lower()
+        engagementName = engagementName.replace("'", "")
+        engagementName = engagementName.replace('"', "")
+        engagementName = engagementName.replace('`', '')
+        engagementName = engagementName.replace(' ', '')
+    elif 'ctf' == engagementType:
+        # Get the engagement name
+        colorNotice('What is the name of this CTF event?')
+        platform = str(input('>  '))
+        platformName = platform
+        platform = platform.lower()
+        platform = platform.replace("'", "")
+        platform = platform.replace('"', "")
+        platform = platform.replace('`', '')
+        platform = platform.replace('/', '')
+        platform = platform.replace('\\', '')
         platform = platform.replace(" ", "")
         # Get the engagement name
         colorNotice('What is the team name?')
@@ -489,12 +508,21 @@ def startup():
     elif 'pentest' == engagementType:
         # Least tested option
         # Company performing the test
-        colorNotice('What is the penetration testing company name?')
-        providers = configSectionToMenu(appConfig['Bug Bounty'])
-        platform = str(input('>  '))
+        platformName = str(input('What is your penetration testing company name?  '))
+        platform = platformName.lower()
+        platform = platform.replace("'", "")
+        platform = platform.replace('"', "")
+        platform = platform.replace('`', '')
+        platform = platform.replace('/', '')
+        platform = platform.replace('\\', '')
+        platform = platform.replace(" ", "")
         # Client name
         colorNotice('What is the client name?')
         engagementName = str(input('>  ')).replace('\s+', '').lower()
+        engagementName = engagementName.replace("'", "")
+        engagementName = engagementName.replace('"', "")
+        engagementName = engagementName.replace('`', '')
+        engagementName = engagementName.replace(' ', '')
     else:
         mainMenu()
     
@@ -590,6 +618,9 @@ def finalize():
     targetName = active.split('-')[0]
     platformName = rpt_base.split('/')[-4]
     
+    # Change to working directory
+    os.chdir(rpt_base)
+
     # Ensure the latest ports file exists
     portsFile = f"{rpt_base}{portsSpreadsheet}"
     if not os.path.exists(portsFile):
@@ -731,15 +762,16 @@ def finalize():
     cmd += ' --number-sections'
     cmd += ' --wrap=auto'
     cmd += ' --highlight-style ' + style_name
-    colorDebug(f"cmd:\n{cmd}")
+    # Helpful for debugging the pandoc command: 
+    #colorDebug(f"cmd:\n{cmd}")
 
     try:
         p = subprocess.getoutput(cmd)
-        colorNotice(p)
     except:
         colorFail("[!]", f"Failed to generate PDF using pandoc.\n{p}")
         sys.exit(10)
-    
+    colorNotice(p)
+
     if 'yes' == toArchive:
         archive_file = rpt_base + rpt_name + ".7z"
         colorNotice("Generating 7z archive " + archive_file)
@@ -749,6 +781,7 @@ def finalize():
         except:
             colorFail("[!]", f"Failed to generate 7z archive\n{p}")
             sys.exit(15)
+        colorNotice(p)
     # Log the action taken
     msg = f"Report finalized as {rptFullPath}"
     sitrepAuto(msg)
@@ -875,10 +908,16 @@ def ports():
 
                 try:
                     df.to_excel(writer, sheet_name=target, index=False)
-                    writer.save()
-                    writer.close()
                 except:
                     colorFail("[e]", "Unable to write to xlsx file.")
+                try:
+                    writer.save()
+                except:
+                    colorFail("[e]", "Unable to save xlsx file.")
+                try:
+                    writer.close()
+                except:
+                    colorFail("[e]", "Unable to close xlsx file.")
         colorList(allPorts.to_markdown())
 
         with pd.ExcelWriter(portsFile, engine='openpyxl') as writer:
@@ -894,10 +933,16 @@ def ports():
 
             try:
                 allPorts.to_excel(writer, sheet_name='All Ports', index=False)
-                writer.save()
-                writer.close()
             except:
                 colorFail("[e]", "Unable to write to xlsx file.")
+            try:
+                writer.save()
+            except:
+                colorFail("[e]", "Unable to save xlsx file.")
+            try:
+                writer.close()
+            except:
+                colorFail("[e]", "Unable to close xlsx file.")
     
     # Update the engagement status
     active = session['Current']['active']
@@ -1193,9 +1238,10 @@ def settingsMenu():
             picker = str(input('>  '))
             if not os.path.isdir(picker):
                 colorVerificationFail('[!]', f'{picker} is not a valid directory.  Creating...')
+                
+                # If umask is not set, incorrect permissions will be assigned on mkdir
+                os.umask(0)
                 try:
-                    # If umask is not set, incorrect permissions will be assigned on mkdir
-                    os.umask(0)
                     os.mkdir(picker, 0o770)
                 except:
                     colorFail('[e]', f'Unable to create directory: {picker} ')
@@ -1373,9 +1419,9 @@ def loadAppConfig(pathConfig, appConfigFile):
     # Application-level settings configuration file
     # Exit without configuration file
     if not os.path.isdir(pathConfig):
+        # If umask is not set, incorrect permissions will be assigned on mkdir
+        os.umask(0)
         try:
-            # If umask is not set, incorrect permissions will be assigned on mkdir
-            os.umask(0)
             os.mkdir(pathConfig, 0o770)
         except:
             colorFail('[e]', f'Unable to create directory for AutoRpt settings: {pathConfig} ')
