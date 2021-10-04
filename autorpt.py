@@ -20,6 +20,7 @@ import os
 import openpyxl
 import pandas as pd
 from pathlib import Path
+import random
 import re
 import shutil
 import subprocess
@@ -62,13 +63,25 @@ def helper():
     sys.exit(1)
 
 def banner():
+    msg = ""
+    mottos = ['Train like you PenTest',
+            'Persistently consistent', 
+            'We PenTest like we train',
+            'Consistency is the key',
+            'Train like you exam like you PenTest', 
+            'Tag your work', 
+            'Documentation is never perfect,\nit simply runs out of time',
+            'Consistent, dependable, and improving']
+    max_size = len(mottos) - 1
+    random_message_id = random.randint(0, max_size)
+    msg = mottos[random_message_id]
     print(f'')
     print(f'  ▄▄▄· ▄• ▄▌▄▄▄▄▄      ▄▄▄   ▄▄▄·▄▄▄▄▄ ')
     print(f' ▐█ ▀█ █▪██▌•██  ▪     ▀▄ █·▐█ ▄█•██   ')
     print(f' ▄█▀▀█ █▌▐█▌ ▐█.▪ ▄█▀▄ ▐▀▀▄  ██▀· ▐█.▪ ')
     print(f' ▐█ ▪▐▌▐█▄█▌ ▐█▌·▐█▌.▐▌▐█•█▌▐█▪·• ▐█▌· ')
     print(f'  ▀  ▀  ▀▀▀  ▀▀▀  ▀█▄▀▪.▀  ▀.▀    ▀▀▀  ')
-    print(f'{term.bright_blue}             Tag your work{term.normal}\n')
+    print(f'{term.bright_blue}{msg.center(40)}{term.normal}\n')
     
 def clearScreen():
     _ = subprocess.call('clear' if os.name == 'posix' else 'cls')
@@ -354,9 +367,8 @@ def addTarget(ipAddress):
 
 def startup():
     colorHeader('Startup')
-
-    colorNotice('Startup creates a directory structure for the engagement.')
-    colorNotice('(eg. /home/kali/Documents/AutoRpt/training/hackthebox/box-yyyymmdd)\n')
+    #colorNotice('Startup creates a directory structure for the engagement.')
+    #colorNotice('(eg. /home/kali/Documents/AutoRpt/training/hackthebox/box-yyyymmdd)\n')
 
     # Clear defaults
     targetIp = ''
@@ -374,15 +386,12 @@ def startup():
     if '' == studentName:
         colorNotice(f'What is your name?')
         studentName = (str(input('>  ')))
-        #appConfig['Settings']['your_name'] = studentName
     if '' == studentId:
         colorNotice(f'What is your student ID?')
         studentId = (str(input('>  ')))
-        #appConfig['Settings']['studentid'] = studentId
     if '' == studentEmail:
         colorNotice(f'What is your email?')
         studentEmail = (str(input('>  ')))
-        #appConfig['Settings']['email'] = studentEmail
 
     # Write new config.toml
     saveConfig(appConfig)
@@ -1396,7 +1405,7 @@ def params(argv):
         startup()
     elif action == '-f' or action == 'finalize' or action == '--finalize':
         finalize()
-    elif action == 'whathaveidone':
+    elif action == 'whathaveidone' or action == 'stats':
         whathaveidone()
     elif action == '-v' or action == 'vuln' or action == '--vuln':
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
@@ -1438,6 +1447,39 @@ def loadAppConfig(pathConfig, appConfigFile):
     
     config = configparser.ConfigParser()
     config.read(appConfigFile)
+
+    # Get Settings.
+    # Future: Replace variables throughout with the direct appConfig reference
+    studentName = config['Settings']['your_name']
+    studentEmail = config['Settings']['email']
+    
+    # If blank settings exist prompt for value
+    # Prompt to reuse or enter new psuedonym
+    if '' == studentName:
+        colorNotice(f'What is your name?')
+        studentName = (str(input('>  ')))
+        config['Settings']['your_name'] = studentName
+    if '' == studentEmail:
+        colorNotice(f'What is your email?   Enter to skip.\nThis is used to create a directory for your personal TTP collection.')
+        studentEmail = (str(input('>  ')))
+        config['Settings']['email'] = studentEmail
+
+    # Write new config.toml
+    saveConfig(config)
+
+
+    # If team notes directory does not exist, create it.
+    # This is for your Team TTP collection or company specific documentation.
+    ttp_notes_dir = f"{config['Paths']['pathwork']}/all-notes"
+    if not os.path.exists(ttp_notes_dir):
+        # If umask is not set, incorrect permissions will be assigned on mkdir
+        os.umask(0)
+        try:
+            os.mkdir(ttp_notes_dir, 0o770)
+        except:
+            colorFail('[e]', f'Unable to create directory: {ttp_notes_dir} ')
+            sys.exit(20)
+
     return config
 
 def loadSessionConfig(appSessionFile):
