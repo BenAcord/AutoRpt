@@ -16,7 +16,7 @@ classoption: oneside
 code-block-font-size: \scriptsize
 ---
 
-INSERT LOGO HERE
+![TCM Security Logo](images/tcmsecuritylogo.png "TCM Security Logo"){ width=50%}
 
 
 
@@ -88,14 +88,6 @@ An external penetration test emulates the role of an attacker attempting to gain
 
 # Finding Severity Ratings
 The following table defines levels of severity and corresponding CVSS score range that are used throughout the document to assess vulnerability and risk impact.
-
-<table>
-<tr>
-<th>SOMETHING</th>
-<td style="background: red;">Test</td>
-</tr>
-</table>
-
 
 | Severity | CVSS V3 Score Range | Definition |
 | :---: | :---: | :---: |

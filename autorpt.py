@@ -15,6 +15,7 @@ import datetime
 import getopt
 from glob import glob
 import json
+import numpy as np
 import os
 import openpyxl
 import pandas as pd
@@ -1474,19 +1475,35 @@ def debugConfig():
     colorVerification('sitrep Log', sitrepLog)
 
 def whathaveidone():
-    # Super secret functionality.
-    # Still need to properly format as a table.
-    print("{0:12}{1:10}{2:50}{3:20}{4:30}{5:30}".format(f"STATUS", "TYPE", "PLATFORM", "CLIENT", "STARTED", "ENDED"))
+    # Super secret functionality.  jk.
+    # Summary analysis of session engagements.
+    df = pd.DataFrame({})
+    status = []
+    types = []
+    platforms = []
+
     for key in session.sections():
         if key not in ['DEFAULT', 'Current']:
-            msg = "{0:12}".format(session[key]['status'])
-            msg += "{0:10}".format(session[key]['type'])
-            msg += "{0:50}".format(session[key]['platform'])
-            msg += "{0:20}".format(session[key]['engagement_name'])
-            msg += "{0:30}".format(session[key]['start'])
-            msg += "{0:30}".format(session[key]['end'])
-            print(msg)
-
+            # to dataframe for analysis
+            status.append(session[key]['status'])
+            types.append(session[key]['type'])
+            platforms.append(session[key]['platform'])
+    
+    new_row = {'STATUS': status,
+            'TYPE': types, 
+            'PLATFORM': platforms}
+    df = pd.DataFrame(new_row)
+    colorHeader("Summarizing your activities")
+    colorNotice(f'Total number of enagements: {df.shape[0]}\n') # row count
+    
+    colorSubHeading("Count of engagements by Status")
+    colorNotice(df.STATUS.value_counts().to_string(index=True))
+    
+    colorSubHeading("\nCount of engagements by Type")
+    colorNotice(df.TYPE.value_counts().to_string(index=True))
+    
+    colorSubHeading("\nCount of engagements by Platform")
+    colorNotice(df.PLATFORM.value_counts().to_string(index=True))
 
 # DisplayablePath from: 
 # https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
