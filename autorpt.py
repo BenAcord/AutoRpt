@@ -1466,7 +1466,14 @@ def loadAppConfig(pathConfig, appConfigFile):
 
     # Write new config.toml
     saveConfig(config)
-
+    msg = "# WARNING !\n"
+    msg += "Use private Git project repositories.\n\n"
+    msg += "Do not use public Git projects.\n"
+    msg += "Public projects may violate terms of service, non-disclosure agreements, or leak proprietary information.\n\n"
+    msg += "\n"
+    with open(f"{config['Paths']['pathwork']}/README.md", 'w', encoding='utf-8') as f:
+        f.write(msg)
+        f.close()
 
     # If team notes directory does not exist, create it.
     # This is for your Team TTP collection or company specific documentation.
