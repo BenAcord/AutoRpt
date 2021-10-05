@@ -1471,10 +1471,12 @@ def loadAppConfig(pathConfig, appConfigFile):
     msg += "Do not use public Git projects.\n"
     msg += "Public projects may violate terms of service, non-disclosure agreements, or leak proprietary information.\n\n"
     msg += "\n"
-    with open(f"{config['Paths']['pathwork']}/README.md", 'w', encoding='utf-8') as f:
-        f.write(msg)
-        f.close()
-
+    readme = f"{config['Paths']['pathwork']}/README.md"
+    if not os.path.isfile(readme):
+        with open(readme, 'w', encoding='utf-8') as f:
+            f.write(msg)
+            f.close()
+        
     # If team notes directory does not exist, create it.
     # This is for your Team TTP collection or company specific documentation.
     ttp_notes_dir = f"{config['Paths']['pathwork']}/all-notes"
