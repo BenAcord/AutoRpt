@@ -41,7 +41,7 @@ TCMS gathered historical breached data found in credentials dumps.  The data amo
 TCMS used the gathered credentials to perform a credential stuffing attack against the OWA login page. Credential stuffing attacks take previously known credentials and attempt to use them on login forms to gain access to company resources. TCMS was unsuccessful in the attack but was able to gather additional sensitive information from the OWA server in the form of username enumeration.
 
 
-![OWA username enumeration](images/owaenumeration.png.png)
+![OWA username enumeration](images/owaenumeration.png)
 *<center>Figure 2: OWA username enumeration</center>*
 
 TCMS gathered the valid usernames and performed a password spraying attack. A password spraying attack attempts to use common passwords against known usernames in hopes of gaining access to company resources. TCMS attempted to use the common Summer2018! (season + year + special character) against all known valid usernames. A username returned as a successful login:

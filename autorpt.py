@@ -34,7 +34,7 @@ def helper():
     print(f"{term.bold_bright_blue}WHERE:{term.normal}")
     print(f'  {term.bright_blue}help{term.normal}      Display this listing of usage and examples.')
     print(f'  {term.bright_blue}startup{term.normal}   Create a clean working directory for a new engagement.')
-    print(f'  {term.bright_blue}add{term.normal}       Add a newly discovered IP address to targets.txt and create its markdown file.')
+    print(f'  {term.bright_blue}add{term.normal}       Add a newly discovered IP address to target.md and create its markdown file.')
     print(f'  {term.bright_blue}vuln{term.normal}      Record a confirmed vulnerability with CVSS scoring and MITRE ATT&CK attributes.')
     print(f'  {term.bright_blue}ports{term.normal}     (AutoRecon specific) Quick display of all open ports per target.')
     print(f'  {term.bright_blue}sitrep{term.normal}    Record a status update of your current progress or display the menu.')
@@ -339,9 +339,9 @@ def addTarget(ipAddress):
         if ipAddress == 'n':
             colorVerificationFail('No IP Address provided', "An IP Address is required.")
             sys.exit(22)
-    # Update targets.txt with a new IP address
-    print(f'Injecting {ipAddress} into targets.txt file.')
-    with open(f'{activeSessionDetails[0]}/targets.txt', 'a') as f:
+    # Update targets with a new IP address
+    print(f'Injecting {ipAddress} into target file.')
+    with open(f'{activeSessionDetails[0]}/{targetsFile}', 'a') as f:
         f.write(f'{ipAddress}\n')
     # Copy machine markdown to active report directory
     rptPath = glob(f'{activeSessionDetails[0]}/report/[0-9]-closing.md')[0]
@@ -367,9 +367,6 @@ def addTarget(ipAddress):
 
 def startup():
     colorHeader('Startup')
-    #colorNotice('Startup creates a directory structure for the engagement.')
-    #colorNotice('(eg. /home/kali/Documents/AutoRpt/training/hackthebox/box-yyyymmdd)\n')
-
     # Clear defaults
     targetIp = ''
 
@@ -386,9 +383,6 @@ def startup():
     if '' == studentName:
         colorNotice(f'What is your name?')
         studentName = (str(input('>  ')))
-    if '' == studentId:
-        colorNotice(f'What is your student ID?')
-        studentId = (str(input('>  ')))
     if '' == studentEmail:
         colorNotice(f'What is your email?')
         studentEmail = (str(input('>  ')))
@@ -515,6 +509,9 @@ def startup():
         engagementName = exams[picker]
         templates_path = f'{autorpt_runfrom}/templates/{engagementName}/'
         # Prompt for student ID, email, name, etc.
+        if '' == studentId:
+            colorNotice(f'What is your student ID?')
+            studentId = (str(input('>  ')))
     elif 'pentest' == engagementType:
         # Least tested option
         # Company performing the test
@@ -576,7 +573,7 @@ def startup():
     if "training" == engagementType and re.search('plain', templates_path, flags=0):
         os.rename(f'{thisDir}/report/1-renameme.md', f'{thisDir}/report/1-{engagementName}.md')
         if len(targetIp) >= 7:
-            with open(f'{thisDir}/targets.txt', 'w') as t:
+            with open(f'{thisDir}/{targetsFile}', 'w') as t:
                 t.write(targetIp + '\n')
     
     # Update sessions file
@@ -606,6 +603,8 @@ def startup():
     sitrepAuto(msg)
 
     # Display directory tree
+    if 'exam' == engagementType:
+        colorNotice("You will need to manually update the targets file.")
     colorNotice("Templates successfully copied to report directory.  Here's the new structure:")
     colorNotice(thisDir)
     paths = DisplayablePath.make_tree(Path(thisDir))
@@ -860,7 +859,7 @@ def ports():
     if os.path.isfile(portsFile):
         os.remove(portsFile)
     # Look for nmap output files associated with each target IP address
-    with open(f"{getActivePath()}/targets.txt", 'r', encoding='utf-8', newline='') as t:
+    with open(f"{getActivePath()}/{targetsFile}", 'r', encoding='utf-8', newline='') as t:
         allPorts = pd.DataFrame({})
         targets = t.readlines()
         for target in targets:
@@ -1036,7 +1035,9 @@ def vuln():
 def vulnAdd():
     colorHeader("Add Vulnerability")
     i = 0
+    target = ""
     targetFile = f"{getActivePath()}/{targetsFile}"
+    colorDebug(f'Target File: {targetFile}')
     if os.path.isfile(targetFile):
         colorNotice("For which target?\nOr '99' to go back to the menu.")
         with open(targetFile) as f: 
@@ -1053,7 +1054,8 @@ def vulnAdd():
         else:
             target = targets[targetId].strip()
     else:
-        print(f'{term.white}targets file is empty.{term.normal}\n\n')
+        print(f'targets file is empty. Please add IP addresses to the targets file.\n\n')
+        vuln()
     
     colorNotice("What is the port number [0-65535]?")
     port = int(input('>  '))
@@ -1422,6 +1424,9 @@ def params(argv):
             sitrepMenu()
     elif action == '-p' or action == 'ports' or action == '--ports':
         ports()
+    elif action == 'active':
+        colorNotice(f"The active engagement is: {session['Current']['active']}")
+        colorNotice(session[session['Current']['active']]['path'])
     else:
         mainMenu()
 
@@ -1544,8 +1549,11 @@ def whathaveidone():
             'TYPE': types, 
             'PLATFORM': platforms}
     df = pd.DataFrame(new_row)
-    colorHeader("Summarizing your activities")
-    colorNotice(f'Total number of enagements: {df.shape[0]}\n') # row count
+    colorHeader("Activity Summary")
+    pivot = df.pivot_table(index=['TYPE', 'STATUS'], values=['PLATFORM'], aggfunc='count').rename(columns={'PLATFORM': 'COUNT'})
+    colorNotice(pivot)
+
+    colorNotice(f'{term.bold}Total number of enagements: {df.shape[0]}{term.normal}\n') # row count
     
     colorSubHeading("Count of engagements by Status")
     colorNotice(df.STATUS.value_counts().to_string(index=True))
@@ -1555,6 +1563,7 @@ def whathaveidone():
     
     colorSubHeading("\nCount of engagements by Platform")
     colorNotice(df.PLATFORM.value_counts().to_string(index=True))
+
 
 # DisplayablePath from: 
 # https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
