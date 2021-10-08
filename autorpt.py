@@ -340,15 +340,16 @@ def addTarget(ipAddress):
             colorVerificationFail('No IP Address provided', "An IP Address is required.")
             sys.exit(22)
     # Update targets with a new IP address
-    print(f'Injecting {ipAddress} into target file.')
-    with open(f'{activeSessionDetails[0]}/{targetsFile}', 'a') as f:
+    activePath = getActivePath()
+    print(f'Injecting {ipAddress} into target file {activePath}/{targetsFile}.')
+    with open(f'{activePath}/{targetsFile}', 'a') as f:
         f.write(f'{ipAddress}\n')
     # Copy machine markdown to active report directory
-    rptPath = glob(f'{activeSessionDetails[0]}/report/[0-9]-closing.md')[0]
+    rptPath = glob(f'{activePath}/report/[0-9]-closing.md')[0]
     filename = rptPath.split('/')[-1]
     filenameBase = filename.split('-')[1]
-    filenameOld = f"{activeSessionDetails[0]}/report/{filename}"
-    filenameNew = f"{activeSessionDetails[0]}/report/"
+    filenameOld = f"{activePath}/report/{filename}"
+    filenameNew = f"{activePath}/report/"
     filenameNew += f"{str(int(filename.split('-')[0]) + 1)}"
     filenameNew += f"-{filenameBase}"
     try:
@@ -358,8 +359,8 @@ def addTarget(ipAddress):
         sys.exit(24)
     # Rename filename to match IP address
     machineFile = f"{str(int(filename.split('-')[0]))}-{ipAddress}.md"
-    destMachineMd = f"{activeSessionDetails[0]}/report/{machineFile}"
-    sourceMachineMd = f"{autorpt_runfrom}/templates/training/report/1-renameme.md"
+    destMachineMd = f"{activePath}/report/{machineFile}"
+    sourceMachineMd = f"{autorpt_runfrom}/templates/training/plain/report/1-renameme.md"
     print(f'Copying machine markdown and renaming to {machineFile}')
     shutil.copyfile(sourceMachineMd, destMachineMd)
     # Log action
@@ -447,6 +448,7 @@ def startup():
             engagementName = providers[picker]
             templates_path = f"{autorpt_runfrom}/templates/training/{engagementName}"
     elif 'bugbounty' == engagementType:
+        templates_path = f'{autorpt_runfrom}/templates/training/bugbounty/'
         # Get the platform
         colorNotice('Enter the platform or company name:')
         providers = configSectionToMenu(appConfig['Bug Bounty'])
@@ -655,6 +657,7 @@ def finalize():
     else:
         rpt_name = f"{targetName.upper()}_" + student_id + "_Exam_Report"
 
+    if 'exam' == engagementType:
         if student_id == '':
             colorNotice("\nWhat is your student ID, if required?\n(eg. OS-12345, N/A)")
             student_id = str(input('>  '))
@@ -790,7 +793,7 @@ def finalize():
         except:
             colorFail("[!]", f"Failed to generate 7z archive\n{p}")
             sys.exit(15)
-        colorNotice(p)
+        # Debug 7zip output: colorNotice(p)
     # Log the action taken
     msg = f"Report finalized as {rptFullPath}"
     sitrepAuto(msg)
@@ -1252,7 +1255,7 @@ def settingsMenu():
                 colorVerificationFail('[!]', f'{picker} is not a valid directory.  Creating...')
                 
                 # If umask is not set, incorrect permissions will be assigned on mkdir
-                os.umask(0)
+                os.umask(0o007)
                 try:
                     os.mkdir(picker, 0o770)
                 except:
@@ -1396,6 +1399,7 @@ def params(argv):
     # Set routing action based on argument.  Otherwise, display help.
     action = sys.argv[1]
     if action == '-a' or action == '--add' or action == 'add':
+        # Add a new target host to the engagement
         if len(sys.argv) == 3:
             msg = sys.argv[2]
         else:
@@ -1410,11 +1414,13 @@ def params(argv):
     elif action == 'whathaveidone' or action == 'stats':
         whathaveidone()
     elif action == '-v' or action == 'vuln' or action == '--vuln':
+        # Record a confirmed vulnerability
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
             vulnList()
         else:
             vuln()
     elif action == '-i' or action == 'sitrep' or action == '--sitrep':
+        # Situation report actions
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
             sitrepList()
         elif len(sys.argv) > 3:
@@ -1423,6 +1429,7 @@ def params(argv):
         else:
             sitrepMenu()
     elif action == '-p' or action == 'ports' or action == '--ports':
+        # Update ports and service versions
         ports()
     elif action == 'active':
         colorNotice(f"The active engagement is: {session['Current']['active']}")
@@ -1484,10 +1491,10 @@ def loadAppConfig(pathConfig, appConfigFile):
         
     # If team notes directory does not exist, create it.
     # This is for your Team TTP collection or company specific documentation.
-    ttp_notes_dir = f"{config['Paths']['pathwork']}/all-notes"
+    ttp_notes_dir = f"{config['Paths']['pathwork']}/All-TTPs"
     if not os.path.exists(ttp_notes_dir):
         # If umask is not set, incorrect permissions will be assigned on mkdir
-        os.umask(0)
+        os.umask(0o007)
         try:
             os.mkdir(ttp_notes_dir, 0o770)
         except:
@@ -1553,7 +1560,7 @@ def whathaveidone():
     pivot = df.pivot_table(index=['TYPE', 'STATUS'], values=['PLATFORM'], aggfunc='count').rename(columns={'PLATFORM': 'COUNT'})
     colorNotice(pivot)
 
-    colorNotice(f'{term.bold}Total number of enagements: {df.shape[0]}{term.normal}\n') # row count
+    colorNotice(f'\n{term.bold}Total number of enagements: {df.shape[0]}{term.normal}\n') # row count
     
     colorSubHeading("Count of engagements by Status")
     colorNotice(df.STATUS.value_counts().to_string(index=True))
@@ -1563,6 +1570,7 @@ def whathaveidone():
     
     colorSubHeading("\nCount of engagements by Platform")
     colorNotice(df.PLATFORM.value_counts().to_string(index=True))
+
 
 
 # DisplayablePath from: 
