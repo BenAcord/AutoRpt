@@ -1,13 +1,14 @@
 # AutoRpt Overview
-AutoRpt manages a base directory structure with note and report templates for several penetration testing use cases.  The main focus is easing the process associated with InfoSec certification exams such as the OSCP or PNPT, though many others are supported.  It also covers CTF and training on common InfoSec platforms like Hack the Box, Try Hack Me, or Proving grounds to name but a few.  Bug bounty hunting and penetration tests are use case options but are considered work in progress.
+AutoRpt enforces a consistent, dependable workflow for engagement note-taking and report writing.
+It does this by managing a base directory structure with note and report templates.  The main focus is easing the process associated with InfoSec certification exams such as the OSCP or PNPT, though many others are supported.  It also covers training and CTF on common InfoSec platforms like Hack the Box, Try Hack Me, or Proving grounds to name but a few.  Bug bounty hunting and penetration tests are use case options but are considered work in progress.
 
 All wrapped in a sleak 1980's menu system.
 
+The workflow is terminal friendly to keep your head in the engagement and not juggling various interfaces.
+
 ![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup.png "AutoRpt startup screenshot for Metasploitable2")
 
-:trophy: Mad props and respect to [noraj for the "Offensive Security Exam Report Template in Markdown"](https://github.com/noraj/OSCP-Exam-Report-Template-Markdown).
-
-:hammer_and_wrench: If you are looking for a solid markdown tool, take a look at [Obsidian](https://obsidian.md/).
+:trophy: Mad props and respect to [noraj for the "Offensive Security Exam Report Template in Markdown"](https://github.com/noraj/OSCP-Exam-Report-Template-Markdown).  This project is included in AutoRpt.
 
 :warning: use at your own risk.
 
@@ -35,6 +36,11 @@ AutoRpt has only been tested on Kali Linux.
 - texlive-fonts-extra
 - texlive-xetex
 
+Highly recommend:
+:hammer_and_wrench: [AutoRecon](https://github.com/Tib3rius/AutoRecon)
+:hammer_and_wrench: [Flameshot](https://flameshot.org/)
+:hammer_and_wrench: [Obsidian](https://obsidian.md/)
+
 ### Clone the Repo
 ```Bash
 cd /opt
@@ -49,7 +55,7 @@ chmod 700 /opt/AutoRpt/setup.sh
 ```
 
 ## Usage
-`autorpt.py [ help | startup | vuln | ports | sitrep \{message\}| finalize | settings ]`
+`autorpt.py [ help | startup | vuln | ports | sitrep \{message\} | active | finalize | settings ]`
 
 AutoRpt enforces consistent organization of directory structure and note taking to facilitate a smooth report writing process.  For details on each parameter's functionality please see the [wiki](https://github.com/BenAcord/AutoRpt/wiki).
 

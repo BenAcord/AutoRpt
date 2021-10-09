@@ -615,7 +615,7 @@ def startup():
     paths = DisplayablePath.make_tree(Path(thisDir))
     for path in paths:
         print(path.displayable())
-    time.sleep(3)
+    time.sleep(2)
 
 def finalize():
     toArchive = 'No'
@@ -1188,7 +1188,7 @@ def vulnModify():
     with open(vulnsFile, 'w', newline='') as f:
         vm.to_csv(f, index=False)
         f.close()
-    time.sleep(3)
+    time.sleep(2)
     vuln()
 
 def vulnRemove():
@@ -1435,8 +1435,11 @@ def params(argv):
         # Update ports and service versions
         ports()
     elif action == 'active':
-        colorNotice(f"The active engagement is: {session['Current']['active']}")
-        colorNotice(session[session['Current']['active']]['path'])
+        if 'None' == session['Current']['active']:
+            colorNotice(f"No engagements.  Run 'autorpt.py startup' to create an engagement.")
+        else:
+            colorNotice(f"The active engagement is: {session['Current']['active']}")
+            colorNotice(session[session['Current']['active']]['path'])
     else:
         mainMenu()
 
