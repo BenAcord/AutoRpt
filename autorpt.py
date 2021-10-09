@@ -552,7 +552,9 @@ def startup():
     timestamp = datetime.datetime.now().strftime('%Y%m%d')
     
     # Compile the engagement string and directory path to create
-    thisEngagement = f'{engagementName}'
+    thisEngagement = f'{engagementType}'
+    thisEngagement += f'-{platform}'
+    thisEngagement += f'-{engagementName}'
     thisEngagement += f'-{timestamp}'
 
     thisDir = appConfig['Paths']['pathwork']
@@ -596,6 +598,7 @@ def startup():
     session[thisEngagement]['status'] = 'Started'
     session[thisEngagement]['start'] = str(datetime.datetime.now())
     session[thisEngagement]['end'] = ''
+    #colorDebug(f"Session: {session}")
     saveEnagements()
 
     # Journal entry in sitrep
