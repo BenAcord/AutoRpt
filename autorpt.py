@@ -1,11 +1,5 @@
 #!/usr/bin/python3
-"""
----
-autorpt.py - Penetration testing report automatic generator
-             Sets up a clean directory for note taking during 
-             a pentest, an exam, or training then compiles the final report.
----------------------------------------------------------------------------------------------
-"""
+"""autorpt.py - enforce consistent, dependable workflow for engagement note-taking and report writing"""
 
 import blessings
 import configparser
@@ -29,9 +23,13 @@ import time
 import yaml
 
 def helper():
+    """The CLI help output"""
     print(f"{term.bold_bright_blue}USAGE:{term.normal}")
-    print(f"{term.bold}autorpt.py [ help | startup | add [IP Address] | vuln | ports | sitrep [message] | finalize | settings ]\n{term.normal}")
-    print(f"{term.bold_bright_blue}WHERE:{term.normal}")
+    print(f"autorpt.py [option]\n")
+    print(f"{term.bold_bright_blue}Where option is one of:{term.normal}")
+    print(f"help | startup | vuln | ports | sitrep [message] | finalize ")
+    print(f"add [IP Address] | settings | active | whathaveidone\n")
+    print(f"{term.bold_bright_blue}OPTIONS:{term.normal}")
     print(f'  {term.bright_blue}help{term.normal}      Display this listing of usage and examples.')
     print(f'  {term.bright_blue}startup{term.normal}   Create a clean working directory for a new engagement.')
     print(f'  {term.bright_blue}add{term.normal}       Add a newly discovered IP address to target.md and create its markdown file.')
@@ -40,6 +38,7 @@ def helper():
     print(f'  {term.bright_blue}sitrep{term.normal}    Record a status update of your current progress or display the menu.')
     print(f'  {term.bright_blue}finalize{term.normal}  Compile markdown files into a desired output file format.')
     print(f'  {term.bright_blue}settings{term.normal}  Configuration settings.')
+    print(f'  {term.bright_blue}active{term.normal}    Display the active engagement name and path.')
 
     print(f"\n{term.bold_bright_blue}EXAMPLES:{term.normal}")
     print("When you are ready to start an exam or training:")
@@ -49,8 +48,6 @@ def helper():
     print("Display vulnerability list:")
     print(f"    {term.bright_blue}autorpt.py vuln list{term.normal}")
     print("Log your current status:")
-    print(f"    {term.bright_blue}autorpt.py sitrep pwned buffer overflow{term.normal}")
-    print("...Or")
     print(f"    {term.bright_blue}autorpt.py sitrep Stuck trying to exploit system X:8001/login.php via SQLi.  May be a rabbit trail.{term.normal}")
     print("...Or use the menu system:")
     print(f"    {term.bright_blue}autorpt.py sitrep{term.normal}")
@@ -63,6 +60,7 @@ def helper():
     sys.exit(1)
 
 def banner():
+    """Display required ASCII art and random motto"""
     msg = ""
     mottos = ['Train like you PenTest',
             'Persistently consistent', 
@@ -132,6 +130,7 @@ def colorNotice(msg):
     print(f"{term.bright}{msg}{term.normal}")
 
 def getCvss3Score():
+    """Menu prompting for the vulnerability CVSS scoring"""
     colorHeader("CVSS 3 Scoring")
     print("Do you know the Overall CVSS v3 Score? [Y|N]")
     picker = str(input(">  ")).upper()
@@ -244,12 +243,14 @@ def getCvss3Score():
     return returnStr
 
 def getCvssMetricValue(cvssDict, metricName):
+    """Helper to display boilerplate prompts for values"""
     print("What is the " + metricName + "?")
     for (i, opt) in enumerate(list(cvssDict)):
         print("\t" + str(i) + ") " + opt)
     return list(cvssDict)[int(input(" >  "))]
 
 def getMitreAttack():
+    """Menu prompting to select MITRE ATT&CK tactic and technique"""
     tactic = ''
     technique = ''
     colorHeader("MITRE ATT&CK")
@@ -314,6 +315,7 @@ def getMitreAttack():
     return [tactic, technique]
 
 def dictToMenu(dictionary):
+    """Helper to convert a dictionary to menu item listing"""
     i = 0
     for item in dictionary.split(','):
         colorMenuItem(str(i) + ".  " + item)
@@ -322,6 +324,7 @@ def dictToMenu(dictionary):
     return i
 
 def configSectionToMenu(section):
+    """Helper to convert a section to menu item listing"""
     i = 0
     items = []
     for item in section:
@@ -332,6 +335,7 @@ def configSectionToMenu(section):
     return items
 
 def addTarget(ipAddress):
+    """Manually get a new IP address for the targets file and copy in a new template"""
     if ipAddress == '':
         # Prompt for target IP address
         colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
@@ -367,6 +371,7 @@ def addTarget(ipAddress):
     sitrepAuto(f'Added new target: {ipAddress}')
 
 def startup():
+    """Initialize a new engagement"""
     colorHeader('Startup')
     # Clear defaults
     targetIp = ''
@@ -618,6 +623,7 @@ def startup():
     time.sleep(2)
 
 def finalize():
+    """Create the final report by combining all numbered markdown files and calling pandoc"""
     toArchive = 'No'
     active = session['Current']['active']
     engagementType = session[active]["type"]
@@ -808,6 +814,7 @@ def finalize():
     saveEnagements()
 
 def getActivePath():
+    """Deprecated means of getting the active engagement path"""
     active = session['Current']['active']
     if 'None' == active:
         colorNotice('No active engagement exists.  Use startup to create a new engagement.')
@@ -816,6 +823,7 @@ def getActivePath():
         return session[active]["path"]
 
 def getActiveAll():
+    """Deprecated means of getting the active engagement name"""
     active = session['Current']['active']
     if 'None' == active:
         colorNotice('No active engagement exists.  Use startup to create a new engagement.')
@@ -824,6 +832,7 @@ def getActiveAll():
         return f"{session['Engagements'][active]}"
 
 def getPandocStyle():
+    """Selector of the code syntax highlight style"""
     colorNotice("\nFrom the following list, pick a syntax highlight style for code blocks?")
     colorNotice("   Recommendation: lighter styles are easier to read and use less ink if printed.")
     colorNotice("   Dark styles include: espresso, zenburn, and breezedark.")
@@ -846,8 +855,7 @@ def getPandocStyle():
     return style_list[style_id]
 
 def getNmapFile(target):
-    # A listing of known good nmap output files.
-    # In order: AutoRecon, nmapAutomator, and Reconnoitre
+    """A listing of known good nmap output files. In order: AutoRecon, nmapAutomator, and Reconnoitre."""
     nmapFiles = [f"_full_tcp_nmap.txt",
                  f"_quick_tcp_nmap.txt",
                  f"Full_{target}.nmap",
@@ -861,6 +869,7 @@ def getNmapFile(target):
                 return nmapFile
 
 def ports():
+    """Display the ports, replace ports spreadsheet."""
     portsFile = f"{getActivePath()}/report/{portsSpreadsheet}"
     if os.path.isfile(portsFile):
         os.remove(portsFile)
@@ -966,6 +975,7 @@ def ports():
     return allPorts
 
 def sitrepAuto(msg):
+    """Automatically, without prompting, write the msg to the sitrep file."""
     d = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
     sitrepFile = f"{getActivePath()}/report/{sitrepLog}"
     if os.path.exists(sitrepFile):
@@ -979,6 +989,7 @@ def sitrepAuto(msg):
     #colorNotice('sitrep logged')
 
 def sitrepList():
+    """Display the contents of the sitrep file"""
     sitrepFile = f"{getActivePath()}/report/{sitrepLog}"
     if os.path.isfile(sitrepFile):
         colorHeader("SITREP Log Entries")
@@ -992,12 +1003,13 @@ def sitrepList():
         print(f'{term.white}Sitrep file is empty.{term.normal}\n\n')
 
 def sitrepNew():
+    """Manually prompt for the sitrep message."""
     msg = str(input('What is your current status? '))
     sitrepAuto(msg)
     sitrepMenu()
 
 def sitrepMenu():
-    # A stream of status journal.
+    """A stream of status journal."""
     colorHeader('SITREP  (Situation Report)')
     colorMenuItem('1. List all sitrep entries')
     colorMenuItem('2. Add new sitrep log entry\n')
@@ -1015,6 +1027,7 @@ def sitrepMenu():
     sitrepMenu()
 
 def vuln():
+    """Menu for vulnerabilities"""
     colorHeader('Vulnerabilities')
     colorMenuItem("1. Add a new vulnerability")
     colorMenuItem("2. List all vulnerabilities")
@@ -1039,6 +1052,7 @@ def vuln():
         vuln()
 
 def vulnAdd():
+    """Manually prompt for details of a validated vulnerability."""
     colorHeader("Add Vulnerability")
     i = 0
     target = ""
@@ -1121,6 +1135,7 @@ def vulnAdd():
     vuln()
 
 def vulnCsvNewRow(row):
+    """Formats the vulnerability row and stores in the spreadsheet."""
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     if not os.path.isfile(vulnsFile):
         headings = 'IpAddress,Port,'
@@ -1143,6 +1158,7 @@ def vulnCsvNewRow(row):
     saveEnagements()
 
 def vulnList():
+    """Displays a list of current vulnerabilities from the spreadsheet."""
     colorHeader("List of Current Vulnerabilities")
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     if os.path.exists(vulnsFile):
@@ -1156,6 +1172,7 @@ def vulnList():
         vuln()
 
 def vulnModify():
+    """Modify a vulnerability"""
     print("\n")
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
     try:
@@ -1192,7 +1209,8 @@ def vulnModify():
     vuln()
 
 def vulnRemove():
-    # Replace with modification of vulnModify
+    """Remove a stored vulnerability"""
+    # TBD: Replace with modification of vulnModify
     i = 0
     print("\n")
     vulnsFile =  f"{getActivePath()}/report/{vulnsCsv}"
@@ -1219,12 +1237,14 @@ def vulnRemove():
     vuln()
 
 def listEngagements():
+    """List all engagement names and paths"""
     for e in session.sections():
         if e not in ['DEFAULT', 'Current']:
             colorVerification(e, session[e]['path'])
     settingsMenu()
 
 def settingsMenu():
+    """Submenu for settings"""
     colorHeader('Settings')
     colorMenuItem('1. Application-level settings')
     colorMenuItem('2. Engagement settings')
@@ -1369,6 +1389,7 @@ def settingsMenu():
     settingsMenu()
 
 def mainMenu():
+    """Primary menu"""
     clearScreen()
     banner()
     colorHeader('Main Menu')
@@ -1399,7 +1420,7 @@ def mainMenu():
         mainMenu()
 
 def params(argv):
-    # Set routing action based on argument.  Otherwise, display help.
+    """Set routing action based on argument.  Otherwise, display help."""
     action = sys.argv[1]
     if action == '-a' or action == '--add' or action == 'add':
         # Add a new target host to the engagement
@@ -1444,7 +1465,7 @@ def params(argv):
         mainMenu()
 
 def loadAppConfig(pathConfig, appConfigFile):
-    # Application-level settings configuration file
+    """Read application-level settings configuration file"""
     # Exit without configuration file
     if not os.path.isdir(pathConfig):
         # If umask is not set, incorrect permissions will be assigned on mkdir
@@ -1510,6 +1531,7 @@ def loadAppConfig(pathConfig, appConfigFile):
     return config
 
 def loadSessionConfig(appSessionFile):
+    """Read session engagement file contents"""
     if os.path.isfile(appSessionFile):
         config = configparser.ConfigParser()
         config.read(appSessionFile)
@@ -1518,14 +1540,17 @@ def loadSessionConfig(appSessionFile):
         colorNotice('The session file does not exist. It will be created on first use of startup.')
 
 def saveConfig(appConfig):
+    """Store to disk modified application configuration values"""
     with open(appConfigFile, 'w') as configFile:
         appConfig.write(configFile)
 
 def saveEnagements():
+    """Store to disk session engagement values"""
     with open(sessionFile, 'w') as configFile:
         session.write(configFile)
 
 def debugConfig():
+    """Depricated. Verify reading of the configuration files were successful"""
     colorVerification('autorpt_runfrom', autorpt_runfrom)
     colorVerification('main appConfig', appConfig.sections())
     for key in appConfig['Paths']:
@@ -1544,8 +1569,8 @@ def debugConfig():
     colorVerification('sitrep Log', sitrepLog)
 
 def whathaveidone():
+    """Summary analysis of session engagements."""
     # Super secret functionality.  jk.
-    # Summary analysis of session engagements.
     df = pd.DataFrame({})
     status = []
     types = []
@@ -1582,6 +1607,7 @@ def whathaveidone():
 # DisplayablePath from: 
 # https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
 class DisplayablePath(object):
+    """Display a directory tree."""
     display_filename_prefix_middle = '├──'
     display_filename_prefix_last = '└──'
     display_parent_prefix_middle = '    '
