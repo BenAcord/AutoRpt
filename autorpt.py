@@ -427,8 +427,15 @@ def startup():
             mainMenu()
         elif picker == 80:
             colorNotice('Enter the name of the custom platform')
-            engagementName = str(input('>  '))
-            platform = 'other'
+            platform = str(input('>  ')).replace(" ", "").lower()
+            platformName = platform
+            # Get the box name
+            colorNotice('What is the box name?')
+            colorNotice('(eg. waldo, kenobi, etc.')
+            engagementName = str(input('>  ')).replace(" ", "").lower()
+            # Get target IP address
+            colorNotice('Do you know the target IP address?  Or enter "N" to skip.')
+            targetIp = str(input('>  ')).replace(" ", "").lower()
         elif picker <= 6:    
             # Set the easy to read platform name
             platformName = platformList[picker]
@@ -620,7 +627,7 @@ def startup():
     paths = DisplayablePath.make_tree(Path(thisDir))
     for path in paths:
         print(path.displayable())
-    time.sleep(2)
+    time.sleep(0.5)
 
 def finalize():
     """Create the final report by combining all numbered markdown files and calling pandoc"""
@@ -1448,7 +1455,7 @@ def params(argv):
         if len(sys.argv) == 3 and 'list' == sys.argv[2]:
             sitrepList()
         elif len(sys.argv) > 3:
-            msg = ' '.join(sys.argv[2:])
+            msg = " ".join(sys.argv[2:])
             sitrepAuto(msg)
         else:
             sitrepMenu()
@@ -1482,7 +1489,7 @@ def loadAppConfig(pathConfig, appConfigFile):
             shutil.copy(appConfigFile, pathConfig)
         except:
             colorFail('[e]', f'Unable to copy configuration file from the GitHub clone: {appConfigFile}')
-            sys.exit(20)
+            sys.exit(21)
     
     config = configparser.ConfigParser()
     config.read(appConfigFile)
@@ -1502,6 +1509,15 @@ def loadAppConfig(pathConfig, appConfigFile):
         colorNotice(f'What is your email?   Enter to skip.\nThis is used to create a directory for your personal TTP collection.')
         studentEmail = (str(input('>  ')))
         config['Settings']['email'] = studentEmail
+
+    if not os.path.exists(config['Paths']['pathwork']):
+        os.umask(0o007)
+        colorDebug(f"pathConfig does not exist: {config['Paths']['pathwork']}")
+        try:
+            os.mkdir(config['Paths']['pathwork'], 0o770)
+        except:
+            colorFail('[e]', f"Unable to create directory for AutoRpt settings: {config['Paths']['pathwork']} ")
+            sys.exit(22)
 
     # Write new config.toml
     saveConfig(config)
@@ -1526,7 +1542,7 @@ def loadAppConfig(pathConfig, appConfigFile):
             os.mkdir(ttp_notes_dir, 0o770)
         except:
             colorFail('[e]', f'Unable to create directory: {ttp_notes_dir} ')
-            sys.exit(20)
+            sys.exit(23)
 
     return config
 
