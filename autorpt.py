@@ -820,6 +820,7 @@ def finalize():
     session[active]['status'] = 'Finalized'
     saveEnagements()
 
+# Obsolete
 def getActivePath():
     """Deprecated means of getting the active engagement path"""
     active = session['Current']['active']
@@ -828,7 +829,7 @@ def getActivePath():
         sys.exit(30)
     else:
         return session[active]["path"]
-
+# Obsolete
 def getActiveAll():
     """Deprecated means of getting the active engagement name"""
     active = session['Current']['active']
@@ -1361,6 +1362,7 @@ def settingsMenu():
             colorNotice('Pick a new active engagement')
             for e in session.sections():
                 if e not in ['DEFAULT', 'Current']:
+                    # Future Feature: Would be nice to exclude finalized items
                     colorMenuItem(f"{i}) {e}")
                     engagements[i] = e
                     i += 1
@@ -1618,6 +1620,12 @@ def whathaveidone():
     colorSubHeading("\nCount of engagements by Platform")
     colorNotice(df.PLATFORM.value_counts().to_string(index=True))
 
+    colorSubHeading("\nDetails")
+    for key in session.sections():
+        if key not in ['DEFAULT', 'Current']:
+            # Either keep as is, a simple print, or add to dataframe and sort by status.
+            # Currently sorted by age, oldest to most recent.
+            print(f"{session[key]['status']:15}\t{key}")
 
 
 # DisplayablePath from: 
