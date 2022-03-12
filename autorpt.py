@@ -30,15 +30,16 @@ def helper():
     print(f"help | startup | vuln | ports | sitrep [message] | finalize ")
     print(f"add [IP Address] | settings | active | whathaveidone\n")
     print(f"{term.bold_bright_blue}OPTIONS:{term.normal}")
-    print(f'  {term.bright_blue}help{term.normal}      Display this listing of usage and examples.')
-    print(f'  {term.bright_blue}startup{term.normal}   Create a clean working directory for a new engagement.')
-    print(f'  {term.bright_blue}add{term.normal}       Add a newly discovered IP address to target.md and create its markdown file.')
-    print(f'  {term.bright_blue}vuln{term.normal}      Record a confirmed vulnerability with CVSS scoring and MITRE ATT&CK attributes.')
-    print(f'  {term.bright_blue}ports{term.normal}     (AutoRecon specific) Quick display of all open ports per target.')
-    print(f'  {term.bright_blue}sitrep{term.normal}    Record a status update of your current progress or display the menu.')
-    print(f'  {term.bright_blue}finalize{term.normal}  Compile markdown files into a desired output file format.')
-    print(f'  {term.bright_blue}settings{term.normal}  Configuration settings.')
-    print(f'  {term.bright_blue}active{term.normal}    Display the active engagement name and path.')
+    print(f'  {term.bright_blue}help{term.normal}             Display this listing of usage and examples.')
+    print(f'  {term.bright_blue}startup{term.normal}          Create a clean working directory for a new engagement.')
+    print(f'  {term.bright_blue}add{term.normal}              Add a newly discovered IP address to target.md and create its markdown file.')
+    print(f'  {term.bright_blue}vuln{term.normal}             Record a confirmed vulnerability with CVSS scoring and MITRE ATT&CK attributes.')
+    print(f'  {term.bright_blue}ports{term.normal}            (AutoRecon specific) Quick display of all open ports per target.')
+    print(f'  {term.bright_blue}sitrep{term.normal}           Record a status update of your current progress or display the menu.')
+    print(f'  {term.bright_blue}finalize{term.normal}         Compile markdown files into a desired output file format.')
+    print(f'  {term.bright_blue}settings{term.normal}         Configuration settings.')
+    print(f'  {term.bright_blue}active{term.normal}           Display the active engagement name and path.')
+    print(f'  {term.bright_blue}whathaveidone{term.normal}    Display measurements summarizing all engagements.')
 
     print(f"\n{term.bold_bright_blue}EXAMPLES:{term.normal}")
     print("When you are ready to start an exam or training:")
@@ -57,6 +58,18 @@ def helper():
     print(f"    {term.bright_blue}autorpt.py ports{term.normal}")
     print("Compile the markdown into a polished report document")
     print(f"    {term.bright_blue}autorpt.py finalize{term.normal}")
+    print("Display statistics and status of engagements")
+    print(f"    {term.bright_blue}autorpt.py whathaveidone{term.normal}")
+
+    print(f"\n{term.bold_bright_blue}WORKFLOW STATUS:{term.normal}")
+    print(f"[{term.bright_green}Started{term.normal}] -> [{term.bright_yellow}In-Progress{term.normal}] -> [{term.bright_red}Finalized{term.normal}]")
+    print(f" │            │                │")
+    print(f" │            │                │")
+    print(f" │            │                └──(3) Report complete. After action report optional")
+    print(f" │            │")
+    print(f" │            └──(2) Activity underway (e.g. Ports, Sitrep, Vuln)")
+    print(f" │")
+    print(f" └──(1) Initial creation of engagement")
     sys.exit(1)
 
 def banner():
@@ -633,17 +646,17 @@ def finalize():
     """Create the final report by combining all numbered markdown files and calling pandoc"""
     toArchive = 'No'
     active = session['Current']['active']
-    engagementType = session[active]["type"]
-    email = session[active]['student_email']
     author = session[active]['student_name']
+    email = session[active]['student_email']
     student_id = session[active]['student_id']
     style_name = appConfig['Settings']['style']
-    rptFormat = session[active]['output_format']
     activePath = session[active]["path"]
+    rptFormat = session[active]['output_format']
     rpt_base = f"{activePath}/report/"
     rpt_date = datetime.datetime.now().strftime('%Y-%m-%d')
     targetName = active.split('-')[0]
     platformName = rpt_base.split('/')[-4]
+    engagementType = session[active]["type"]
     
     # Change to working directory
     os.chdir(rpt_base)
@@ -819,7 +832,7 @@ def finalize():
     session[active]['end'] = str(datetime.datetime.now())
     session[active]['status'] = 'Finalized'
     saveEnagements()
-
+    
 # Obsolete
 def getActivePath():
     """Deprecated means of getting the active engagement path"""
@@ -1601,9 +1614,7 @@ def whathaveidone():
             types.append(session[key]['type'])
             platforms.append(session[key]['platform'])
     
-    new_row = {'STATUS': status,
-            'TYPE': types, 
-            'PLATFORM': platforms}
+    new_row = {'STATUS': status, 'TYPE': types, 'PLATFORM': platforms}
     df = pd.DataFrame(new_row)
     colorHeader("Activity Summary")
     pivot = df.pivot_table(index=['TYPE', 'STATUS'], values=['PLATFORM'], aggfunc='count').rename(columns={'PLATFORM': 'COUNT'})
@@ -1625,8 +1636,13 @@ def whathaveidone():
         if key not in ['DEFAULT', 'Current']:
             # Either keep as is, a simple print, or add to dataframe and sort by status.
             # Currently sorted by age, oldest to most recent.
-            print(f"{session[key]['status']:15}\t{key}")
-
+            if "Finalized" == session[key]['status']:
+                #colorPass(session[key]['status'], key)
+                print(f'{term.red}{session[key]["status"]:15} {key}{term.normal}')
+            elif "Started" == session[key]['status']:
+                print(f'{term.bright_green}{session[key]["status"]:15} {key}{term.normal}')
+            else:
+                print(f"{term.bright_yellow}{session[key]['status']:15}\t{key}{term.normal}")
 
 # DisplayablePath from: 
 # https://stackoverflow.com/questions/9727673/list-directory-tree-structure-in-python
