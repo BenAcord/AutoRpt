@@ -654,7 +654,7 @@ def finalize():
     rptFormat = session[active]['output_format']
     rpt_base = f"{activePath}/report/"
     rpt_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    targetName = active.split('-')[0]
+    targetName = active.split('-')[2]
     platformName = rpt_base.split('/')[-4]
     engagementType = session[active]["type"]
     
