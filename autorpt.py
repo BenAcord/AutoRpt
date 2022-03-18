@@ -14,6 +14,7 @@ import os
 import openpyxl
 import pandas as pd
 from pathlib import Path
+import pyperclip as pc
 import random
 import re
 import shutil
@@ -1482,7 +1483,9 @@ def params(argv):
             colorNotice(f"No engagements.  Run 'autorpt.py startup' to create an engagement.")
         else:
             colorNotice(f"The active engagement is: {session['Current']['active']}")
-            colorNotice(session[session['Current']['active']]['path'])
+            colorNotice(f"Path: {session[session['Current']['active']]['path']}")
+            colorNotice(f"Path is in your clipboard.")
+            pc.copy(session[session['Current']['active']]['path'])
     else:
         mainMenu()
 
