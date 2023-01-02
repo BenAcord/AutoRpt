@@ -4,7 +4,32 @@ It does this by managing a base directory structure with note and report templat
 
 All wrapped in a sleak 1980's menu system.
 
-
+AutoRpt creates unique working directories from these templates.  If you retake a course or certification exam the new directory will be unique from the previous.
+```
+templates
+├── oscp
+├── osda
+├── osed
+├── osee
+├── osep
+├── osmr
+├── oswa
+├── oswe
+├── oswp
+├── pnpt
+└── training
+    ├── bugbounty
+    ├── exp-301-lab
+    ├── exp-312-lab
+    ├── exp-401-lab
+    ├── pen-200-lab
+    ├── pen-210-lab
+    ├── pen-300-lab
+    ├── plain
+    ├── soc-200-lab
+    ├── web-200-lab
+    └── web-300-lab
+```
 
 The workflow is terminal friendly to keep your head in the engagement and not juggling various interfaces.
 
