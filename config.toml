@@ -1,3 +1,6 @@
+[Version]
+autorpt_version = 1.1.0
+
 [Paths]
 pathwork = /home/kali/Documents/AutoRpt
 
@@ -26,10 +29,14 @@ Proving Grounds = provinggrounds
 Virtual Hacking Labs = virtualhackinglabs
 Sans Netwars = sansnetwars
 Portswigger Web Security Academy = websecurityacademy
+SOC-200 = soc-200-lab
+WEB-200 = web-200-lab
 PEN-200 = pen-200-lab
+PEN-210 = pen-210-lab
 PEN-300 = pen-300-lab
 WEB-300 = web-300-lab
 EXP-301 = exp-301-lab
+EXP-312 = exp-312-lab
 EXP-401 = exp-401-lab
 
 [Bug Bounty]
@@ -39,10 +46,13 @@ SynAck = synack
 Other = other
 
 [Exams]
+osda = offensivesecurity,Offensive Security Defense Analyst
+oswa = offensivesecurity,Offensive Security Web Assessor
+oswp = offensivesecurity,Offensive Security Wireless Professional
 oscp = offensivesecurity,Offensive Security Certified Professional
 osep = offensivesecurity,Offensive Security Experienced Penetration Tester
 osed = offensivesecurity,Offensive Security Exploit Developer
+osmr = offensivesecurity,Offensive Security macOS Researcher
 oswe = offensivesecurity,Offensive Security Web Expert
 osee = offensivesecurity,Offensive Security Exploitation Expert
 pnpt = tcmsecurity,Practical Network Penetration Tester
-

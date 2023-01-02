@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "autorpt"
+version = "1.1.0"
+description = "Enforcing a consistent, dependable workflow for engagement note-taking and report writing."
+authors = ["BenAcord"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+blessings = "^1.7"
+configparser = "^5.3.0"
+cvss = "^2.5"
+datetime = "^4.9"
+openpyxl = "^3.0.10"
+pandas = "^1.5.2"
+pathlib = "^1.0.1"
+pyperclip = "^1.8.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
