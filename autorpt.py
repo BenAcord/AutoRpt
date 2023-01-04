@@ -20,8 +20,9 @@ import autorpt_finalize as finalize
 def show_version():
     """ Display version information. """
     out.color_notice(
-        f"AutoRpt version {cfg.config_values['Version']['autorpt_version']}"
+        f"AutoRpt version v{cfg.config_values['Version']['autorpt_version']}"
     )
+    sys.exit(0)
 
 def dictionary_to_menu(dictionary):
     """ Helper to convert a dictionary to menu item listing. """
@@ -219,6 +220,7 @@ def settings_menu():
 
 def main_menu():
     """ Primary menu """
+    picker = ''
     out.clear_screen()
     out.banner()
     out.color_header('Main Menu')
@@ -277,43 +279,33 @@ def display_sitrep_menu():
 
 def get_the_active_engagement():
     """ Show the active engagement and path. """
+    
     if 'None' == cfg.session['Current']['active']:
         out.color_notice("No engagements.  Run 'autorpt.py startup' to create an engagement.")
     else:
-        out.color_notice(f"The active engagement is: {cfg.session['Current']['active']}")
-        out.color_notice(f"Path: {cfg.session[cfg.session['Current']['active']]['path']}")
-        out.color_notice("Path is in your clipboard.")
+        out.color_notice(f"Ready to go!")
+        out.color_notice(
+            f"Path is in your clipboard: {cfg.session[cfg.session['Current']['active']]['path']}"
+        )
         pc.copy(cfg.session[cfg.session['Current']['active']]['path'])
 
 def params(this_arguments):
     """ Set routing action based on argument.  Otherwise, display help. """
     match this_arguments[1]:
-        case "addtemplate":
-            work.add_template()
-        case "addtarget":
-            add_a_new_target()
-        case "help":
-            out.helper()
-        case "startup":
-            startup.startup()
-        case "finalize":
-            finalize.finalize()
-        case "list":
-            finalize.whathaveidone()
-        case "whathaveidone":
-            finalize.whathaveidone()
-        case "vuln":
-            display_vuln_menu()
-        case "sitrep":
-            display_sitrep_menu()
-        case "ports":
-            extras.ports()
-        case "active":
-            get_the_active_engagement()
-        case "version":
-            show_version()
-        case _:
-            out.color_debug('Could not find params value in match.')
+        case "addtemplate": work.add_template()
+        case "addtarget": add_a_new_target()
+        case "help": out.helper()
+        case "startup": startup.startup()
+        case "finalize": finalize.finalize()
+        case "list": finalize.whathaveidone()
+        case "whathaveidone": finalize.whathaveidone()
+        case "vuln": display_vuln_menu()
+        case "sitrep": display_sitrep_menu()
+        case "ports": extras.ports()
+        case "active": get_the_active_engagement()
+        case "upgrade": cfg.upgrade_config_file(cfg.config_file)
+        case "version": show_version()
+        case _: out.color_debug('Could not find params value in match.')
 
 if __name__ == "__main__":
     # Display pretty ASCII art

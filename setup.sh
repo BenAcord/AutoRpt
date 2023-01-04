@@ -19,7 +19,7 @@ fi
 
 # Eisvogel
 if [ -f ~/.local/share/pandoc/templates ] ; then 
-    echo "eisvogel latex template exists: ~/.local/share/pandoc/templatess/eisvogel.latex"
+    echo "eisvogel latex template exists: ~/.local/share/pandoc/templates/eisvogel.latex"
 else 
     echo "Copying eisvogel template"
     cp includes/eisvogel* ~/.local/share/pandoc/templates/

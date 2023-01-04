@@ -1,5 +1,5 @@
 [Version]
-autorpt_version = 1.1.0
+autorpt_version = 1.1.1
 
 [Paths]
 pathwork = /home/kali/Documents/AutoRpt
@@ -12,7 +12,7 @@ studentid =
 preferred_output_format = 
 style = haddock
 output_formats = pdf,pdf+7z,docx,odt,jira,commonmark_x,gfm
-no_template = docx
+no_template = docx,commonmark_x,gfm,jira
 
 [Files]
 sessionfile = sessions.toml

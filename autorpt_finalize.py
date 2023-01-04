@@ -25,7 +25,7 @@ def finalize():
     # Change to working directory
     os.chdir(f'{cfg.session[active]["path"]}/report/')
 
-    # Ensure the latest ports file exists
+    # Ensure the latest ports file exists. Only applies to some engagements.
     #ports_file = f"{rpt_base}{cfg.ports_spreadsheet}"
     extras.ports()
 

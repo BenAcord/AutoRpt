@@ -474,22 +474,23 @@ def get_nmap_file_contents(nmap_file, target, ports_file):
 def ports():
     """ Display the ports and replace the ports spreadsheet. """
 
-    ports_file = f"{cfg.get_active_path()}/report/{cfg.ports_spreadsheet}"
-    if os.path.isfile(ports_file):
-        out.color_notice(f'Removing existing ports file: {ports_file}')
-        os.remove(ports_file)
-    # Look for nmap output files associated with each target IP address
-    with open(
-        f"{cfg.get_active_path()}/{cfg.targets_file}",
-        'r',
-        encoding='utf-8',
-        newline=''
-    ) as target_file_reader:
-        targets = target_file_reader.readlines()
-        for target in targets:
-            target = target.strip()
-            get_nmap_file(target, ports_file)
-    # Update the engagement status
-    active = cfg.session['Current']['active']
-    cfg.session[active]['status'] = 'In-process'
-    cfg.save_enagements()
+    if os.path.isfile(f"{cfg.get_active_path()}/{cfg.targets_file}"):
+        ports_file = f"{cfg.get_active_path()}/report/{cfg.ports_spreadsheet}"
+        if os.path.isfile(ports_file):
+            out.color_notice(f'Removing existing ports file: {ports_file}')
+            os.remove(ports_file)
+        # Look for nmap output files associated with each target IP address
+        with open(
+            f"{cfg.get_active_path()}/{cfg.targets_file}",
+            'r',
+            encoding='utf-8',
+            newline=''
+        ) as target_file_reader:
+            targets = target_file_reader.readlines()
+            for target in targets:
+                target = target.strip()
+                get_nmap_file(target, ports_file)
+        # Update the engagement status
+        active = cfg.session['Current']['active']
+        cfg.session[active]['status'] = 'In-process'
+        cfg.save_enagements()
