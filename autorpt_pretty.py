@@ -19,7 +19,7 @@ def helper():
         "startup | vuln [list] | ports | sitrep [message] | "
         "addtarget [IP Address] | addtemplate | "
     )
-    print("finalize | list | whathaveidone\n")
+    print("finalize | list | whathaveidone | upgrade\n")
     print(f"{term.bold_bright_blue}OPTIONS:{term.normal}")
     print(
         f'  {term.bright_blue}help{term.normal}\t\t\t'
@@ -69,6 +69,10 @@ def helper():
     print(
         f'  {term.bright_blue}whathaveidone{term.normal}\t\t'
         'Display measurements summarizing all engagements.'
+    )
+    print(
+        f'  {term.bright_blue}upgrade{term.normal}\t\t'
+        'Check the cloned repo version against the existing user config and upgrade if necessary.'
     )
 
     print(f"\n{term.bold_bright_blue}EXAMPLES:{term.normal}")

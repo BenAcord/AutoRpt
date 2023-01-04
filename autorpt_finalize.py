@@ -83,11 +83,11 @@ def confirm_identity(active):
 
     if 'exam' == cfg.session[active]["type"]:
         if cfg.session[active]['student_id'] == '':
-            out.color_notice("\nWhat is your student ID, if required?\n(eg. OS-12345, N/A)")
+            out.color_notice(f"\nWhat is your student ID (currently [{cfg.session[active]['student_id']}]), if required?\n(eg. OS-12345, N/A)")
             cfg.session[active]['student_id'] = str(input('>  '))
         else:
             out.color_notice(
-                "Student ID pulled from config file as "
+                "Student ID pulled from session file as "
                 + cfg.session[active]['student_id']
             )
 
