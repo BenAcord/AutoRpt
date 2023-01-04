@@ -16,7 +16,7 @@ no_template = docx,commonmark_x,gfm,jira
 
 [Files]
 sessionfile = sessions.toml
-targetfile = targets.txt
+targetfile = targets.md
 portfile = ports.xlsx
 vulnfile = vulns.csv
 sitrepfile = sitrep.log
