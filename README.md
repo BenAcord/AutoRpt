@@ -63,6 +63,7 @@ AutoRpt has only been tested on Kali Linux.
 - pandoc-data
 - texlive
 - texlive-xetex
+- pip: cvss blessings colorama pyperclip packaging pandas openpyxl
 
 Highly recommend:
 :hammer_and_wrench: [AutoRecon](https://github.com/Tib3rius/AutoRecon)

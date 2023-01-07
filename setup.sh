@@ -24,11 +24,11 @@ fi
 #   texlive                       .17             .57
 #   texlive-xetex               11.3            16.4
 #   texlive-fonts-recommended    5              15.4
+#----// fontx-extra may not be needed.
 #   texlive-fonts-extra        507            1437.0
 sudo apt-get install -y p7zip pandoc pandoc-data texlive texlive-xetex
-# 01/07/23 - May not be needed - texlive-fonts-recommended texlive-fonts-extra
 
-pip install -y cvss blessings colorama pyperclip packaging pandas openpyxl
+pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl
 
 cd /opt/AutoRpt
 chmod 700 /opt/AutoRpt/autorpt.py
