@@ -59,13 +59,12 @@ def load_config_values(this_config_path, this_config_file):
         student_name = (str(input('>  ')))
         config['Settings']['your_name'] = student_name
     if '' == student_email:
-        this_msg = (
+        out.color_notice(
             'Your email address is missing from the settings.  '
             'What is your email?   Enter to skip.\n'
             'This is used for reports and to create a directory \n'
             'for your personal TTP collection.'
         )
-        out.color_notice(this_msg)
         student_email = (str(input('>  ')))
         config['Settings']['email'] = student_email
 
@@ -86,17 +85,16 @@ def load_config_values(this_config_path, this_config_file):
 
     # Write new config.toml
     save_config(config)
-    this_msg = (
-        "# WARNING !\n"
-        "Use private Git project repositories.\n\n"
-        "Do not use public Git projects.\n"
-        "Public projects may violate terms of service, non-disclosure agreements,"
-        "or leak proprietary information.\n\n\n"
-    )
     readme = f"{os.path.expanduser(config['Paths']['pathwork'])}/README.md"
     if not os.path.isfile(readme):
         with open(readme, 'w', encoding='utf-8') as readme_writer:
-            readme_writer.write(this_msg)
+            readme_writer.write(
+                "# WARNING !\n"
+                "Use private Git project repositories.\n\n"
+                "Do not use public Git projects.\n"
+                "Public projects may violate terms of service, non-disclosure agreements,"
+                "or leak proprietary information.\n\n\n"
+            )
             readme_writer.close()
 
     # If team notes directory does not exist, create it.

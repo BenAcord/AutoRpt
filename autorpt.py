@@ -279,11 +279,11 @@ def display_sitrep_menu():
 
 def get_the_active_engagement():
     """ Show the active engagement and path. """
-    
+
     if 'None' == cfg.session['Current']['active']:
         out.color_notice("No engagements.  Run 'autorpt.py startup' to create an engagement.")
     else:
-        out.color_notice(f"Ready to go!")
+        out.color_notice("Ready to go!")
         out.color_notice(
             f"Path is in your clipboard: {cfg.session[cfg.session['Current']['active']]['path']}"
         )

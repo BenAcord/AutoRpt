@@ -289,7 +289,7 @@ def set_default_template_path(engagement_type, student_name, student_email):
             'Cannot overlay or replace.'
         )
         sys.exit(4)
-    
+
     # Copy the template to the engagement directory
     # Input_Values:
     # platform, engagement_name, templates_path, platform_name, target_ip
