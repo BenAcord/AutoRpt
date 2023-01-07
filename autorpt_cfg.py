@@ -129,7 +129,9 @@ def backup_config_file():
     try:
         shutil.copyfile(config_file, backup_file_name)
     except (FileNotFoundError, PermissionError, IOError, OSError):
-        out.color_fail(f'Unable to copy {config_file} to {backup_file_name}.')
+        out.color_fail(
+            f'Unable to copy {config_file} to {backup_file_name}.'
+        )
         sys.exit(23)
 
 def save_config(this_config_values):

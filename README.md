@@ -54,10 +54,11 @@ templates
 ---
 
 ## Install
-A work-in-progress shell script is included which is intended to automate the dependencies and setup.  The example here uses /opt as AutoRpt's home.
+A work-in-progress shell script is included which is intended to automate the dependencies and setup.  The example here uses /opt as AutoRpt's install home.
 
 ### Dependencies & Caveats
 AutoRpt has only been tested on Kali Linux.
+These dependencies will be added with setup.sh.
 - p7zip
 - pandoc
 - pandoc-data
@@ -70,20 +71,15 @@ Highly recommend:
 :hammer_and_wrench: [Flameshot](https://flameshot.org/)
 :hammer_and_wrench: [Obsidian](https://obsidian.md/)
 
-### Clone the Repo
+### Clone the repo & run setup
 ```Bash
 cd /opt
 sudo mkdir AutoRpt
 # Set your user and group as owner.
 sudo chown kali:kali AutoRpt
 git clone https://github.com/BenAcord/AutoRpt.git
-```
-### Setup
-Execute setup.sh or perform its steps manually.
-
-```Bash
-chmod 700 /opt/AutoRpt/setup.sh
-/opt/AutoRpt/setup.sh
+cd AutoRpt
+./setup.sh
 ```
 
 ## Usage
