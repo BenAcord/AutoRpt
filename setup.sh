@@ -8,15 +8,16 @@ if [[ -f ~/.zprofile && `grep "export PATH=" ~/.zprofile` ]]
 then 
     echo "Adding ~/.local/bin to ~/.zprofile"
     echo "export PATH=\"${PATH}:~/.local/bin\"" >> ~/.zprofile
+    source ~/.zprofile
 elif [[ -f ~/.profile && `grep "PATH=" ~/.profile` ]]
 then
     echo "Adding ~/.local/bin to ~/.profile"
     echo "PATH=\"${PATH}:~/.local/bin\"" >> ~/.profile
+    source ~/.profile
 else
     echo "Unable to locate a .zprofile or .profile to update the PATH variable with ~/.local/bin"
     echo "You will need to either custom update your profile or manually call the full path to autorpt.py."
 fi
-
 
 
 # SIZING:                     Download (mb)     Install (mb)
@@ -27,7 +28,7 @@ fi
 sudo apt-get install -y p7zip pandoc pandoc-data texlive texlive-xetex
 # 01/07/23 - May not be needed - texlive-fonts-recommended texlive-fonts-extra
 
-pip install cvss blessings colorama pyperclip packaging
+pip install -y cvss blessings colorama pyperclip packaging pandas openpyxl
 
 cd /opt/AutoRpt
 chmod 700 /opt/AutoRpt/autorpt.py
@@ -47,6 +48,18 @@ if [ -f ~/.local/share/pandoc/templates ] ; then
 else 
     echo "Copying eisvogel template"
     cp includes/eisvogel* ~/.local/share/pandoc/templates/
+fi
+
+# Create this user's AutoRpt config directory.
+if [ ! -d ~/.config/AutoRpt ]
+then 
+    mkdir ~/.config/AutoRpt
+fi
+
+# Create this user's AutoRpt working directory.
+if [ ! -d ~/Documents/AutoRpt ]
+then 
+    mkdir ~/Documents/AutoRpt
 fi
 
 # Config file to users local config directory

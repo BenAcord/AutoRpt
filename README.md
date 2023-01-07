@@ -62,8 +62,6 @@ AutoRpt has only been tested on Kali Linux.
 - pandoc
 - pandoc-data
 - texlive
-- texlive-fonts-recommended
-- texlive-fonts-extra
 - texlive-xetex
 
 Highly recommend:
@@ -74,6 +72,9 @@ Highly recommend:
 ### Clone the Repo
 ```Bash
 cd /opt
+sudo mkdir AutoRpt
+# Set your user and group as owner.
+sudo chown kali:kali AutoRpt
 git clone https://github.com/BenAcord/AutoRpt.git
 ```
 ### Setup

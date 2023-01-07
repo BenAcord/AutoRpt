@@ -19,7 +19,10 @@ def load_config_values(this_config_path, this_config_file):
         # If umask is not set, incorrect permissions will be assigned on mkdir
         os.umask(0)
         try:
-            os.mkdir(this_config_path, 0o770)
+            os.mkdir(
+                os.path.expanduser(this_config_path),
+                0o770
+            )
         except (FileNotFoundError, PermissionError, IOError, OSError):
             out.color_fail(
                 '[e]',
@@ -66,11 +69,14 @@ def load_config_values(this_config_path, this_config_file):
         student_email = (str(input('>  ')))
         config['Settings']['email'] = student_email
 
-    if not os.path.exists(config['Paths']['pathwork']):
+    if not os.path.exists(os.path.expanduser(config['Paths']['pathwork'])):
         os.umask(0o007)
         out.color_debug(f"config_path does not exist: {config['Paths']['pathwork']}")
         try:
-            os.mkdir(config['Paths']['pathwork'], 0o770)
+            os.mkdir(
+                os.path.expanduser(config['Paths']['pathwork']),
+                0o770
+            )
         except (FileNotFoundError, PermissionError, IOError, OSError):
             out.color_fail(
                 '[e]',
@@ -87,7 +93,7 @@ def load_config_values(this_config_path, this_config_file):
         "Public projects may violate terms of service, non-disclosure agreements,"
         "or leak proprietary information.\n\n\n"
     )
-    readme = f"{config['Paths']['pathwork']}/README.md"
+    readme = f"{os.path.expanduser(config['Paths']['pathwork'])}/README.md"
     if not os.path.isfile(readme):
         with open(readme, 'w', encoding='utf-8') as readme_writer:
             readme_writer.write(this_msg)
@@ -95,7 +101,7 @@ def load_config_values(this_config_path, this_config_file):
 
     # If team notes directory does not exist, create it.
     # This is for your Team TTP collection or company specific documentation.
-    ttp_notes_dir = f"{config['Paths']['pathwork']}/All-TTPs"
+    ttp_notes_dir = f"{os.path.expanduser(config['Paths']['pathwork'])}/All-TTPs"
     if not os.path.exists(ttp_notes_dir):
         # If umask is not set, incorrect permissions will be assigned on mkdir
         os.umask(0o007)
@@ -192,7 +198,7 @@ def upgrade_config_file(this_config_file):
 
     # Update the in-memory latest config with user preferences in the existing, current config.
     # Ignoring some as they aren't enduser facing: type, output_formats, no_template.
-    latest_config['Paths']['pathwork'] = current_config['Paths']['pathwork']
+    latest_config['Paths']['pathwork'] = os.path.expanduser(current_config['Paths']['pathwork'])
     latest_config['Paths']['your_name'] = current_config['Settings']['your_name']
     latest_config['Paths']['email'] = current_config['Settings']['email']
     latest_config['Paths']['studentid'] = current_config['Settings']['studentid']
@@ -209,7 +215,7 @@ def upgrade_config_file(this_config_file):
 # Using open without explicitly specifying an encoding (unspecified-encoding)
 os.environ["PYTHONUTF8"] = "1"
 # Get the script home starting directory (eg. /opt/AutoRpt)
-autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
+autorpt_runfrom = os.path.dirname(os.path.expanduser(os.path.realpath(__file__)))
 # Directory for additional, supporting content.
 # Currently only the Mitre ATT&CK Framwork.
 pathIncludes = autorpt_runfrom + '/includes'  #  This was an error, "pathIncludes:".
