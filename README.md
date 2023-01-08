@@ -60,6 +60,7 @@ A work-in-progress shell script is included which is intended to automate the de
 AutoRpt has only been tested on Kali Linux.
 These dependencies will be added with setup.sh.
 - p7zip
+- xclip
 - pandoc
 - pandoc-data
 - texlive

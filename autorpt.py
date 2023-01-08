@@ -287,7 +287,7 @@ def get_the_active_engagement():
         out.color_notice(
             f"Path is in your clipboard: {cfg.session[cfg.session['Current']['active']]['path']}"
         )
-        pc.copy(cfg.session[cfg.session['Current']['active']]['path'])
+        pc.copy(os.path.expanduser(cfg.session[cfg.session['Current']['active']]['path']))
 
 def params(this_arguments):
     """ Set routing action based on argument.  Otherwise, display help. """

@@ -20,7 +20,7 @@
 #fi
 
 # Install dependencies
-sudo apt-get install -y p7zip pandoc pandoc-data texlive texlive-xetex
+sudo apt-get install -y p7zip xclip pandoc pandoc-data texlive texlive-xetex
 
 pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl
 

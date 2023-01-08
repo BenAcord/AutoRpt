@@ -275,7 +275,7 @@ def set_default_template_path(engagement_type, student_name, student_email):
     this_engagement = (f'{engagement_type}-{input_values[0]}-{input_values[1]}-{timestamp}')
 
     this_dir = (
-        f"{cfg.config_values['Paths']['pathwork']}/"
+        f"{os.path.expanduser(cfg.config_values['Paths']['pathwork'])}/"
         f"{engagement_type}/"
         f"{input_values[0]}/"
         f"{input_values[1]}-"
