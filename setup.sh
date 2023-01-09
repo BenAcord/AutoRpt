@@ -3,15 +3,18 @@
 # Author: Ben Acord (Overcast)
 
 
-# Install dependencies
-sudo apt-get install -y p7zip xclip pandoc pandoc-data texlive texlive-latex-extra
-# texlive-fonts-extra texlive-xetex
+# Issue warning on sizing and act accordingly.
+# Latex document formatting is large ecosystem.  Using bare mimumum here.
+echo -e "\nWARNING\nTexlive and Latex are large packages.  Continuing will increase filesystem size by 4.5 GB.\nContinue? [Y|N]\n"
+read contiue_answer
+if [ $contiue_answer != "Y" ]
+then
+    echo "A 'Y' response was not provided.  Exiting."
+    exit 1
+fi
 
-# Eisvogel requires these: 
-time /usr/bin/tlmgr install adjustbox babel-german background bidi collectbox csquotes \
-everypage filehook footmisc footnotebackref framed fvextra letltxmacro ly1 mdframed \
-mweights needspace pagecolor sourcecodepro sourcesanspro titling ucharcat ulem \
-unicode-math upquote xecjk xurl zref
+# Install dependencies
+sudo apt-get install -y p7zip xclip pandoc pandoc-data texlive texlive-latex-extra texlive-fonts-extra texlive-xetex
 
 pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl tabulate
 # Pretty: blessings colorama pyperclip
