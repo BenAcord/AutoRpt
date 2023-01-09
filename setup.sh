@@ -3,26 +3,19 @@
 # Author: Ben Acord (Overcast)
 
 
-# Verify or add local bin to .zprofile or .profile if .zprofile does not exist
-#if [[ -f ~/.zprofile && `grep "export PATH=" ~/.zprofile` ]]
-#then 
-#    echo "Adding ~/.local/bin to ~/.zprofile"
-#    echo "export PATH=\"${PATH}:~/.local/bin\"" >> ~/.zprofile
-#    source ~/.zprofile
-#elif [[ -f ~/.profile && `grep "PATH=" ~/.profile` ]]
-#then
-#    echo "Adding ~/.local/bin to ~/.profile"
-#    echo "PATH=\"${PATH}:~/.local/bin\"" >> ~/.profile
-#    source ~/.profile
-#else
-#    echo "Unable to locate a .zprofile or .profile to update the PATH variable with ~/.local/bin"
-#    echo "You will need to either custom update your profile or manually call the full path to autorpt.py."
-#fi
-
 # Install dependencies
-sudo apt-get install -y p7zip xclip pandoc pandoc-data texlive texlive-xetex
+sudo apt-get install -y p7zip xclip pandoc pandoc-data texlive texlive-latex-extra
+# texlive-fonts-extra texlive-xetex
 
-pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl
+# Eisvogel requires these: 
+time /usr/bin/tlmgr install adjustbox babel-german background bidi collectbox csquotes \
+everypage filehook footmisc footnotebackref framed fvextra letltxmacro ly1 mdframed \
+mweights needspace pagecolor sourcecodepro sourcesanspro titling ucharcat ulem \
+unicode-math upquote xecjk xurl zref
+
+pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl tabulate
+# Pretty: blessings colorama pyperclip
+# Vulns: cvss pandas openpyxl tabulate
 
 # Shortcut name without the .py extension.
 install_dir=`pwd`

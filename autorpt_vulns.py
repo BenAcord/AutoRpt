@@ -185,6 +185,15 @@ def vuln_list():
 
 def modify_vuln():
     """Modify a vulnerability"""
+
+
+    # 01/08/23 [Bug] The listing of vulns should only include the...
+    # ID, IpAddress, Port, Name, CvssSeverity
+    # Then the modification should list the columns as in the "Add" verficiation.
+    # User picks column ... change match "Add" verfication redo.
+
+
+
     print("\n")
     vulns_file =  f"{cfg.get_active_path()}/report/{cfg.vulnsCsv}"
     try:
