@@ -45,7 +45,6 @@ def add_vuln():
     i = 0
     target = ""
     target_file = f"{cfg.get_active_path()}/{cfg.targets_file}"
-    out.color_debug(f'Target File: {target_file}')
     if os.path.isfile(target_file):
         out.color_notice("For which target?\nOr '99' to go back to the menu.")
         with open(target_file) as target_file_writer: # pylint: disable=unspecified-encoding

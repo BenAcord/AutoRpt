@@ -164,6 +164,8 @@ def create_report(rpt_extension, rpt_full_path, rpt_filename, vulns_table):
     # Merge markdown sections into a single mardown for pandoc later
     md_file_list = glob(f'{cfg.session[active]["path"]}/report/' + '[0-9]*.md')
     md_file_list = sorted(md_file_list)
+
+    # Replace boilerplate placeholder text with user supplied values.
     for file in md_file_list:
         with open(file, 'r+') as md_file_reader: # pylint: disable=unspecified-encoding
             file_contents = md_file_reader.read()

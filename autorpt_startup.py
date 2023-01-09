@@ -385,5 +385,4 @@ def update_session_file(session_values):
     cfg.session[this_engagement]['status'] = 'Started'
     cfg.session[this_engagement]['start'] = str(datetime.datetime.now())
     cfg.session[this_engagement]['end'] = ''
-    #out.color_debug(f"Session: {session}")
     cfg.save_enagements()

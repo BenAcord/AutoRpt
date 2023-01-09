@@ -325,9 +325,9 @@ def get_cvss3_score():
             out.color_subheading('Environmental Score Metrics')
             cvss_vector += score_cvss3_environmental()
 
-        out.color_debug(f"check the vector [{cvss_vector}]")
+        #out.color_debug(f"check the vector [{cvss_vector}]")
         cvss_values = CVSS3(cvss_vector)
-        out.color_debug(f"CVSS3 Values: [{cvss_values}]")
+        #out.color_debug(f"CVSS3 Values: [{cvss_values}]")
         return_string = [
             str(cvss_values.severities()[2]),
             str(cvss_values.scores()[2]),
@@ -419,7 +419,7 @@ def get_nmap_file(target, ports_file):
             if name in files:
                 get_nmap_file_contents(nmap_file, target, ports_file)
     if nmap_file == '':
-        out.color_debug(f'\t\tExiting.  No nmap files found: [{nmap_file}]')
+        out.color_notice(f'\t\tExiting.  No nmap files found: [{nmap_file}]')
         sys.exit(35)
 
 def get_nmap_file_contents(nmap_file, target, ports_file):

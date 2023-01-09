@@ -151,7 +151,6 @@ def settings_for_application_menu():
     out.color_menu_item("8) Main menu")
     out.color_menu_item("\nPick a number to modify its setting")
     picker = int(input('>  '))
-    out.color_debug(f'User selected {picker}')
     match picker:
         case 1: set_app_working_directory()
         case 2: set_author_name()
@@ -161,8 +160,7 @@ def settings_for_application_menu():
         case 6: set_code_block_style()
         case 7: settings_menu()
         case 8: main_menu()
-        case _:
-            out.color_debug('Could not find a setting number that matches.')
+        case _: main_menu()
     settings_for_application_menu()
 
 def settings_for_session_menu():
@@ -213,10 +211,9 @@ def settings_menu():
     match picker:
         case 1: settings_for_application_menu()
         case 2: settings_for_session_menu()
-        case 3: settings_menu()
+        case 3: main_menu()
         case 4: sys.exit(23)
-        case _:
-            out.color_debug('Could not find a setting number that matches.')
+        case _: settings_menu()
 
 def main_menu():
     """ Primary menu """
@@ -305,7 +302,7 @@ def params(this_arguments):
         case "active": get_the_active_engagement()
         case "upgrade": cfg.upgrade_config_file(cfg.config_file)
         case "version": show_version()
-        case _: out.color_debug('Could not find params value in match.')
+        case _: out.helper()
 
 if __name__ == "__main__":
     # Display pretty ASCII art

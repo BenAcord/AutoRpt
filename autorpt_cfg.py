@@ -44,33 +44,11 @@ def load_config_values(this_config_path, this_config_file):
     config = configparser.ConfigParser()
     config.read(this_config_file)
 
-    # Get Settings.
-    # Future: Replace variables throughout with the direct config_values reference
-    student_name = config['Settings']['your_name']
-    student_email = config['Settings']['email']
-
-    # If blank settings exist prompt for value
-    # Prompt to reuse or enter new psuedonym
-    if '' == student_name:
-        out.color_notice(
-            'Your name is missing from the settings.  '
-            'This is used to personalize reports.\nWhat is your name?'
-        )
-        student_name = (str(input('>  ')))
-        config['Settings']['your_name'] = student_name
-    if '' == student_email:
-        out.color_notice(
-            'Your email address is missing from the settings.  '
-            'What is your email?   Enter to skip.\n'
-            'This is used for reports and to create a directory \n'
-            'for your personal TTP collection.'
-        )
-        student_email = (str(input('>  ')))
-        config['Settings']['email'] = student_email
-
     if not os.path.exists(os.path.expanduser(config['Paths']['pathwork'])):
         os.umask(0o007)
-        out.color_debug(f"config_path does not exist: {config['Paths']['pathwork']}")
+        out.color_notice(
+            f"Config path does not exist: {config['Paths']['pathwork']}.  Attempting to create."
+        )
         try:
             os.mkdir(
                 os.path.expanduser(config['Paths']['pathwork']),

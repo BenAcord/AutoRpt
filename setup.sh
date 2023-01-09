@@ -5,7 +5,11 @@
 
 # Issue warning on sizing and act accordingly.
 # Latex document formatting is large ecosystem.  Using bare mimumum here.
-echo -e "\nWARNING\nTexlive and Latex are large packages.  Continuing will increase filesystem size by 4.5 GB.\nContinue? [Y|N]\n"
+echo -e "\nWARNING\n"
+echo "Converting between document types with Texlive and Latex requires large packages."
+echo "Continuing will increase filesystem size by roughly 4.5 GB."
+echo "If you know you have the space it is recommended to select, Y."
+echo -e "\nContinue? [Y|N]\n"
 read contiue_answer
 if [ $contiue_answer != "Y" ]
 then
