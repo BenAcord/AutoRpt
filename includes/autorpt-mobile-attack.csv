@@ -1,44 +1,81 @@
-TACTIC,TECHNIQUE,TID
-collection,Abuse Accessibility Features,T1453
-collection,Access Notifications,T1517
-collection,Foreground Persistence,T1541
-collection,Input Capture,T1417
-collection,Screen Capture,T1513
-command-and-control,Remote File Copy,T1544
-credential-access,Abuse Accessibility Features,T1453
-credential-access,Access Notifications,T1517
-credential-access,Input Capture,T1417
-credential-access,Input Prompt,T1411
-credential-access,Keychain,T1579
-credential-access,URI Hijacking,T1416
-defense-evasion,Abuse Accessibility Features,T1453
-defense-evasion,Code Injection,T1540
-defense-evasion,Delete Device Data,T1447
-defense-evasion,Geofencing,T1581
-defense-evasion,Input Injection,T1516
-defense-evasion,Masquerade as Legitimate Application,T1444
-defense-evasion,Native Code,T1575
-defense-evasion,Proxy Through Victim,T1604
-defense-evasion,Suppress Application Icon,T1508
-defense-evasion,Uninstall Malicious Application,T1576
-discovery,System Information Discovery,T1426
-discovery,System Network Configuration Discovery,T1422
-execution,Broadcast Receivers,T1402
-execution,Command-Line Interface,T1605
-execution,Native Code,T1575
-execution,Scheduled Task/Job,T1603
-impact,Abuse Accessibility Features,T1453
-impact,Carrier Billing Fraud,T1448
-impact,Delete Device Data,T1447
-impact,Input Injection,T1516
-impact,SMS Control,T1582
-initial-access,Deliver Malicious App via Other Means,T1476
-initial-access,Masquerade as Legitimate Application,T1444
-initial-access,Supply Chain Compromise,T1474
-persistence,Broadcast Receivers,T1402
-persistence,Code Injection,T1540
-persistence,Compromise Application Executable,T1577
-persistence,Foreground Persistence,T1541
-persistence,Scheduled Task/Job,T1603
-privilege-escalation,Code Injection,T1540
-privilege-escalation,Device Administrator Permissions,T1401
+T1603,execution,Scheduled Task/Job
+T1638,collection,Adversary-in-the-Middle
+T1626,privilege-escalation,Abuse Elevation Control Mechanism
+T1470,remote-service-effects,Obtain Device Cloud Backups
+T1630,defense-evasion,Indicator Removal on Host
+T1474,initial-access,Supply Chain Compromise
+T1636,collection,Protected User Data
+T1418,discovery,Software Discovery
+T1424,discovery,Process Discovery
+T1629,defense-evasion,Impair Defenses
+T1453,collection,Abuse Accessibility Features
+T1428,lateral-movement,Exploitation of Remote Services
+T1635,credential-access,Steal Application Access Token
+T1633,defense-evasion,Virtualization/Sandbox Evasion
+T1413,collection,Access Sensitive Data in Device Logs
+T1623,execution,Command and Scripting Interpreter
+T1544,command-and-control,Ingress Tool Transfer
+T1637,command-and-control,Dynamic Resolution
+T1477,initial-access,Exploit via Radio Interfaces
+T1423,discovery,Network Service Scanning
+T1646,exfiltration,Exfiltration Over C2 Channel
+T1404,privilege-escalation,Exploitation for Privilege Escalation
+T1616,collection,Call Control
+T1436,command-and-control,Commonly Used Port
+T1517,collection,Access Notifications
+T1639,exfiltration,Exfiltration Over Alternative Protocol
+T1398,persistence,Boot or Logon Initialization Scripts
+T1627,defense-evasion,Execution Guardrails
+T1645,persistence,Compromise Client Software Binary
+T1575,defense-evasion,Native API
+T1476,initial-access,Deliver Malicious App via Other Means
+T1469,remote-service-effects,Remotely Wipe Data Without Authorization
+T1604,defense-evasion,Proxy Through Victim
+T1541,defense-evasion,Foreground Persistence
+T1458,initial-access,Replication Through Removable Media
+T1429,collection,Audio Capture
+T1625,persistence,Hijack Execution Flow
+T1437,command-and-control,Application Layer Protocol
+T1407,defense-evasion,Download New Code at Runtime
+T1409,collection,Stored Application Data
+T1513,collection,Screen Capture
+T1632,defense-evasion,Subvert Trust Controls
+T1403,persistence,Modify Cached Executable Code
+T1509,command-and-control,Non-Standard Port
+T1430,collection,Location Tracking
+T1427,lateral-movement,Attack PC via USB Connection
+T1451,network-effects,SIM Card Swap
+T1417,collection,Input Capture
+T1643,impact,Generate Traffic from Victim
+T1444,initial-access,Masquerade as Legitimate Application
+T1582,impact,SMS Control
+T1631,defense-evasion,Process Injection
+T1414,collection,Clipboard Data
+T1641,impact,Data Manipulation
+T1481,command-and-control,Web Service
+T1634,credential-access,Credentials from Password Store
+T1617,defense-evasion,Hooking
+T1420,discovery,File and Directory Discovery
+T1406,defense-evasion,Obfuscated Files or Information
+T1516,defense-evasion,Input Injection
+T1464,impact,Network Denial of Service
+T1577,persistence,Compromise Application Executable
+T1624,persistence,Event Triggered Execution
+T1422,discovery,System Network Configuration Discovery
+T1512,collection,Video Capture
+T1475,initial-access,Deliver Malicious App via Authorized App Store
+T1471,impact,Data Encrypted for Impact
+T1421,discovery,System Network Connections Discovery
+T1461,initial-access,Lockscreen Bypass
+T1533,collection,Data from Local System
+T1640,impact,Account Access Removal
+T1426,discovery,System Information Discovery
+T1532,collection,Archive Collected Data
+T1642,impact,Endpoint Denial of Service
+T1644,command-and-control,Out of Band Data
+T1521,command-and-control,Encrypted Channel
+T1405,credential-access,Exploit TEE Vulnerability
+T1399,defense-evasion,Modify Trusted Execution Environment
+T1449,network-effects,Exploit SS7 to Redirect Phone Calls/SMS
+T1628,defense-evasion,Hide Artifacts
+T1456,initial-access,Drive-By Compromise

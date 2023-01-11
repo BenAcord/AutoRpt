@@ -1,5 +1,8 @@
-# Ingore Obsidian system files
+# Ignore Obsidian system files
 .obsidian
+
+# Ignore large JSON files from Mitre ATT&CK
+includes/*.json
 
 # Ignore Mac system files
 .DS_store

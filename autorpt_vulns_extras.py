@@ -7,6 +7,7 @@ Enforce consistent, dependable workflow for engagement note-taking and report wr
 import os
 import sys
 from glob import glob
+import csv
 import re
 import pandas as pd
 import openpyxl
@@ -370,6 +371,7 @@ def get_mitre_attack():
         file = csv_file_list[picker]
 
     this_dataframe = pd.read_csv(file, index_col=False, engine="python")
+    
 
     # Get the tactic
     i = 0

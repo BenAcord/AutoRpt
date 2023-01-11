@@ -1,106 +1,91 @@
-TID,TACTIC,TECHNIQUE
-T0830,collection-ics,Adversary-in-the-Middle
-T0802,collection-ics,Automated Collection
-T0811,collection-ics,Data from Information Repositories
-T0868,collection-ics,Detect Operating Mode
-T0870,collection-ics,Detect Program State
-T0877,collection-ics,I/O Image
-T0825,collection-ics,Location Identification
-T0801,collection-ics,Monitor Process State
-T0861,collection-ics,Point & Tag Identification
-T0845,collection-ics,Program Upload
-T0850,collection-ics,Role Identification
-T0852,collection-ics,Screen Capture
-T0887,collection-ics,Wireless Sniffing
-T0885,command-and-control-ics,Commonly Used Port
-T0884,command-and-control-ics,Connection Proxy
-T0869,command-and-control-ics,Standard Application Layer Protocol
-T0808,discovery-ics,Control Device Identification
-T0824,discovery-ics,I/O Module Discovery
-T0840,discovery-ics,Network Connection Enumeration
-T0841,discovery-ics,Network Service Scanning
-T0842,discovery-ics,Network Sniffing
-T0846,discovery-ics,Remote System Discovery
-T0888,discovery-ics,Remote System Information Discovery
-T0854,discovery-ics,Serial Connection Enumeration
-T0887,discovery-ics,Wireless Sniffing
-T0858,evasion-ics,Change Operating Mode
-T0820,evasion-ics,Exploitation for Evasion
-T0872,evasion-ics,Indicator Removal on Host
-T0849,evasion-ics,Masquerading
-T0851,evasion-ics,Rootkit
-T0856,evasion-ics,Spoof Reporting Message
-T0858,execution-ics,Change Operating Mode
-T0875,execution-ics,Change Program State
-T0807,execution-ics,Command-Line Interface
-T0871,execution-ics,Execution through API
-T0823,execution-ics,Graphical User Interface
-T0874,execution-ics,Hooking
-T0821,execution-ics,Modify Controller Tasking
-T0834,execution-ics,Native API
-T0844,execution-ics,Program Organization Units
-T0853,execution-ics,Scripting
-T0863,execution-ics,User Execution
-T0879,impact-ics,Damage to Property
-T0813,impact-ics,Denial of Control
-T0815,impact-ics,Denial of View
-T0826,impact-ics,Loss of Availability
-T0827,impact-ics,Loss of Control
-T0828,impact-ics,Loss of Productivity and Revenue
-T0837,impact-ics,Loss of Protection
-T0880,impact-ics,Loss of Safety
-T0829,impact-ics,Loss of View
-T0831,impact-ics,Manipulation of Control
-T0832,impact-ics,Manipulation of View
-T0882,impact-ics,Theft of Operational Information
-T0806,impair-process-control,Brute Force I/O
-T0875,impair-process-control,Change Program State
-T0833,impair-process-control,Modify Control Logic
-T0836,impair-process-control,Modify Parameter
-T0839,impair-process-control,Module Firmware
-T0856,impair-process-control,Spoof Reporting Message
-T0855,impair-process-control,Unauthorized Command Message
-T0800,inhibit-response-function,Activate Firmware Update Mode
-T0878,inhibit-response-function,Alarm Suppression
 T0803,inhibit-response-function,Block Command Message
-T0804,inhibit-response-function,Block Reporting Message
-T0805,inhibit-response-function,Block Serial COM
-T0809,inhibit-response-function,Data Destruction
-T0814,inhibit-response-function,Denial of Service
-T0816,inhibit-response-function,Device Restart/Shutdown
-T0835,inhibit-response-function,Manipulate I/O Image
-T0838,inhibit-response-function,Modify Alarm Settings
-T0833,inhibit-response-function,Modify Control Logic
-T0851,inhibit-response-function,Rootkit
 T0881,inhibit-response-function,Service Stop
-T0857,inhibit-response-function,System Firmware
-T0810,initial-access-ics,Data Historian Compromise
-T0817,initial-access-ics,Drive-by Compromise
-T0818,initial-access-ics,Engineering Workstation Compromise
-T0819,initial-access-ics,Exploit Public-Facing Application
-T0866,initial-access-ics,Exploitation of Remote Services
-T0822,initial-access-ics,External Remote Services
-T0883,initial-access-ics,Internet Accessible Device
-T0886,initial-access-ics,Remote Services
-T0847,initial-access-ics,Replication Through Removable Media
-T0848,initial-access-ics,Rogue Master
-T0865,initial-access-ics,Spearphishing Attachment
-T0862,initial-access-ics,Supply Chain Compromise
-T0864,initial-access-ics,Transient Cyber Asset
+T0836,impair-process-control,Modify Parameter
+T0821,execution-ics,Modify Controller Tasking
+T0887,discovery-ics,Wireless Sniffing
+T0829,impact-ics,Loss of View
+T0800,inhibit-response-function,Activate Firmware Update Mode
+T0831,impact-ics,Manipulation of Control
+T0814,inhibit-response-function,Denial of Service
+T0805,inhibit-response-function,Block Serial COM
+T0850,collection-ics,Role Identification
+T0807,execution-ics,Command-Line Interface
+T0861,collection-ics,Point & Tag Identification
+T0816,inhibit-response-function,Device Restart/Shutdown
+T0863,execution-ics,User Execution
 T0860,initial-access-ics,Wireless Compromise
+T0858,execution-ics,Change Operating Mode
+T0878,inhibit-response-function,Alarm Suppression
+T0868,collection-ics,Detect Operating Mode
+T0837,impact-ics,Loss of Protection
+T0801,collection-ics,Monitor Process State
+T0853,execution-ics,Scripting
+T0888,discovery-ics,Remote System Information Discovery
+T0845,collection-ics,Program Upload
+T0819,initial-access-ics,Exploit Public-Facing Application
+T0811,collection-ics,Data from Information Repositories
+T0864,initial-access-ics,Transient Cyber Asset
+T0835,inhibit-response-function,Manipulate I/O Image
+T0842,discovery-ics,Network Sniffing
+T0851,evasion-ics,Rootkit
+T0802,collection-ics,Automated Collection
+T0804,inhibit-response-function,Block Reporting Message
+T0855,impair-process-control,Unauthorized Command Message
+T0809,inhibit-response-function,Data Destruction
+T0832,impact-ics,Manipulation of View
+T0810,initial-access-ics,Data Historian Compromise
+T0841,discovery-ics,Network Service Scanning
+T0872,evasion-ics,Indicator Removal on Host
+T0877,collection-ics,I/O Image
+T0815,impact-ics,Denial of View
+T0871,execution-ics,Execution through API
+T0862,initial-access-ics,Supply Chain Compromise
+T0854,discovery-ics,Serial Connection Enumeration
+T0880,impact-ics,Loss of Safety
+T0828,impact-ics,Loss of Productivity and Revenue
+T0865,initial-access-ics,Spearphishing Attachment
+T0825,collection-ics,Location Identification
+T0817,initial-access-ics,Drive-by Compromise
+T0879,impact-ics,Damage to Property
+T0856,evasion-ics,Spoof Reporting Message
+T0866,initial-access-ics,Exploitation of Remote Services
 T0812,lateral-movement-ics,Default Credentials
-T0866,lateral-movement-ics,Exploitation of Remote Services
-T0891,lateral-movement-ics,Hardcoded Credentials
-T0867,lateral-movement-ics,Lateral Tool Transfer
-T0843,lateral-movement-ics,Program Download
+T0822,initial-access-ics,External Remote Services
+T0806,impair-process-control,Brute Force I/O
+T0870,collection-ics,Detect Program State
+T0830,collection-ics,Adversary-in-the-Middle
+T0820,evasion-ics,Exploitation for Evasion
+T0827,impact-ics,Loss of Control
+T0875,execution-ics,Change Program State
+T0874,execution-ics,Hooking
+T0808,discovery-ics,Control Device Identification
 T0844,lateral-movement-ics,Program Organization Units
-T0886,lateral-movement-ics,Remote Services
-T0859,lateral-movement-ics,Valid Accounts
-T0891,persistence-ics,Hardcoded Credentials
-T0889,persistence-ics,Modify Program
-T0839,persistence-ics,Module Firmware
-T0873,persistence-ics,Project File Infection
+T0823,execution-ics,Graphical User Interface
+T0848,initial-access-ics,Rogue Master
+T0834,execution-ics,Native API
+T0826,impact-ics,Loss of Availability
+T0882,impact-ics,Theft of Operational Information
 T0857,persistence-ics,System Firmware
+T0849,evasion-ics,Masquerading
+T0843,lateral-movement-ics,Program Download
+T0847,initial-access-ics,Replication Through Removable Media
+T0852,collection-ics,Screen Capture
+T0891,lateral-movement-ics,Hardcoded Credentials
 T0859,persistence-ics,Valid Accounts
 T0890,privilege-escalation,Exploitation for Privilege Escalation
-T0874,privilege-escalation,Hooking
+T0846,discovery-ics,Remote System Discovery
+T0818,initial-access-ics,Engineering Workstation Compromise
+T0884,command-and-control-ics,Connection Proxy
+T0869,command-and-control-ics,Standard Application Layer Protocol
+T0833,impair-process-control,Modify Control Logic
+T0886,initial-access-ics,Remote Services
+T0824,discovery-ics,I/O Module Discovery
+T0813,impact-ics,Denial of Control
+T0838,inhibit-response-function,Modify Alarm Settings
+T0885,command-and-control-ics,Commonly Used Port
+T0873,persistence-ics,Project File Infection
+T0840,discovery-ics,Network Connection Enumeration
+T0867,lateral-movement-ics,Lateral Tool Transfer
+T0839,persistence-ics,Module Firmware
+T0883,initial-access-ics,Internet Accessible Device
+T0889,persistence-ics,Modify Program
