@@ -1,3 +1,4 @@
+TID,TACTIC,TECHNIQUE
 T1047,execution,Windows Management Instrumentation
 T1113,collection,Screen Capture
 T1037,persistence,Boot or Logon Initialization Scripts

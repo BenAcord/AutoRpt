@@ -1,3 +1,4 @@
+TID,TACTIC,TECHNIQUE
 T0803,inhibit-response-function,Block Command Message
 T0881,inhibit-response-function,Service Stop
 T0836,impair-process-control,Modify Parameter

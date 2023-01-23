@@ -10,9 +10,11 @@ import os
 import shutil
 import sys
 import re
-import autorpt_cfg as cfg
-import autorpt as core
-import autorpt_pretty as out
+import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
+import autorpt.main as main # pylint: disable=import-error,consider-using-from-import
+from autorpt.pretty import term, color_header, color_verify # pylint: disable=import-error
+from autorpt.pretty import color_menu_item, color_fail, color_notice # pylint: disable=import-error
+
 
 def iterate_closing_file(active_engagement_path, active_lab_files):
     """ Increment the file number for closing.md """
@@ -28,7 +30,8 @@ def iterate_closing_file(active_engagement_path, active_lab_files):
 
     active_closing_file = glob(f'{active_engagement_path}/report/*-closing.md')[0]
     closing_inum_original = get_file_id(active_closing_file)
-    # Increment the closing file iterator if it is less than or equal to the new lab file iterator.
+    # Increment the closing file iterator if it is less than or equal to
+    # the new lab file iterator.
     closing_inum_new =  closing_inum_original + 1
 
     if closing_inum_new <= holder:
@@ -43,7 +46,9 @@ def move_file(source_file, dest_file):
     try:
         shutil.move(source_file, dest_file)
     except (FileNotFoundError, PermissionError, IOError, OSError):
-        out.color_fail("File Move", "Unable to move the file [{source_file}] to [{dest_file}].")
+        color_fail(
+            "File Move", "Unable to move the file [{source_file}] to [{dest_file}]."
+        )
         sys.exit(20)
 
 def copy_file(source_file, dest_file):
@@ -52,8 +57,10 @@ def copy_file(source_file, dest_file):
     try:
         shutil.copyfile(source_file, dest_file)
     except (FileNotFoundError, PermissionError, IOError, OSError):
-        this_msg = "Unable to copy the source template to the active report destination."
-        out.color_fail("Add Template", this_msg)
+        color_fail(
+            "Add Template",
+            "Unable to copy the source template to the active report destination."
+        )
         sys.exit(21)
 
 def get_file_id(this_file_name):
@@ -74,7 +81,9 @@ def add_template():
     new_lab_file_name = str(holder) + "-template.md"
 
     # Get the lab file iterator, ignoring 0 and the highest value (ie. execsummary and closing).
-    source_path = cfg.session[cfg.session['Current']['active']]['source_path']
+    source_path = cfg.SESSION[
+        cfg.SESSION['Current']['active']]['source_path'
+    ]
     source_file = f"{source_path}/report/z-template.md"
     dest_file = f"{active_engagement_path}/report/{new_lab_file_name}"
     print(f'Copying template to file number {str(holder)}')
@@ -91,20 +100,24 @@ def add_target(ip_address):
     # Manually get a new IP address for the targets file and copy in a new template.
     if ip_address == '':
         # Prompt for target IP address
-        out.color_notice('Do you know the target IP address or hostname?  Or enter "N" to skip.')
+        color_notice(
+            'Do you know the target IP address or hostname?  Or enter "N" to skip.'
+        )
         ip_address = str(input('>  ')).replace(" ", "").lower()
         if ip_address == 'n':
-            out.color_fail('No IP Address or hostname provided', "An IP Address is required.")
+            color_fail(
+                'No IP Address or hostname provided', "An IP Address is required."
+            )
             sys.exit(22)
     # Check if the value already exists in the file.
     with open(
-        f'{active_engagement_path}/{cfg.targets_file}',
+        f'{active_engagement_path}/{cfg.TARGETS_FILE}',
         "r",
         encoding="utf8"
     ) as targets_file_reader:
         targets_file_contents = targets_file_reader.read()
     if ip_address in targets_file_contents:
-        out.color_fail(
+        color_fail(
             'Duplicate Target',
             'This value already exists in the targets file.  '
             'Will not create its template file as it may already exist.  '
@@ -115,9 +128,13 @@ def add_target(ip_address):
         # Update targets with a new IP address
         print(
             f'Injecting {ip_address} into target file '
-            f'{active_engagement_path}/{cfg.targets_file}.'
+            f'{active_engagement_path}/{cfg.TARGETS_FILE}.'
         )
-        with open(f'{active_engagement_path}/{cfg.targets_file}', 'a') as target_file_writer: # pylint: disable=unspecified-encoding
+        with open(
+            f'{active_engagement_path}/{cfg.TARGETS_FILE}',
+            'a',
+            encoding='utf8'
+        ) as target_file_writer: # pylint: disable=unspecified-encoding
             target_file_writer.write(f'{ip_address}\n')
 
         # holder is the baseline ID iterator for a filename.  0 is always execsummary.
@@ -130,7 +147,9 @@ def add_target(ip_address):
         holder = iterate_closing_file(active_engagement_path, active_lab_files)
         new_lab_file_name = f"{str(holder)}-{ip_address}.md"
 
-        source_path = cfg.session[cfg.session['Current']['active']]['source_path']
+        source_path = cfg.SESSION[
+            cfg.SESSION['Current']['active']]['source_path'
+        ]
         source_file = f"{source_path}/report/z-template.md"
         dest_file = f"{active_engagement_path}/report/{new_lab_file_name}"
         print(f'Copying template to file number {str(holder)}')
@@ -140,9 +159,9 @@ def add_target(ip_address):
         sitrep_auto(f'Added new target: {ip_address}')
 
 def sitrep_auto(this_msg):
-    """Automatically, without prompting, write the this_msg to the sitrep file."""
+    """Automatically, without prompting, write the message to the sitrep file."""
     this_dataframe = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-    sitrep_file = f"{cfg.get_active_path()}/report/{cfg.sitrepLog}"
+    sitrep_file = f"{cfg.get_active_path()}/report/{cfg.SITREP_LOG}"
     if os.path.exists(sitrep_file):
         with open(sitrep_file, 'a', encoding='utf-8', newline='') as sitrep_file_writer:
             sitrep_file_writer.write(f'{this_dataframe} - {this_msg}\n')
@@ -152,24 +171,29 @@ def sitrep_auto(this_msg):
             sitrep_file_writer.write(f'{this_dataframe} - {this_msg}\n')
             sitrep_file_writer.close()
     # Update the engagement status
-    active = cfg.session['Current']['active']
-    cfg.session[active]['status'] = 'In-process'
-    cfg.save_enagements()
+    active = cfg.SESSION['Current']['active']
+    cfg.SESSION[active]['status'] = 'In-process'
+    cfg.save_engagements(cfg.SESSION)
 
 def sitrep_list():
     """Display the contents of the sitrep file"""
-    sitrep_file = f"{cfg.session[cfg.session['Current']['active']]['path']}"
-    sitrep_file += f"/report/{cfg.sitrepLog}"
+    sitrep_file = (
+        f"{cfg.SESSION[cfg.SESSION['Current']['active']]['path']}"
+    )
+    sitrep_file += f"/report/{cfg.SITREP_LOG}"
     if os.path.isfile(sitrep_file):
-        out.color_header("SITREP Log Entries")
+        color_header("SITREP Log Entries")
         with open(sitrep_file) as sitrep_file_writer: # pylint: disable=unspecified-encoding
             sitrep_content = sitrep_file_writer.readlines()
             sitrep_file_writer.close()
         for sitrep_line in sitrep_content:
             fields = sitrep_line.strip().split(" - ")
-            out.color_verify(fields[0], fields[1])
+            color_verify(fields[0], fields[1])
     else:
-        print(f'{out.term.white}Sitrep file is empty.{out.term.normal}\n\n')
+        print(
+            f'{term.white}'
+            f'Sitrep file is empty.{term.normal}\n\n'
+        )
 
 def sitrep_new():
     """Manually prompt for the sitrep message."""
@@ -178,16 +202,16 @@ def sitrep_new():
 
 def sitrep_menu():
     """A stream of status journal."""
-    out.color_header('SITREP  (Situation Report)')
-    out.color_menu_item('1. List all sitrep entries')
-    out.color_menu_item('2. Add new sitrep log entry\n')
-    out.color_menu_item('3. Main Menu')
-    out.color_menu_item('4. Quit')
+    color_header('SITREP  (Situation Report)')
+    color_menu_item('1. List all sitrep entries')
+    color_menu_item('2. Add new sitrep log entry\n')
+    color_menu_item('3. Main Menu')
+    color_menu_item('4. Quit')
     sitrep_action = int(input('>  '))
     if 4 == sitrep_action:
         sys.exit(0)
     elif 3 == sitrep_action:
-        core.main_menu()
+        main.main_menu()
     elif 1 == sitrep_action:
         sitrep_list()
     elif 2 == sitrep_action:

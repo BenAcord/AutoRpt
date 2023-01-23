@@ -6,22 +6,23 @@ Enforce consistent, dependable workflow for engagement note-taking and report wr
 
 import os
 import sys
-from glob import glob
 import csv
+from glob import glob
 import re
 import pandas as pd
 import openpyxl
 from openpyxl.utils.dataframe import dataframe_to_rows
 from cvss import CVSS3
-import autorpt as core
-import autorpt_cfg as cfg
-import autorpt_pretty as out
+import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
+import autorpt.main as main # pylint: disable=import-error,consider-using-from-import
+from autorpt.pretty import color_list, color_header, color_subheading # pylint: disable=import-error
+from autorpt.pretty import color_menu_item, color_verify, color_fail, color_notice # pylint: disable=import-error
 
 def score_cvss3_basic():
     """ Rating calculation for the CVSS3 basic metric group. """
     basic_metric_value = ""
 
-    out.color_subheading('Exploit')
+    color_subheading('Exploit')
     basic_metric_value += get_cvss_metric_value(
         {
             'Network': 'AV:N',
@@ -70,7 +71,7 @@ def score_cvss3_basic():
     )
     basic_metric_value += '/'
 
-    out.color_subheading('Impact')
+    color_subheading('Impact')
     basic_metric_value += get_cvss_metric_value(
         {
             'None': 'C:N',
@@ -144,7 +145,7 @@ def score_cvss3_environmental():
     """ Rating calculation for the CVSS3 environmental metric group. """
     envionmental_metric_value = "/"
 
-    out.color_subheading('Exploit')
+    color_subheading('Exploit')
     envionmental_metric_value += get_cvss_metric_value(
         {
             'Not Defined': 'MAV:X',
@@ -198,7 +199,7 @@ def score_cvss3_environmental():
     )
     envionmental_metric_value += '/'
 
-    out.color_subheading('Impact')
+    color_subheading('Impact')
     envionmental_metric_value += get_cvss_metric_value(
         {
             'Not Defined': 'MC:X',
@@ -232,7 +233,7 @@ def score_cvss3_environmental():
     )
     envionmental_metric_value += '/'
 
-    out.color_subheading('Impact Subscore Modifiers')
+    color_subheading('Impact Subscore Modifiers')
     envionmental_metric_value += get_cvss_metric_value(
         {
             'Not Defined': 'CR:X',
@@ -268,7 +269,7 @@ def score_cvss3_environmental():
 
 def get_cvss3_score():
     """Menu prompting for the vulnerability CVSS scoring"""
-    out.color_header("CVSS 3 Scoring")
+    color_header("CVSS 3 Scoring")
     cvss_vector = ""
     print("Do you know the Overall CVSS v3 Score? [Y|N]")
     known_score_response = str(input(">  ")).upper()
@@ -284,13 +285,12 @@ def get_cvss3_score():
         elif 9.0 <= cvss_score <= 10.0:
             cvss_severity = 'Critical'
         else:
-            out.color_notice('The score must be between 0.1 and 10.0.')
+            color_notice('The score must be between 0.1 and 10.0.')
             get_cvss3_score()
-        this_msg = (
+        print(
             'If known, paste the CVSS Vector string here'
             'or hit Enter to skip (eg. AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N'
         )
-        print(this_msg)
         cvss_vector = str(input('>  ')).upper()
         if cvss_vector in ('NONE', ''):
             # Was: 'NONE' == cvss_vector or '' == cvss_vector:
@@ -301,7 +301,7 @@ def get_cvss3_score():
     else:
         # At a bare minimum the base score is needed.
         # For testing - AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:N'
-        out.color_subheading('Base Score Metrics')
+        color_subheading('Base Score Metrics')
         cvss_vector = 'CVSS:3.0/'
         cvss_vector += score_cvss3_basic()
 
@@ -312,7 +312,7 @@ def get_cvss3_score():
         print("If not, the score can be calculated from what has already been entered.")
         user_input = str(input(">  ")).upper()
         if "Y" == user_input:
-            out.color_subheading('Temporal Score Metrics')
+            color_subheading('Temporal Score Metrics')
             cvss_vector += score_cvss3_temporal()
 
 
@@ -323,12 +323,12 @@ def get_cvss3_score():
         print("If not, the score can be calculated from what has already been entered.")
         user_input = str(input(">  ")).upper()
         if "Y" == user_input:
-            out.color_subheading('Environmental Score Metrics')
+            color_subheading('Environmental Score Metrics')
             cvss_vector += score_cvss3_environmental()
 
-        #out.color_debug(f"check the vector [{cvss_vector}]")
+        #color_debug(f"check the vector [{cvss_vector}]")
         cvss_values = CVSS3(cvss_vector)
-        #out.color_debug(f"CVSS3 Values: [{cvss_values}]")
+        #color_debug(f"CVSS3 Values: [{cvss_values}]")
         return_string = [
             str(cvss_values.severities()[2]),
             str(cvss_values.scores()[2]),
@@ -344,7 +344,10 @@ def get_cvss_metric_value(cvss_dictionary, metric_name):
     try:
         user_input = cvss_dictionary.get(list(cvss_dictionary)[int(input(" >  "))])
     except IndexError:
-        out.color_fail('CVSS Value', 'That selection is not available in this listing.')
+        color_fail(
+            'CVSS Value',
+            'That selection is not available in this listing.'
+        )
         sys.exit(34)
     return user_input
 
@@ -352,41 +355,44 @@ def get_mitre_attack():
     """Menu prompting to select MITRE ATT&CK tactic and technique"""
     tactic = ''
     technique = ''
-    out.color_header("MITRE ATT&CK")
-    path_includes = cfg.autorpt_runfrom + '/includes'
+    color_header("MITRE ATT&CK")
+    path_includes = cfg.AUTORPT_RUNFROM + '/includes'
     csv_file_list = glob(path_includes + '/autorpt-*-attack.csv')
 
     i = 0
-    out.color_notice('Which MITRE ATT&CK Framework applies?\nPress 99 for main menu.')
-    for file in csv_file_list:
-        out.color_menu_item(f'{i}. {file[30:-11]}')
+    color_notice(
+        'Which MITRE ATT&CK Framework applies?\nPress 99 for main menu.'
+    )
+    for mitre_file in csv_file_list:
+        color_menu_item(f'{i}. {mitre_file[30:-11]}')
         i = i + 1
     picker = int(input('>  '))
     if 99 == picker:
-        core.main_menu()
+        main.main_menu()
     elif picker > (len(csv_file_list)):
-        out.color_notice('Selection out of range')
-        core.main_menu()
+        color_notice('Selection out of range')
+        main.main_menu()
     else:
-        file = csv_file_list[picker]
+        mitre_file = csv_file_list[picker]
 
-    this_dataframe = pd.read_csv(file, index_col=False, engine="python")
-    
+    this_dataframe = pd.read_csv(mitre_file, index_col=False, engine="python")
 
     # Get the tactic
     i = 0
     picker = 0
     tactics = this_dataframe.TACTIC.unique()
-    out.color_notice('What is the Tactic?\nOr 99 to return to the ATT&CK menu.')
+    color_notice(
+        'What is the Tactic?\nOr 99 to return to the ATT&CK menu.'
+    )
     for tactic in tactics:
-        out.color_menu_item(f'{i}. {tactic}')
+        color_menu_item(f'{i}. {tactic}')
         i = i + 1
     picker = int(input('>  '))
     if 99 == picker:
         get_mitre_attack()
     elif picker > len(tactics):
-        out.color_notice('Selection out of range.')
-        core.main_menu()
+        color_notice('Selection out of range.')
+        main.main_menu()
     else:
         tactic = tactics[picker]
 
@@ -394,34 +400,37 @@ def get_mitre_attack():
     i = 0
     picker = 0
     techniques = this_dataframe.query(f'TACTIC == "{tactic}"')[['TECHNIQUE']]
-    out.color_notice('Pick a Technique?')
+    color_notice(f'Which Technique from {tactic}?')
     for _, row in techniques.iterrows():
         # index variable replaced with _ as it is unused.
-        out.color_menu_item(f"{str(i)}.  {str(row.TECHNIQUE)}")
+        color_menu_item(f"{str(i)}.  {str(row.TECHNIQUE)}")
         i = i + 1
     picker = int(input('>  '))
     technique = techniques.iloc[picker, 0]
-
     return [tactic, technique]
 
 def get_nmap_file(target, ports_file):
-    """A listing of known good nmap output files.
-    In order: AutoRecon, nmapAutomator, and Reconnoitre."""
+    """
+    A listing of known good nmap output files.
+    In order: AutoRecon, nmapAutomator, and Reconnoitre.
+    """
 
     nmap_file = ""
-    nmap_file_list = ["_full_tcp_nmap.txt",
-                 "_quick_tcp_nmap.txt",
-                 f"Full_{target}.nmap",
-                 f"{target}.quick.nmap",
-                 f"{target}.nmap"]
+    nmap_file_list = [
+        "_full_tcp_nmap.txt",
+        "_quick_tcp_nmap.txt",
+        f"Full_{target}.nmap",
+        f"{target}.quick.nmap",
+        f"{target}.nmap"
+    ]
 
     for name in nmap_file_list:
         for root, _, files in os.walk(cfg.get_active_path()):
             nmap_file = os.path.join(root, name)
             if name in files:
                 get_nmap_file_contents(nmap_file, target, ports_file)
-    if nmap_file == '':
-        out.color_notice(f'\t\tExiting.  No nmap files found: [{nmap_file}]')
+    if nmap_file == '' and cfg.RUN_STATE != 'finalize':
+        color_notice(f'\t\tExiting.  No nmap files found: [{nmap_file}]')
         sys.exit(35)
 
 def get_nmap_file_contents(nmap_file, target, ports_file):
@@ -451,9 +460,12 @@ def get_nmap_file_contents(nmap_file, target, ports_file):
                 this_dataframe = this_dataframe.append(new_row, ignore_index = True)
                 all_ports = all_ports.append(new_row, ignore_index = True)
         nmap_file_reader.close()
+
     # Provide CLI information.
-    out.color_verify(target, f'Port Count: {str(len(this_dataframe.index))}')
-    out.color_list(this_dataframe.to_markdown())
+    if cfg.RUN_STATE != 'finalize':
+        color_verify(target, f'Port Count: {str(len(this_dataframe.index))}')
+        color_list(this_dataframe.to_markdown())
+
     # Create worksheet per target.
     if os.path.exists(ports_file):
         book = openpyxl.load_workbook(ports_file)
@@ -468,7 +480,7 @@ def get_nmap_file_contents(nmap_file, target, ports_file):
                 sheet.append(df_row)
         book.save(ports_file)
     except (PermissionError, IOError):
-        out.color_fail(
+        color_fail(
             'Ports Spreadsheet',
             'Cannot create or append worksheet to ports file.'
         )
@@ -476,14 +488,15 @@ def get_nmap_file_contents(nmap_file, target, ports_file):
 def ports():
     """ Display the ports and replace the ports spreadsheet. """
 
-    if os.path.isfile(f"{cfg.get_active_path()}/{cfg.targets_file}"):
-        ports_file = f"{cfg.get_active_path()}/report/{cfg.ports_spreadsheet}"
-        if os.path.isfile(ports_file):
-            out.color_notice(f'Removing existing ports file: {ports_file}')
+    if os.path.isfile(f"{cfg.get_active_path()}/{cfg.TARGETS_FILE}"):
+        ports_file = f"{cfg.get_active_path()}"
+        ports_file = f"{ports_file}/report/{cfg.PORTS_SPREADSHEET}"
+        if os.path.isfile(ports_file) and cfg.RUN_STATE != 'finalize':
+            color_notice(f'Removing existing ports file: {ports_file}')
             os.remove(ports_file)
         # Look for nmap output files associated with each target IP address
         with open(
-            f"{cfg.get_active_path()}/{cfg.targets_file}",
+            f"{cfg.get_active_path()}/{cfg.TARGETS_FILE}",
             'r',
             encoding='utf-8',
             newline=''
@@ -493,6 +506,6 @@ def ports():
                 target = target.strip()
                 get_nmap_file(target, ports_file)
         # Update the engagement status
-        active = cfg.session['Current']['active']
-        cfg.session[active]['status'] = 'In-process'
-        cfg.save_enagements()
+        active = cfg.SESSION['Current']['active']
+        cfg.SESSION[active]['status'] = 'In-process'
+        cfg.save_engagements(cfg.SESSION)

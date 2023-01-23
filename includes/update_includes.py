@@ -130,6 +130,10 @@ def parse_attack_json(json_filename):
             #quotechar='',
             quoting=csv.QUOTE_MINIMAL
         )
+        # Write CSV header.
+        row = ['TID', 'TACTIC', 'TECHNIQUE']
+        csv_writer.writerow(row)
+        # Write rows values.
         for row in attack_csv:
             csv_writer.writerow(row)
 

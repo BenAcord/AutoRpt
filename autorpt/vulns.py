@@ -7,22 +7,27 @@ Enforce consistent, dependable workflow for engagement note-taking and report wr
 import os
 import sys
 import time
+import csv
 import pandas as pd
-import autorpt_vulns_extras as extras
-import autorpt as core
-import autorpt_cfg as cfg
-import autorpt_pretty as out
-import autorpt_work as work
+import autorpt.main as main # pylint: disable=import-error,consider-using-from-import
+import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
+#import get_active_path # pylint: disable=import-error
+from autorpt.work import sitrep_auto # pylint: disable=import-error
+from autorpt.pretty import color_verify, color_list, color_header # pylint: disable=import-error
+from autorpt.pretty import color_menu_item, color_fail, color_notice # pylint: disable=import-error
+from autorpt.cvss import get_cvss3_score, get_mitre_attack # pylint: disable=import-error
 
 def vuln():
     """Menu for vulnerabilities"""
-    out.color_header('Vulnerabilities')
-    out.color_menu_item("1. Add a new vulnerability")
-    out.color_menu_item("2. List all vulnerabilities")
-    out.color_menu_item("3. Modify an existing vulnerability")
-    out.color_menu_item("4. Remove a vulnerability\n")
-    out.color_menu_item('5. Main Menu')
-    out.color_menu_item("6. quit")
+
+    vuln_selection = 0
+    color_header('Vulnerabilities')
+    color_menu_item("1. Add a new vulnerability")
+    color_menu_item("2. List all vulnerabilities")
+    color_menu_item("3. Modify an existing vulnerability")
+    color_menu_item("4. Remove a vulnerability\n")
+    color_menu_item('5. Main Menu')
+    color_menu_item("6. quit")
     vuln_selection = int(input("> "))
     if 1 == vuln_selection:
         add_vuln()
@@ -33,7 +38,7 @@ def vuln():
     elif 4 == vuln_selection:
         remove_vuln()
     elif 5 == vuln_selection:
-        core.main_menu()
+        main.main_menu()
     elif 6 == vuln_selection:
         raise SystemExit(0)
     else:
@@ -41,19 +46,20 @@ def vuln():
 
 def add_vuln():
     """Manually prompt for details of a validated vulnerability."""
-    out.color_header("Add Vulnerability")
+
+    color_header("Add Vulnerability")
     i = 0
     target = ""
-    target_file = f"{cfg.get_active_path()}/{cfg.targets_file}"
+    target_file = f"{cfg.get_active_path()}/{cfg.TARGETS_FILE}"
     if os.path.isfile(target_file):
-        out.color_notice("For which target?\nOr '99' to go back to the menu.")
+        color_notice("For which target?\nOr '99' to go back to the menu.")
         with open(target_file) as target_file_writer: # pylint: disable=unspecified-encoding
             targets = target_file_writer.readlines()
             target_file_writer.close()
         for target in targets:
             target = target.strip()
             #print(f'  {i}.  {term.yellow}{target}{term.normal}')
-            out.color_menu_item(f"{i}.  {target}")
+            color_menu_item(f"{i}.  {target}")
             i = i + 1
         target_id = int(input(">  "))
         if 99 == target_id:
@@ -61,37 +67,39 @@ def add_vuln():
         else:
             target = targets[target_id].strip()
     else:
-        out.color_fail(
+        color_fail(
             'Add Vuln',
             'targets file is empty. Please add IP addresses to the targets file.'
         )
         vuln()
 
-    out.color_notice("What is the port number [0-65535]?")
+    color_notice("What is the port number [0-65535]?")
     port = int(input('>  '))
     if port < 1 or port > 65535:
-        out.color_notice("Number is outside the range of acceptable port numbers: 0 - 65535.")
+        color_notice(
+            "Number is outside the range of acceptable port numbers: 0 - 65535."
+        )
         vuln()
 
-    out.color_notice(
+    color_notice(
         "What is the name for this vulnerability?\n"
         "(eg. Remote code injection in Vendor_Product_Component)"
     )
     vuln_name = str(input('>  '))
 
-    out.color_notice("Describe the business impact: ")
+    color_notice("Describe the business impact: ")
     vuln_impact = str(input('>  '))
 
-    out.color_notice("What is the remediation?")
+    color_notice("What is the remediation?")
     remediation = str(input('>  '))
 
-    out.color_notice("Do you have a comment for where you left off? ")
+    color_notice("Do you have a comment for where you left off? ")
     vuln_comment = str(input('>  '))
     if len(vuln_comment) > 0:
-        work.sitrep_auto(vuln_comment)
+        sitrep_auto(vuln_comment)
     # Wrap with double-quotes as the list has commas and single-quotes.
-    raw_cvss = extras.get_cvss3_score()
-    mitre_attack = extras.get_mitre_attack()
+    raw_cvss = get_cvss3_score()
+    mitre_attack = get_mitre_attack()
 
     user_input_values = [
         target,
@@ -113,18 +121,20 @@ def add_vuln():
 
 def verify_values(user_input_values):
     """ Confirm the user supplied values match what they want to log. """
-    out.color_notice("\n-----------------\n  Verify the data entered.\n-----------------")
-    out.color_verify('[Target]                ', user_input_values[0])
-    out.color_verify('[Port]                  ', user_input_values[1])
-    out.color_verify('[Name]                  ', user_input_values[2])
-    out.color_verify("[Business Impact]       ", user_input_values[3])
-    out.color_verify("[Remediation]           ", user_input_values[4])
-    out.color_verify("[Comment]               ", user_input_values[5])
-    out.color_verify("[CVSS Overall Score]    ", user_input_values[6])
-    out.color_verify("[CVSS Severity]         ", user_input_values[7])
-    out.color_verify("[CVSS Vector]           ", user_input_values[8])
-    out.color_verify('[MITRE ATT&CK Tactic]   ', user_input_values[9])
-    out.color_verify('[MITRE ATT&CK Technique]', user_input_values[10])
+    color_notice(
+        "\n-----------------\n  Verify the data entered.\n-----------------"
+    )
+    color_verify('[Target]                ', user_input_values[0])
+    color_verify('[Port]                  ', user_input_values[1])
+    color_verify('[Name]                  ', user_input_values[2])
+    color_verify("[Business Impact]       ", user_input_values[3])
+    color_verify("[Remediation]           ", user_input_values[4])
+    color_verify("[Comment]               ", user_input_values[5])
+    color_verify("[CVSS Overall Score]    ", user_input_values[6])
+    color_verify("[CVSS Severity]         ", user_input_values[7])
+    color_verify("[CVSS Vector]           ", user_input_values[8])
+    color_verify('[MITRE ATT&CK Tactic]   ', user_input_values[9])
+    color_verify('[MITRE ATT&CK Technique]', user_input_values[10])
 
     check_point = str(input("\nAre these values correct? [Y|N]  > ")).upper()
     if check_point == "Y":
@@ -149,7 +159,7 @@ def verify_values(user_input_values):
 
 def add_new_vuln_csv_row(row):
     """Formats the vulnerability row and stores in the spreadsheet."""
-    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.vulnsCsv}"
+    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.VULNS_CSV}"
     if not os.path.isfile(vulns_file):
         headings = 'IpAddress,Port,'
         headings += 'Name,Impact,Remediation,Comment'
@@ -165,16 +175,23 @@ def add_new_vuln_csv_row(row):
             vulns_file_writer.write(row)
             vulns_file_writer.write("\n")
             vulns_file_writer.close()
-    this_msg = f'Added new vulnerability: {str(row)}'
-    work.sitrep_auto(this_msg)
+    sitrep_auto(f'Added new vulnerability: {str(row)}')
 
 def vuln_list():
-    """Displays a list of current vulnerabilities from the spreadsheet."""
-    out.color_header("List of Current Vulnerabilities")
-    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.vulnsCsv}"
+    """ Displays a list of current vulnerabilities from the spreadsheet. """
+    color_header("List of Current Vulnerabilities")
+    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.VULNS_CSV}"
+    color_notice(f"To mass edit see: {vulns_file}\n")
     if os.path.exists(vulns_file):
-        this_dataframe = pd.read_csv(vulns_file, sep=",", engine="python") # , index_col=False
-        out.color_list(this_dataframe.to_markdown())
+        # Only display certain columns:
+        # IP Address, Port, Name, CvssSeverity, MitreTactic, MitreTechnique
+        this_dataframe = pd.read_csv(
+            vulns_file,
+            sep=",",
+            engine="python",
+            usecols=[0,1,2,7,9,10]
+        )
+        color_list(this_dataframe.to_markdown())
     else:
         print("0 vulnerabilities")
     if len(sys.argv) == 3 and 'list' == sys.argv[2]:
@@ -183,8 +200,7 @@ def vuln_list():
         vuln()
 
 def modify_vuln():
-    """Modify a vulnerability"""
-
+    """ Modify a vulnerability """
 
     # 01/08/23 [Bug] The listing of vulns should only include the...
     # ID, IpAddress, Port, Name, CvssSeverity
@@ -192,16 +208,25 @@ def modify_vuln():
     # User picks column ... change match "Add" verfication redo.
 
 
-
     print("\n")
-    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.vulnsCsv}"
-    try:
-        vulns_file_data = pd.read_csv(vulns_file)
-    except (FileNotFoundError, PermissionError, IOError, OSError):
-        out.color_notice('No vulnerabilities logged to modify.')
+    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.VULNS_CSV}"
+    if not os.path.isfile(vulns_file):
+        color_notice('No vulnerabilities logged.')
         vuln()
+
+    try:
+        vulns_file_data = pd.read_csv(vulns_file, skiprows=0)
+    except (pd.errors.EmptyDataError, FileNotFoundError, PermissionError, IOError, OSError):
+        color_notice('No vulnerabilities logged to modify.')
+        vuln()
+
+    # Gracefully end early if there are no rows.
+    if len(vulns_file_data) == 0:
+        color_notice('No vulnerabilities logged to modify.')
+        vuln()
+
     headings = list(vulns_file_data.columns.values)
-    out.color_list(vulns_file_data.to_markdown())
+    color_list(vulns_file_data.to_markdown())
     vuln_id = int(input("\nPick an entry to modify or '99' to go back to the menu:  "))
     if 99 == vuln_id:
         vuln()
@@ -222,8 +247,8 @@ def modify_vuln():
         f"Modified vulnerability {field_id} "
         f"to: {new_value} for {str(vulns_file_data.at[vuln_id, 'Name'])}"
     )
-    out.color_notice(this_msg)
-    work.sitrep_auto(this_msg)
+    color_notice(this_msg)
+    sitrep_auto(this_msg)
     with open(vulns_file, 'w', newline='') as vulns_file_writer: # pylint: disable=unspecified-encoding
         vulns_file_data.to_csv(vulns_file_writer, index=False)
         vulns_file_writer.close()
@@ -234,13 +259,14 @@ def remove_vuln():
     """Remove a stored vulnerability"""
 
     print("\n")
-    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.vulnsCsv}"
+    vulns_file =  f"{cfg.get_active_path()}/report/{cfg.VULNS_CSV}"
     try:
-        vulns_file_data = pd.read_csv(vulns_file)
-    except (FileNotFoundError, PermissionError, IOError, OSError):
-        out.color_notice('No vulnerabilities logged to modify.')
+        vulns_file_data = pd.read_csv(vulns_file, skiprows=0)
+    except (pd.errors.EmptyDataError, FileNotFoundError, PermissionError, IOError, OSError):
+        color_notice('No vulnerabilities logged to modify.')
         vuln()
-    out.color_list(vulns_file_data.to_markdown())
+
+    color_list(vulns_file_data.to_markdown())
     vuln_id = int(input("\nPick an entry to modify or '99' to go back to the menu:  "))
     if 99 == vuln_id:
         vuln()
@@ -248,8 +274,8 @@ def remove_vuln():
         vulns_file_data.drop([vulns_file_data.index[vuln_id]], axis="index", inplace=True)
 
     this_msg = (f"Removed vulnerability ID {vuln_id}")
-    out.color_notice(this_msg)
-    work.sitrep_auto(this_msg)
+    color_notice(this_msg)
+    sitrep_auto(this_msg)
     with open(vulns_file, 'w', newline='') as vulns_file_writer: # pylint: disable=unspecified-encoding
         vulns_file_data.to_csv(vulns_file_writer, index=False)
         vulns_file_writer.close()

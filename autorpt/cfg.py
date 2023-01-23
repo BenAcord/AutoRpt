@@ -9,44 +9,45 @@ import os
 import sys
 import shutil
 import configparser
+import pyperclip as pc
 from packaging import version
-import autorpt_pretty as out
+from autorpt.pretty import color_fail, color_notice, color_debug # pylint: disable=import-error
 
-def load_config_values(this_config_path, this_config_file):
+def load_config_values():
     """Read application-level settings configuration file"""
     # Exit without configuration file
-    if not os.path.isdir(this_config_path):
+    if not os.path.isdir(CONFIG_PATH):
         # If umask is not set, incorrect permissions will be assigned on mkdir
         os.umask(0)
         try:
             os.mkdir(
-                os.path.expanduser(this_config_path),
+                os.path.expanduser(CONFIG_PATH),
                 0o770
             )
         except (FileNotFoundError, PermissionError, IOError, OSError):
-            out.color_fail(
+            color_fail(
                 '[e]',
-                f'Unable to create directory for AutoRpt settings: {this_config_path}'
+                f'Unable to create directory for AutoRpt settings: {CONFIG_PATH}'
             )
             sys.exit(20)
 
-    if not os.path.isfile(this_config_file):
+    if not os.path.isfile(CONFIG_FILE):
         try:
             # copy configuration file from GitHub clone
-            shutil.copy(this_config_file, this_config_path)
+            shutil.copy(CONFIG_FILE, CONFIG_PATH)
         except (FileNotFoundError, PermissionError, IOError, OSError):
-            out.color_fail(
+            color_fail(
                 '[e]',
-                'Unable to copy configuration file from the GitHub clone:{this_config_file}'
+                'Unable to copy configuration file from the GitHub clone:{CONFIG_FILE}'
             )
             sys.exit(21)
 
     config = configparser.ConfigParser()
-    config.read(this_config_file)
+    config.read(CONFIG_FILE)
 
     if not os.path.exists(os.path.expanduser(config['Paths']['pathwork'])):
         os.umask(0o007)
-        out.color_notice(
+        color_notice(
             f"Config path does not exist: {config['Paths']['pathwork']}.  Attempting to create."
         )
         try:
@@ -55,7 +56,7 @@ def load_config_values(this_config_path, this_config_file):
                 0o770
             )
         except (FileNotFoundError, PermissionError, IOError, OSError):
-            out.color_fail(
+            color_fail(
                 '[e]',
                 f"Unable to create directory for AutoRpt settings: {config['Paths']['pathwork']} "
             )
@@ -84,94 +85,126 @@ def load_config_values(this_config_path, this_config_file):
         try:
             os.mkdir(ttp_notes_dir, 0o770)
         except (FileNotFoundError, PermissionError, IOError, OSError):
-            out.color_fail('[e]', f'Unable to create directory: {ttp_notes_dir} ')
+            color_fail(
+                '[e]', f'Unable to create directory: {ttp_notes_dir} '
+            )
             sys.exit(23)
     # End of load_config_values
     return config
 
-def load_session_config(app_session_file):
+def load_session_config():
     """Read session engagement file contents"""
-    if os.path.isfile(app_session_file):
+    if os.path.isfile(SESSION_FILE):
         config = configparser.ConfigParser()
-        config.read(app_session_file)
+        config.read(SESSION_FILE)
         return config
-    out.color_notice('The session file does not exist. It will be created on first use of startup.')
+    color_notice(
+        'The session file does not exist. It will be created on first use of startup.'
+    )
     return None
 
 def backup_config_file():
     """ Make a copy of the current user config file. """
     backup_time = datetime.datetime.now().strftime('%Y%m%d-%H%M')
-    backup_file_name = f'{config_file}.{backup_time}'
-    out.color_notice(f'Backing up the current configuration file to {backup_file_name}')
+    backup_file_name = f'{CONFIG_FILE}.{backup_time}'
+    color_notice(
+        f'Backing up the current configuration file to {backup_file_name}'
+    )
     # Copy in the new template file as a new lab interated file.
     try:
-        shutil.copyfile(config_file, backup_file_name)
+        shutil.copyfile(CONFIG_FILE, backup_file_name)
+
     except (FileNotFoundError, PermissionError, IOError, OSError):
-        out.color_fail(
-            f'Unable to copy {config_file} to {backup_file_name}.'
+        color_fail(
+            'Backup Config', f'Unable to copy {CONFIG_FILE} to {backup_file_name}.'
         )
         sys.exit(23)
 
-def save_config(this_config_values):
+def save_config(this_latest_config):
     """Store to disk modified application configuration values"""
 
     try:
-        with open(config_file, 'w') as config_file_writer: # pylint: disable=unspecified-encoding
-            this_config_values.write(config_file_writer)
+        with open(CONFIG_FILE, 'w') as config_file_writer: # pylint: disable=unspecified-encoding
+            this_latest_config.write(config_file_writer)
             return True
     except (PermissionError, IOError):
-        out.color_fail(
+        color_fail(
             'Save Config', "Failed to save the updated values to the user config.toml file."
         )
         return False
 
-def save_enagements():
+def save_engagements(this_session):
     """Store to disk session engagement values"""
-    with open(session_file, 'w') as config_file_writer: # pylint: disable=unspecified-encoding
-        session.write(config_file_writer)
+    with open(SESSION_FILE, 'w') as config_file_writer: # pylint: disable=unspecified-encoding
+        this_session.write(config_file_writer)
 
 def get_active_path():
     """ Deprecated means of getting the active engagement path. """
-    active = session['Current']['active']
+    active = SESSION['Current']['active']
     if 'None' == active:
-        out.color_notice('No active engagement exists.  Use startup to create a new engagement.')
+        color_notice(
+            'No active engagement exists.  Use startup to create a new engagement.'
+        )
         sys.exit(30)
     else:
-        return session[active]["path"]
+        return SESSION[active]["path"]
+
+def get_the_active_engagement():
+    """ Show the active engagement and path. """
+
+    if 'None' == SESSION['Current']['active']:
+        color_notice(
+            "No engagements.  Run 'autorpt.py startup' to create an engagement."
+        )
+    else:
+        color_notice("Ready to go!")
+        this_msg = SESSION['Current']['active']
+        color_notice(
+            "Path is in your clipboard: "
+            f"{SESSION[this_msg]['path']}"
+        )
+        this_msg = SESSION['Current']['active']
+        pc.copy(
+            os.path.expanduser(
+                SESSION[this_msg]['path']
+            )
+        )
 
 def get_active_all():
     """ Deprecated means of getting the active engagement name. """
-    active = session['Current']['active']
+    active = SESSION['Current']['active']
     if 'None' == active:
-        out.color_notice('No active engagement exists.  Use startup to create a new engagement.')
+        color_notice(
+            'No active engagement exists.  Use startup to create a new engagement.'
+        )
         sys.exit(30)
     else:
-        return f"{session['Engagements'][active]}"
+        return f"{SESSION['Engagements'][active]}"
 
-def upgrade_config_file(this_config_file):
+def upgrade_config_file():
     """ Manually called to upgrade from a legacy config file to the latest """
 
     # Check the version to see if an upgrade is needed.
-    latest_config_file = f'{autorpt_runfrom}/config.toml'
+    latest_config_file = f'{AUTORPT_RUNFROM}/config.toml'
     latest_config = configparser.ConfigParser()
     latest_config.read(latest_config_file)
     latest_version = latest_config['Version']['autorpt_version']
 
     # Get current config values for key sections.
     current_config = configparser.ConfigParser()
-    current_config.read(this_config_file)
+    current_config.read(CONFIG_FILE)
     try:
         current_version = current_config['Version']['autorpt_version']
     except KeyError:
         # Legacy version detected, pre-v1.1.0.
         current_version = '1.0.0'
     if version.parse(current_version) < version.parse(latest_version):
-        out.color_notice(
+        color_notice(
             'An upgrade is needed.  '
             f'Latest Version: {latest_version}  Current Version: {current_version}'
         )
     else:
-        out.color_notice('No upgrade is needed at this time.')
+        color_notice('No upgrade is needed at this time.')
         sys.exit(0)
 
     # Update the in-memory latest config with user preferences in the existing, current config.
@@ -185,43 +218,65 @@ def upgrade_config_file(this_config_file):
     )
     latest_config['Paths']['style'] = current_config['Settings']['style']
     backup_config_file()
-    out.color_notice('Upgrading the user config.toml file.')
+    color_notice('Upgrading the user config.toml file.')
     save_config(latest_config)
-
 
 # Force PYTHONUTF8=1 to prevent PyLint warning,
 # Using open without explicitly specifying an encoding (unspecified-encoding)
 os.environ["PYTHONUTF8"] = "1"
+# Set the run state argument.
+global RUN_STATE # pylint: disable=global-at-module-level
+RUN_STATE = ""
+for arg in range(1, len(sys.argv)):
+    RUN_STATE = RUN_STATE + sys.argv[int(arg)]
+#color_debug(f"RUN STATE: [{RUN_STATE}]")
 # Get the script home starting directory (eg. /opt/AutoRpt)
-autorpt_runfrom = os.path.dirname(os.path.expanduser(os.path.realpath(__file__)))
+global AUTORPT_RUNFROM # pylint: disable=global-at-module-level
+AUTORPT_RUNFROM = os.path.dirname(os.path.expanduser(os.path.realpath(__file__)))
+AUTORPT_RUNFROM = AUTORPT_RUNFROM.replace(r'/autorpt', "")
 # Directory for additional, supporting content.
 # Currently only the Mitre ATT&CK Framwork.
-pathIncludes = autorpt_runfrom + '/includes'  #  This was an error, "pathIncludes:".
+global PATH_INCLUDES # pylint: disable=global-at-module-level
+PATH_INCLUDES = AUTORPT_RUNFROM + '/includes'
 # Path to store configuration settings and sessions
-config_path = os.path.expanduser("~/.config/AutoRpt")
+global CONFIG_PATH # pylint: disable=global-at-module-level
+CONFIG_PATH = os.path.expanduser("~/.config/AutoRpt")
 # Configuration settings
-config_file = config_path + '/config.toml'
+global CONFIG_FILE # pylint: disable=global-at-module-level
+CONFIG_FILE = CONFIG_PATH + '/config.toml'
 # Load configuration settings
-config_values = load_config_values(config_path, config_file)
+global CONFIG_VALUES # pylint: disable=global-at-module-level
+CONFIG_VALUES = load_config_values()
 # Should be supportedFiletypes
-supported_filetypes = config_values['Settings']['output_formats']
+global SUPPORTED_FILETYPES # pylint: disable=global-at-module-level
+SUPPORTED_FILETYPES = CONFIG_VALUES['Settings']['output_formats']
 # Exclude filetypes that break report creation with pandoc
 # File with list of target IP addresses
-targets_file = config_values['Files']['targetfile']
+global TARGETS_FILE # pylint: disable=global-at-module-level
+TARGETS_FILE = CONFIG_VALUES['Files']['targetfile']
 # Spreadsheet of all ports per IP address in targets file
-ports_spreadsheet = config_values['Files']['portfile']
+global PORTS_SPREADSHEET # pylint: disable=global-at-module-level
+PORTS_SPREADSHEET = CONFIG_VALUES['Files']['portfile']
 # Validated list of vulnerabilities
-vulnsCsv =  config_values['Files']['vulnfile']
+global VULNS_CSV # pylint: disable=global-at-module-level
+VULNS_CSV =  CONFIG_VALUES['Files']['vulnfile']
 # Situation report
-sitrepLog =  config_values['Files']['sitrepfile']
+global SITREP_LOG # pylint: disable=global-at-module-level
+SITREP_LOG =  CONFIG_VALUES['Files']['sitrepfile']
 # Constant active working directory for current engagement.
-ACTIVE_PATH = config_values['Paths']['pathwork']
+global ACTIVE_PATH # pylint: disable=global-at-module-level
+ACTIVE_PATH = CONFIG_VALUES['Paths']['pathwork']
 # Engagement sessions
-session_file = config_path + '/' + config_values['Files']['sessionfile']
-session = load_session_config(session_file)
+global SESSION_FILE # pylint: disable=global-at-module-level
+SESSION_FILE = CONFIG_PATH + '/' + CONFIG_VALUES['Files']['sessionfile']
+global SESSION # pylint: disable=global-at-module-level
+SESSION = load_session_config()
 # Constant for the current active engagement or blank if none.
+global ACTIVE_SESSION # pylint: disable=global-at-module-level
 ACTIVE_SESSION = ''
 try:
-    ACTIVE_SESSION = session['Current']['active']
+    ACTIVE_SESSION = SESSION['Current']['active']
 except (FileNotFoundError, PermissionError, IOError, OSError):
-    out.color_fail('Active Session', 'Failed to assign the active session to global variable.')
+    color_fail(
+        'Active Session', 'Failed to assign the active session to global variable.'
+    )
