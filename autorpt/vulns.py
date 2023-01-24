@@ -265,6 +265,10 @@ def remove_vuln():
         color_notice('No vulnerabilities logged to modify.')
         vuln()
 
+    if len(vulns_file_data) <= 1:
+        color_notice('No vulnerabilities logged to modify.')
+        vuln()
+
     color_list(vulns_file_data.to_markdown())
     vuln_id = int(input("\nPick an entry to modify or '99' to go back to the menu:  "))
     if 99 == vuln_id:
