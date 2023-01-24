@@ -12,7 +12,7 @@ import sys
 import time
 import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
 import autorpt.main as main # pylint: disable=import-error,consider-using-from-import
-from autorpt.pretty import color_fail, color_notice, color_header, color_menu_item, color_debug # pylint: disable=import-error
+from autorpt.pretty import color_fail, color_notice, color_header, color_menu_item # pylint: disable=import-error
 from autorpt.work import sitrep_auto # pylint: disable=import-error
 
 def startup():
@@ -311,7 +311,7 @@ def set_default_template_path(engagement_type, student_name, student_email):
         'Certification exams and some other types of engagements require '
         'a student ID, like the OSID.\n'
         f'Your current student ID is currently set to [{student_id}].  '
-        'Do you want to keep this ID?'
+        'Do you want to keep this ID [Y|N] ?'
     )
     if 'N' == str(input('>  ')).upper():
         color_notice(

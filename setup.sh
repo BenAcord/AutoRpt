@@ -18,9 +18,11 @@ then
 fi
 
 # Install dependencies
+# p7zip deprecated 01/23/23 for use in code but you may want it for
+# inspecting and manually creating 7zip archives.
 sudo apt-get install -y p7zip xclip pandoc pandoc-data texlive texlive-latex-extra texlive-fonts-extra texlive-xetex
 
-pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl tabulate ijson
+pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl tabulate ijson py7zr
 # Pretty: blessings colorama pyperclip
 # Vulns: cvss pandas openpyxl tabulate
 

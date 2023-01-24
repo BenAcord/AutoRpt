@@ -14,12 +14,12 @@ def helper():
     print(f"{term.bold_bright_blue}USAGE:{term.normal}")
     print("autorpt.py [option]\n")
     print(f"{term.bold_bright_blue}Where option is one of:{term.normal}")
-    print("help | settings | active | ")
     print(
+        "help | settings | active | "
         "startup | vuln [list] | ports | sitrep [message] | "
         "addtarget [IP Address] | addtemplate | "
+        "finalize | list | whathaveidone | upgrade\n"
     )
-    print("finalize | list | whathaveidone | upgrade\n")
     print(f"{term.bold_bright_blue}OPTIONS:{term.normal}")
     print(
         f'  {term.bright_blue}help{term.normal}\t\t\t'
@@ -31,8 +31,7 @@ def helper():
     )
     print(
         f'  {term.bright_blue}addtarget{term.normal}\t\t'
-        'Add a newly discovered IP address to target.md and '
-        'create its markdown file in the active project report directory.'
+        'Add a new IP address to target.md and a markdown file in the active project.'
     )
     print(
         f'  {term.bright_blue}addtemplate{term.normal}\t\t'
@@ -72,10 +71,11 @@ def helper():
     )
     print(
         f'  {term.bright_blue}upgrade{term.normal}\t\t'
-        'Check the cloned repo version against the existing user config and upgrade if necessary.'
+        'Upgrade existing user config file with latest repo updates.'
     )
 
     print(f"\n{term.bold_bright_blue}EXAMPLES:{term.normal}")
+    print("See the wiki for more detailed examples.")
     print("When you are ready to start an exam or training:")
     print(f"    {term.bright_blue}autorpt.py startup{term.normal}")
     print("Log a verified vulnerability:")

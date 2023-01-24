@@ -6,7 +6,6 @@ Enforce consistent, dependable workflow for engagement note-taking and report wr
 
 import os
 import sys
-import csv
 from glob import glob
 import re
 import pandas as pd

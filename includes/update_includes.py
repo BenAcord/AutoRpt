@@ -11,6 +11,7 @@ import fnmatch
 import hashlib
 import csv
 import re
+import shutil
 import ijson
 import requests
 import blessings
@@ -56,7 +57,7 @@ def out_verify(field, msg):
 def out_pass(field, msg):
     """ Format a good pass line output """
     print(
-        f'{term.black_bold_on_bright_green} '
+        f'{term.white_bold_on_bright_green} '
         f'{field} {term.normal}  '
         f'{term.bright_green}{msg}{term.normal}'
     )
@@ -145,40 +146,53 @@ def auto_verify_attack_csv():
     out_header("    Verifying AutoRpt Attack CSV Files    ")
     files = [f for f in os.listdir('.') if os.path.isfile(f)]
     csv_files = []
+
     for name in files:
         if name.endswith(".csv") and re.match(r'autorpt-.*-attack.csv', str(name)):
             csv_files.append(name)
+
     if 0 == (len(csv_files)):
         out_notice('No files found')
         sys.exit(10)
-    # Get Enterprise framework
-    picker = 3
-    file = csv_files[picker]
 
-    try:
-        if re.search(r"^autorpt-enterprise-attack.csv$", str(file)):
-            with open(file, newline='', encoding='utf8') as csvfile:
-                spamreader = csv.reader(csvfile, delimiter=',')
-                for row in spamreader:
-                    tactic_id = row[0]
-                    tactic = row[1]
-                    technique = row[2]
-                    if tactic_id == 'T1047':
-                        out_pass(
-                            'Verification PASS ',
-                            f"ID: {tactic_id} Tactic: {tactic} Technique: {technique}"
-                        )
-        else:
-            out_notice('Unable to find autorpt-enterprise-attack.csv!')
-    except (PermissionError, IOError, FileNotFoundError):
-        out_fail(
-            'Verification Failed ',
-            f"Tactic: {tactic} Technique: {technique}"
-        )
+    out_notice(f'Number of csv_files: {len(csv_files)}')
+    i = 0
+    for this_csv in csv_files:
+        if "enterprise" in this_csv:
+            out_notice(f"{i})\t{this_csv}")
+
+            # Get Enterprise framework
+            picker = i
+            file = csv_files[picker]
+
+            try:
+                if re.search(r"^autorpt-enterprise-attack.csv$", str(file)):
+                    with open(file, newline='', encoding='utf8') as csvfile:
+                        spamreader = csv.reader(csvfile, delimiter=',')
+                        for row in spamreader:
+                            tactic_id = row[0]
+                            tactic = row[1]
+                            technique = row[2]
+                            if tactic_id == 'T1190':
+                                out_pass(
+                                    'Verification PASS ',
+                                    f"ID: {tactic_id} Tactic: {tactic} Technique: {technique}"
+                                )
+                else:
+                    out_notice(
+                        'Unable to find T1190 in autorpt-enterprise-attack.csv!  '
+                        'It may have been deprecated or the update failed.'
+                    )
+            except (PermissionError, IOError, FileNotFoundError):
+                out_fail(
+                    'Verification Failed ',
+                    f"Tactic: {tactic} Technique: {technique}"
+                )
+        i = i + 1
 
 def download_mitre_attack_json_files():
     """ Download the ATT&CK files in JSON format. """
-    out_header('[    Downloading Latest JSON Files From MITRE ATT&CK GitHub    ]')
+    out_header('[    Downloading Latest JSON Files from the MITRE ATT&CK GitHub    ]')
     for url in allUrls:
         local_filename = os.path.basename(url)
         framework = local_filename.replace('-attack.json', '')
@@ -229,17 +243,86 @@ def remove_mitre_attack_json_files():
             out_notice(f'Removing: {name}')
             os.remove(name)
 
+def download_eisvogel_template(this_template):
+    """ Download the latest Eisvogel template. """
+    url_filename = os.path.basename(this_template)
+    if "LICENSE" in url_filename:
+        local_filename = 'eisvogel.LICENSE'
+        base_name = local_filename
+    else:
+        local_filename = url_filename.replace('.tex', '.latex')
+        base_name = url_filename.replace('.tex', '')
+    target_filename = (
+        f"{os.path.expanduser('~/.local/share/pandoc/templates/')}"
+        f"{local_filename}"
+    )
+    out_header(f"[    Downloading Latest {base_name} from Wandmalfarbe's GitHub    ]")
+
+    # HTTP GET Request.
+    try:
+        request_response = requests.get(this_template, timeout=90)
+    except (PermissionError, IOError, FileNotFoundError):
+        out_notice(f'Unable to download {this_template}')
+        sys.exit(1)
+
+    # Calculate sha256sum for the downloaded file
+    # and store the digest in the latest config value
+    print("[i] Generating the hash for the latest file...")
+    config['Latest'][base_name] = hashlib.sha256(request_response.content).hexdigest()
+
+    # If latest sum is different than current parse latest to update current
+    if (
+        #not config['Current'][base_name] or
+        not config.has_option('Current', base_name) or
+        config['Current'][base_name] != config['Latest'][base_name]
+    ):
+        print("[i] Changes exist.  Writing the latest template to disk.")
+        with open (local_filename, 'wb') as to_disk:
+            try:
+                to_disk.write(request_response.content)
+            except (PermissionError, IOError, FileNotFoundError):
+                out_notice(f'Unable to write to {local_filename}')
+                sys.exit(2)
+
+            config['Current'][base_name] = config['Latest'][base_name]
+            try:
+                with open(updateConfigFile, 'w', encoding='utf8') as config_file_writer:
+                    config.write(config_file_writer)
+            except (PermissionError, IOError):
+                out_fail(
+                    'Save Config',
+                    "Failed to save the updated values to the user config.toml file."
+                )
+                sys.exit(3)
+        out_pass('Copying file', f"{target_filename}")
+        try:
+            shutil.copy(local_filename, target_filename)
+        except (PermissionError, IOError, FileNotFoundError):
+            out_fail("Unable to write", target_filename)
+            sys.exit(3)
+    else:
+        out_pass('Download', f'{local_filename} is already up-to-date.')
+
+
 if __name__ == "__main__":
     # Get the script home starting directory
     autorpt_runfrom = os.path.dirname(os.path.realpath(__file__))
-    MITRE_GITHUB = 'https://raw.githubusercontent.com/mitre/cti/master'
-    urlEnterprise = f'{MITRE_GITHUB}/enterprise-attack/enterprise-attack.json'
-    urlMobile = f'{MITRE_GITHUB}/mobile-attack/mobile-attack.json'
-    urlIcs = f'{MITRE_GITHUB}/ics-attack/ics-attack.json'
-    allUrls = [urlEnterprise, urlMobile, urlIcs]
+    GITHUB_BASE_URL = 'https://raw.githubusercontent.com/'
+    EISVOGEL_BASE = f'{GITHUB_BASE_URL}Wandmalfarbe/pandoc-latex-template/master/'
+    github_eisvogel = f'{EISVOGEL_BASE}eisvogel.tex'
+    github_eisvogel_license = f'{EISVOGEL_BASE}LICENSE'
+    github_mitre = f'{GITHUB_BASE_URL}mitre/cti/master'
+    url_enterprise = f'{github_mitre}/enterprise-attack/enterprise-attack.json'
+    url_mobile = f'{github_mitre}/mobile-attack/mobile-attack.json'
+    url_ics = f'{github_mitre}/ics-attack/ics-attack.json'
+    allUrls = [url_enterprise, url_mobile, url_ics]
     updateConfigFile = f'{autorpt_runfrom}/update.toml'
     config = configparser.ConfigParser()
     config.read(updateConfigFile)
+
+    # Download the latest Eisvogel template.
+    download_eisvogel_template(github_eisvogel)
+    download_eisvogel_template(github_eisvogel_license)
 
     # Download the latest MITRE CTI GitHub JSON files
     download_mitre_attack_json_files()

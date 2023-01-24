@@ -11,7 +11,7 @@ import shutil
 import configparser
 import pyperclip as pc
 from packaging import version
-from autorpt.pretty import color_fail, color_notice, color_debug # pylint: disable=import-error
+from autorpt.pretty import color_fail, color_notice # pylint: disable=import-error
 
 def load_config_values():
     """Read application-level settings configuration file"""

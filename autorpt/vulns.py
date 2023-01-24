@@ -7,7 +7,6 @@ Enforce consistent, dependable workflow for engagement note-taking and report wr
 import os
 import sys
 import time
-import csv
 import pandas as pd
 import autorpt.main as main # pylint: disable=import-error,consider-using-from-import
 import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import

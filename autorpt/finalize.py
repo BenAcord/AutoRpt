@@ -11,6 +11,7 @@ import re
 import subprocess
 import sys
 import pandas as pd
+import py7zr
 import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
 import autorpt.cvss as cvss # pylint: disable=import-error,consider-using-from-import
 from autorpt.work import sitrep_auto # pylint: disable=import-error
@@ -257,6 +258,7 @@ def create_report(rpt_extension, rpt_full_path, rpt_filename, vulns_table):
     cmd += ' --number-sections'
     cmd += ' --wrap=auto'
     cmd += ' --highlight-style ' + cfg.CONFIG_VALUES['Settings']['style']
+    cmd += ' --pdf-engine=xelatex'
     # Helpful for debugging the pandoc command:
     #color_debug(f"cmd:\n{cmd}")
 
@@ -267,16 +269,15 @@ def create_report(rpt_extension, rpt_full_path, rpt_filename, vulns_table):
         sys.exit(10)
     color_notice(cmd_output)
 
-def create_archive_file(rpt_base, rpt_name, rpt_full_path):
+def create_archive_file(rpt_base, rpt_name, rpt_ext):
     """ Create the 7z archive file containing only the report file. """
-    archive_file = rpt_base + rpt_name + ".7z"
-    color_notice("Generating 7z archive " + archive_file)
-    cmd = '/usr/bin/7z a ' + archive_file + ' ' + rpt_full_path
-    try:
-        subprocess.getoutput(cmd)
-    except subprocess.CalledProcessError as err:
-        color_fail("[!]", f"Failed to generate 7z archive\n{err}")
-        sys.exit(15)
+    archive_file = f"{rpt_base}{rpt_name}.7z"
+    report_file = f"{rpt_base}{rpt_name}.{rpt_ext}"
+    color_notice(
+        f"Creating 7z archive: {archive_file}\nContents: {report_file}"
+    )
+    with py7zr.SevenZipFile(archive_file, 'w') as archive:
+        archive.writeall(report_file)
 
 def get_pandoc_style():
     """Selector of the code syntax highlight style"""
