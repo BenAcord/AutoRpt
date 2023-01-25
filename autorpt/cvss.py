@@ -490,11 +490,11 @@ def ports():
     if os.path.isfile(f"{cfg.get_active_path()}/{cfg.TARGETS_FILE}"):
         ports_file = f"{cfg.get_active_path()}"
         ports_file = f"{ports_file}/report/{cfg.PORTS_SPREADSHEET}"
-        
+
         if os.path.isfile(ports_file) and cfg.RUN_STATE != 'finalize':
             color_notice(f'Removing existing ports file: {ports_file}')
             os.remove(ports_file)
-        
+
         # Look for nmap output files associated with each target IP address
         with open(
             f"{cfg.get_active_path()}/{cfg.TARGETS_FILE}",
@@ -506,11 +506,11 @@ def ports():
             for target in targets:
                 target = target.strip()
                 get_nmap_file(target, ports_file)
-        
+
         # Update the engagement status
         active = cfg.SESSION['Current']['active']
         cfg.SESSION[active]['status'] = 'In-process'
         cfg.save_engagements(cfg.SESSION)
-        
+
         if not os.path.isfile(ports_file):
             color_notice("No nmap files found.")
