@@ -6,11 +6,8 @@ Enforce consistent, dependable workflow for engagement note-taking and report wr
 
 import sys
 from autorpt.main import main_menu, params
-from autorpt.pretty import banner
 
 if __name__ == '__main__':
-    # Display pretty ASCII art
-    banner()
     # Take action based on parameters
     if len(sys.argv) <= 1:
         main_menu()

@@ -25,6 +25,10 @@ def show_version():
     )
     sys.exit(0)
 
+def get_version():
+    """ Return the version information. """
+    return f"v{cfg.CONFIG_VALUES['Version']['autorpt_version']}"
+
 def dictionary_to_menu(dictionary):
     """ Helper to convert a dictionary to menu item listing. """
     i = 0
@@ -289,6 +293,9 @@ def display_sitrep_menu():
 
 def params(this_arguments):
     """ Set routing action based on argument.  Otherwise, display help. """
+
+    # Display pretty ASCII art
+    banner(get_version())
 
     if len(this_arguments) >= 3:
         param_directive = str.join(' ', (this_arguments[1], this_arguments[2]))
