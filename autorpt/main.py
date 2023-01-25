@@ -8,7 +8,8 @@ import os
 import re
 import sys
 import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
-from autorpt.pretty import helper, banner, clear_screen, color_header, color_subheading # pylint: disable=import-error
+from autorpt.help import helper # pylint: disable=import-error
+from autorpt.pretty import banner, clear_screen, color_header, color_subheading # pylint: disable=import-error
 from autorpt.pretty import color_menu_item, color_verify, color_fail, color_notice # pylint: disable=import-error
 from autorpt.startup import startup # pylint: disable=import-error
 from autorpt.finalize import get_pandoc_style, finalize, whathaveidone # pylint: disable=import-error
@@ -289,8 +290,13 @@ def display_sitrep_menu():
 def params(this_arguments):
     """ Set routing action based on argument.  Otherwise, display help. """
 
+    if len(this_arguments) >= 3:
+        param_directive = str.join(' ', (this_arguments[1], this_arguments[2]))
+    else:
+        param_directive = this_arguments[1]
+
     # Configuration settings
-    match this_arguments[1]:
+    match param_directive:
         case "addtemplate": add_template()
         case "addtarget": add_a_new_target()
         case "help": helper()
@@ -299,11 +305,8 @@ def params(this_arguments):
         case "list": whathaveidone()
         case "whathaveidone": whathaveidone()
         case "vuln": display_vuln_menu()
-        case "sitrep":
-            if this_arguments[2] == "list":
-                sitrep_list()
-            else:
-                display_sitrep_menu()
+        case "sitrep list": sitrep_list()
+        case "sitrep":display_sitrep_menu()
         case "ports": ports()
         case "active": cfg.get_the_active_engagement()
         case "upgrade": cfg.upgrade_config_file()
