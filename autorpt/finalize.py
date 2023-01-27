@@ -141,6 +141,13 @@ def replace_boilerplate(this_file, this_active, this_filename):
     vulns_file = f"{rpt_base}{cfg.VULNS_CSV}"
     vulns_chart = ""
     vulns_table = ""
+    vulns_recommendations = ""
+    target_file = f'{cfg.SESSION[active]["path"]}/targets.md'
+    targets_table = ""
+
+    if os.path.isfile(target_file):
+        with open(target_file, 'r', encoding='utf8') as targets_reader:
+            targets_table = targets_reader.read()
 
     if os.path.isfile(vulns_file):
         # Generate the text for the vulnerability severity chart, it's ASCII.
@@ -205,8 +212,18 @@ def replace_boilerplate(this_file, this_active, this_filename):
             file_contents
         )
         file_contents = re.sub(
+            'BOILERPLATE_VULNS_RECOMMENDATIONS',
+            vulns_recommendations,
+            file_contents
+        )
+        file_contents = re.sub(
             'BOILERPLATE_PLATFORM',
             f'{cfg.SESSION[this_active]["path"]}/report/'.split('/')[-4],
+            file_contents
+        )
+        file_contents = re.sub(
+            'BOILERPLATE_TARGETS_LIST',
+            targets_table,
             file_contents
         )
         file_contents = re.sub(
