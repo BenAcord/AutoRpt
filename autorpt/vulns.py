@@ -328,7 +328,7 @@ def create_vuln_chart():
         # Plain text of the chart without color.
         # Cannot be saved to a variable.
         # Best, quick win option for writing chart to the report.
-        chart_filename = f"{cfg.SESSION[this_active_name]['path']}/report/vulns_chart.txt"
+        chart_filename = f"{cfg.SESSION[this_active_name]['path']}/report/vulns_chart.md"
         # The final False controls is color is preserved.  If True it will break reporting
         # as it confuses pandoc on latex syntax.
         plt.save_fig(chart_filename, False, False)
