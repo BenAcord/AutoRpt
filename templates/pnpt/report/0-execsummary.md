@@ -1,5 +1,5 @@
 ---
-title: "Demo Company"
+title: "Practical Network Penetration Tester Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Practical Network Penetration Tester"
@@ -89,22 +89,15 @@ An external penetration test emulates the role of an attacker attempting to gain
 # Finding Severity Ratings
 The following table defines levels of severity and corresponding CVSS score range that are used throughout the document to assess vulnerability and risk impact.
 
-| Severity | CVSS V3 Score Range | Definition |
-| :---: | :---: | :---: |
-| Critical | 9.0-10.0 | Exploitation is straightforward and usually results in system-level compromise.  It is advised to form a plan of action and patch immediately. |
-| High | 7.0-8.9 | Exploitation is more difficult but could cause elevated privileges and potentially a loss of data or downtime.  It is advised to form a plan of action and patch as soon as possible. |
-| Moderate | 4.0-6.9 | Vulnerabilities exist but are not exploitable or require extra steps such as social engineering.  It is advised to form a plan of action and patch after high-priority issues have been resolved. |
-| Low | 0.1-3.9 | Vulnerabilities are non-exploitable but would reduce an organization’s attack surface.  It is advised to form a plan of action and patch during the next maintenance window. |
-| Informational | N/A | No vulnerability exists.  Additional information is provided regarding items noticed during testing, strong controls, and additional documentation. |
+BOILERPLATE_VULNS_TABLE
 
 \pagebreak
 
 # Scope
-| Assessment | Details | 
-| :---: | :---: |
-| External Penetraton Test | 192.168.0.0/24,<br>192.168.1.0/24 |
 
-- Full scope information provided in “Demo Company-867-19 Full Findings.xslx”
+BOILERPLATE_TARGETS_LIST
+
+- Full scope information provided in “vulns.csv”
 
 ## Scope Exclusions
 
@@ -129,3 +122,29 @@ The following table describes how TCMS gained internal network access, step by s
 | 2 | Attempted a “credential stuffing” attack against Outlook Web Access (OWA), which was unsuccessful.  However, OWA provided username enumeration, which allowed TCMS to gather a list of valid usernames to leverage in further attacks. | Synchronize valid and invalid account messages. |
 | 3 | Performed a “password spraying” attack against OWA using the usernames discovered in step 2.  TCMS used the password of Summer2018! (season + year + special character) against all valid accounts and gained access into the OWA application. | OWA permitted authenticated with valid credentials.  TCMS recommends DC implement Multi-Factor Authentication (MFA) on all external services.<br><br>OWA permitted unlimited login attempts.  TCMS recommends DC restrict logon attempts against their service.<br><br>TCMS recommends an improved password policy of: 1) 14 characters or longer 2) Use different passwords for each account accessed. 3) Do not use words and proper names in passwords, regardless of language<br><br>Additionally, TCMS recommends that DC:<br> - Train employees on how to create a proper password |
 | 4 | Leveraged valid credentials to log into VPN | OWA permitted authenticated with valid credentials.  TCMS recommends DC implement Multi-Factor Authentication (MFA) on all external services. |
+
+# Security Strengths
+## SIEM Alerts of Vulnerability Scans
+
+During the assessment, the DC security team alerted TCMS engineers of detected vulnerability scanning against their systems. The team was successfully able to identify the TCMS engineer’s attacker IP address within minutes of scanning and was capable of blacklisting TCMS from further scanning actions.
+
+# Security Weaknesses
+
+BOILERPLATE_VULNS_RECOMMENDATIONS
+
+## Missing Multi-Factor Authentication
+
+TCMS leveraged multiple attacks against DC login forms using valid credentials harvested through open-source intelligence. Successful logins included employee e-mail accounts through Outlook Web Access and internal access via Active Directory login on the VPN. The use of multi-factor authentication would have prevented full access and required TCMS to utilize additional attack methods to gain internal network access.
+
+## Weak Password Policy
+
+TCMS successfully performed password guessing attacks against DC login forms, providing internal network access. A predictable password format of Summer2018! (season + year + special character) was attempted and successful.
+
+## Unrestricted Logon Attempts
+
+During the assessment, TCMS performed multiple brute-force attacks against login forms found on the external network. For all logins, unlimited attempts were allowed, which permitted an eventual successful login on the Outlook Web Access application.
+
+# Vulnerabilities by Impact
+
+BOILERPLATE_VULNS_CHART
+

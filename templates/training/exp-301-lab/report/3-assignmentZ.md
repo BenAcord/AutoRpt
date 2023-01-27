@@ -1,3 +1,4 @@
+
 ## Assignment Z
 
 ### Proof.txt
@@ -6,7 +7,7 @@
 
 Provide a screenshot of running `type proof.txt` and the `ipconfig` command from the directory where proof.txt is stored.
 
-![local.txt](src/placeholder-image-300x225.png)
+![local.txt](images/placeholder-image-300x225.png)
 
 ### Initial Analysis
 

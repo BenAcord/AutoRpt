@@ -1,182 +1,38 @@
----
-title: "BOILERPLATE_PLATFORM BOILERPLATE_TARGET"
-subtitle: "Write-Up"
-author: ["BOILERPLATE_AUTHOR"]
-date: "BOILERPLATE_DATE"
-subject: "Markdown"
-keywords: [BOILERPLATE_KEYWORDS]
-lang: "en"
-titlepage: true
-titlepage-color: "1E90FF"
-titlepage-text-color: "FFFAFA"
-titlepage-rule-color: "FFFAFA"
-titlepage-rule-height: 2
-book: true
-classoption: oneside
-code-block-font-size: \scriptsize
-geometry: margin=1in
----
-# Summary
 
-## Introduction
+# 192.168.XX.XX / Hostname
 
-Describe the overall lab purpose: Hack the Box, Proving Grounds, Virtual Hacking Labs, Try Hack Me, VulnHub, CTF, etc.
+## Local.txt / Proof.txt / Secret.txt
 
-## Objective
+Provide the contents of local.txt, proof.txt or secret.txt
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
-The objective of this assessment is to perform a penetration test against a single target for the purpose of personal growth and development.
+## Pre-Compromise Enumeration Steps
 
-Briefly describe the target
+Provide relevant techniques and methods used to perform enumeration prior to initial compromise, the steps taken should be able to be easily followed and reproducible if necessary.
+Include any custom code or references to public tools.
 
-## Lessons Learned
+## Compromise
 
-### Key takeaway
+Provide a description of exploitation steps to compromise the machine and obtain shell access, the steps taken should be able to be easily followed and reproducible if necessary.
+Only the steps that ended up working are required.
+Include any custom code or references to public tools.
 
-tbd
+## Post-Exploitation Enumeration Steps
 
-### Most fun or interesting part of the training
+Provide relevant post-exploitation enumeration steps related to the network or local privilege escalation, the steps taken should be able to be easily followed and reproducible if necessary.
+Include any custom code or references to public tools.
 
-tbd
+## Local Privilege Escalation
 
-### Biggest struggle
+Provide a description of exploitation steps to escalate privileges on the machine if applicable, the steps taken should be able to be easily followed and reproducible if necessary.
+Include any custom code or references to public tools.
 
-tbd
+## Screenshots
 
-### Items for further growth
+The exam control panel contains a section available to submit your proof files.
+The contents of the local.txt, proof.txt and secret.txt files obtained from your exam machines must be submitted in the control panel before your exam has ended.
+Note that the control panel will not indicate whether the submitted proof is correct or not.
 
-- a
-- b
-- c
+Each local.txt, proof.txt and secret.txt found must be shown in a screenshot that includes the contents of the file, as well as the IP address of the target by using ipconfig, ifconfig or ip addr.
 
-# Details
-
-# BOILERPLATE_HOSTNAME Write-Up
-
-## Introduction
-
-Describe the lab and the target system and a high-level summary of the results.
-
-## Recommendations
-
-I recommend patching the vulnerabilities identified during the testing to ensure that an attacker cannot exploit these systems in the future.  One thing to remember is that these systems require frequent patching and once patched, should remain on a regular patch program to protect additional vulnerabilities that are discovered at a later date.
-
-BOILERPLATE_VULNS
-
-## System: BOILERPLATE_TARGET
-
-### Service Enumeration
-
-The service enumeration portion of a penetration test focuses on gathering information about what services are alive on a system or systems.  This is valuable for an attacker as it provides detailed information on potential attack vectors into a system.  Understanding what applications are running on the system gives an attacker needed information before performing the actual penetration test.  In some cases, some ports may not be listed.
-
-**Vulnerability Analysis**
-
-*Initial Shell Vulnerability Exploited*
-
-**Severity: Critical or High**
-
-*Explanation*
-
-**Vulnerability Explanation**
-
-*Explanation and additional info about where the initial shell was acquired from*
-
-**Vulnerability Fix**
-
-*Explanation*
-
-### Exploitation & Low Privilege Shell
-
-Steps to reproduce:
-
-1. A 
-2. B
-3. C
-
-**Proof of Concept Code**
-
-If you have not made any modifications to an exploit, you should only provide the URL where the exploit can be found. Do not include the full unmodified code, especially if it is several pages long.  
-If you have modified an exploit, you should include:
-
-- The modified exploit code
-- The URL to the original exploit code
-- The command used to generate any shellcode (if applicable)
-- Highlighted changes you have made
-- An explanation of why those changes were made
-
----
-
-```Bash
-echo Code goes here.
-```
-
----
-
-### Local.txt
-
-**Screenshot**
-
-> Screenshot must show proof.txt contents with `cat` or `type` command and output from `ipconfig` or `ip`.  Additionally, search the system for local.txt to cover all bases.  
-
-![Alt text](images/placeholder-image-300x225.png "title"){ width=50%}
-
-**Contents**
-
-> local.txt
-
-### Privilege Escalation
-
-**Vulnerability Analysis**
-
-*Additional Priv Esc info*
-
-**Vulnerability Exploited**
-
-**Vulnerability Explanation**
-
-**Vulnerability Fix**
-
-**Severity: Critical or High**
-
-**Exploitation & Administrative Shell**
-
-Steps to reproduce:
-
-1. A 
-2. B
-3. C
-
-
-**Exploit Code**
-
-If you have not made any modifications to an exploit, you should only provide the URL where the exploit can be found. Do not include the full unmodified code, especially if it is several pages long.  
-If you have modified an exploit, you should include:
-
-- The modified exploit code
-- The URL to the original exploit code
-- The command used to generate any shellcode (if applicable)
-- Highlighted changes you have made
-- An explanation of why those changes were made
-
----
-
-```Bash
-echo Code goes here.
-```
-
----
-
-### Proof.txt
-
-**Screenshot**
-
-Screenshot must show proof.txt contents with `cat` or `type` command and output from `ipconfig` or `ip`.  Additionally, search the system for local.txt to cover all bases.  
-
-![Alt text](images/placeholder-image-300x225.png "title"){ width=50%}
-
-**Contents**
-
-> proof.txt
-
-## Conclusion
-
-Capture your summary thoughts here.
+![ImgPlaceholder](images/placeholder-image-300x225.png)

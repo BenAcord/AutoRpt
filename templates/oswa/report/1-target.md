@@ -4,6 +4,10 @@
 ## Local.txt / Proof.txt
 
 Provide the contents of local.txt and proof.txt
+local.txt: `AAAA`
+proof.txt: `AAAA`
+
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
 ## Vulnerability 1
 

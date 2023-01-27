@@ -4,6 +4,7 @@
 ## proof.txt / local.txt / secret.txt
 
 Provide the contents of local.txt, proof.txt or secret.txt.
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
 ## Initial Analysis
 
@@ -30,3 +31,4 @@ The contents of the local.txt, proof.txt or secret.txt files obtained from your 
 Note that the control panel will not indicate whether the submitted proof is correct or not.
 
 Each local.txt, proof.txt or secret.txt found must be shown in a screenshot that includes the contents of the file, as well as the IP address of the target by using ipconfig.
+![ImgPlaceholder](images/placeholder-image-300x225.png)

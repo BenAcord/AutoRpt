@@ -35,9 +35,8 @@ This document is the exclusive property of BOILERPLATE_TARGET, BOILERPLATE_PLATF
 TBD
 
 ## Scope
-| Assessment | Details | 
-| :---: | :---: |
-| External Penetraton Test | BOILERPLATE_TARGET |
+
+BOILERPLATE_TARGETS_LIST
 
 ## Scope Exclusions
 
@@ -64,4 +63,11 @@ Phases of penetration testing activities include the following:
 # Executive Summary
 
 TBD
+
+
+BOILERPLATE_VULNS_CHART
+
+BOILERPLATE_VULNS_TABLE
+
+BOILERPLATE_VULNS_RECOMMENDATIONS
 

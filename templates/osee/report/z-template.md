@@ -1,10 +1,13 @@
+
 # 192.168.66.63
 
 ## Proof.txt
 
-Provide the contents of proof.txt
+Provide the contents of proof.txt: `AAAA`
 
-##  ROP Chains with Explanations
+![ImgPlaceholder](images/placeholder-image-300x225.png)
+
+## ROP Chains with Explanations
 
 Provide the ASM ROP chains used in the exploit with a brief explanation for each gadget.
 
@@ -16,7 +19,7 @@ Provide the final proof of concept code used to gain access to the server.
 
 Provide a screenshot of the ipconfig command and the contents of proof.txt.
 
-![ImgPlaceholder](src/placeholder-image-300x225.png)
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
 ## Steps
 

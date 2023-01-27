@@ -1,8 +1,8 @@
 ---
-title: "Offensive Security Defense Analyst Lab Report"
+title: "SOC-200 Lab Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
-subject: "Offensive Security Defense Analyst"
+subject: "SOC-200"
 keywords: [security operations, defensive analysis]
 subtitle: "SOC-200 Lab Report"
 lang: "en"
@@ -15,7 +15,7 @@ book: true
 classoption: oneside
 code-block-font-size: \scriptsize
 ---
-# Offensive Security OSDA Exam Report
+# Offensive Security SOC-200 Lab Report
 
 Copyright © 2022 Offensive Security Ltd. All rights reserved.
 
@@ -23,9 +23,7 @@ No part of this publication, in whole or in part, may be reproduced, copied, tra
 
 ## Introduction
 
-The Offensive Security Exam report contains all efforts that were conducted in order to pass the Offensive Security certification test.
-This report should contain all items that were used to pass the exam and it will be graded from a standpoint of correctness and fullness to all aspects of the exam.
-The purpose of this report is to ensure that the student has a full understanding of security detection methodologies as well as the technical knowledge to pass the qualifications for the Offensive Security Defense Analyst.
+The Offensive Security SOC-200 lab report contains all efforts that were conducted in order to pass the Offensive Security certification test.  This report should contain all items that were used to pass the exam and it will be graded from a standpoint of correctness and fullness to all aspects of the exam.  The purpose of this report is to ensure that the student has a full understanding of security detection methodologies as well as the technical knowledge to pass the qualifications for the Offensive Security Defense Analyst.
 
 ## Objective
 

@@ -1,5 +1,4 @@
 
-
 # Access Point X
 
 A brief description of the attack chain with machine names, including the depth of compromise should be included here.
@@ -11,6 +10,7 @@ Provide the contents of the “Access Point X” wireless network key.
 ## Screenshots
 
 Provide at least one screenshot of the successfully cracked “Access Point X" wireless network key and a screenshot of proof.txt.
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
 ## Steps
 

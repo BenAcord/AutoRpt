@@ -43,3 +43,10 @@ I was tasked with performing a penetration test of ...
 ## Recommendations
 
 TBD
+
+BOILERPLATE_VULNS_CHART
+
+BOILERPLATE_VULNS_TABLE
+
+BOILERPLATE_VULNS_RECOMMENDATIONS
+

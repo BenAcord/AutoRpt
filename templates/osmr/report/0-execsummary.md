@@ -48,3 +48,9 @@ The student will be required to fill out this exam documentation fully and to in
 # High-Level Summary
 
 A brief description of the assignments that were solved, including the overall exploitation steps.
+
+BOILERPLATE_VULNS_CHART
+
+BOILERPLATE_VULNS_TABLE
+
+BOILERPLATE_VULNS_RECOMMENDATIONS

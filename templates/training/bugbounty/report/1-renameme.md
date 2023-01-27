@@ -3,11 +3,10 @@
 
 Description of threats
 
-BOILERPLATE_VULNS
-
 # Evidence
 
 Screenshots
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
 # Steps to Reproduce
 

@@ -3,7 +3,8 @@
 
 ## Proof.txt
 
-Provide the contents of proof.txt.
+Provide the contents of proof.txt: `AAAA`
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
 ## Initial Analysis
 

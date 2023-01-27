@@ -4,6 +4,9 @@
 ## proof.txt / local.txt / secret.txt
 
 Provide the contents of local.txt, proof.txt or secret.txt.
+local.txt: `AAAA`
+secret.txt: `BBBB`
+![ImgPlaceholder](images/placeholder-image-300x225.png)
 
 ## Initial Analysis
 

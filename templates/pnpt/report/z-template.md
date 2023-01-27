@@ -1,27 +1,4 @@
-# Security Strengths
-## SIEM alerts of vulnerability scans
 
-During the assessment, the DC security team alerted TCMS engineers of detected vulnerability scanning against their systems.  The team was successfully able to identify the TCMS engineer’s attacker IP address within minutes of scanning and was capable of blacklisting TCMS from further scanning actions.
-
-# Security Weaknesses
-## Missing Multi-Factor Authentication
-
-TCMS leveraged multiple attacks against DC login forms using valid credentials harvested through open-source intelligence.  Successful logins included employee e-mail accounts through Outlook Web Access and internal access via Active Directory login on the VPN.  The use of multi-factor authentication would have prevented full access and required TCMS to utilize additional attack methods to gain internal network access.
-
-## Weak Password Policy
-
-TCMS successfully performed password guessing attacks against DC login forms, providing internal network access.  A predictable password format of Summer2018! (season + year + special character) was attempted and successful.  
-
-## Unrestricted Logon Attempts
-
-During the assessment, TCMS performed multiple brute-force attacks against login forms found on the external network.  For all logins, unlimited attempts were allowed, which permitted an eventual successful login on the Outlook Web Access application.  
-
-# Vulnerabilities by Impact
-
-The following chart illustrates the vulnerabilities found by impact:
-
-![chart-vulnerabilities-by-impact](images/chart-vulnerabilities-by-impact.png)
-\pagebreak
 ## External Penetration Test Findings
 ### Insufficient Lockout Policy – Outlook Web App (Critical)
 | | |

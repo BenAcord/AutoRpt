@@ -30,3 +30,9 @@ The student will be required to fill out this exam documentation fully and to in
 - Methodology walkthrough and detailed outline of steps taken
 - Each finding with included screenshots, walkthrough, sample code, and proof.txt if applicable.
 - Any additional items that were not included
+
+BOILERPLATE_VULNS_CHART
+
+BOILERPLATE_VULNS_TABLE
+
+BOILERPLATE_VULNS_RECOMMENDATIONS

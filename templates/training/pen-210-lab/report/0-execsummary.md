@@ -1,10 +1,10 @@
 ---
-title: "Offensive Security Wireless Professional Exam Report"
+title: "PEN-210 Lab Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
-subject: "Offensive Security Wireless Professional"
+subject: "PEN-210 Lab Report"
 keywords: [wireless security, penetration testing]
-subtitle: "OSWP Exam Report"
+subtitle: "PEN-210 Lab Report"
 lang: "en"
 titlepage: true
 titlepage-color: "FF8C00"
@@ -17,7 +17,7 @@ code-block-font-size: \scriptsize
 header-includes:
     - \usepackage{setspace}
 ---
-# OSWP Exam Report
+# PEN-210 Lab Report
 
 Copyright © 2022 Offensive Security Ltd. All rights reserved.
 
