@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 """
-autorpt.py
-Enforce consistent, dependable workflow for engagement note-taking and report writing.
+Functions for managing the consistency of the vulnerabilities file.
 """
 
 import os
 import sys
 import time
 import pandas as pd
+import plotext as plt
 import autorpt.main as main # pylint: disable=import-error,consider-using-from-import
 import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
 #import get_active_path # pylint: disable=import-error
@@ -284,3 +284,55 @@ def remove_vuln():
         vulns_file_writer.close()
     time.sleep(2)
     vuln()
+
+def create_vuln_chart():
+    """
+    Tally the counts of severity for recorded vulnerabilities and store them as a ASCII chart.
+    """
+
+    this_active_name = cfg.SESSION['Current']['active']
+    full_vulns_path = f"{cfg.SESSION[this_active_name]['path']}/report/{cfg.VULNS_CSV}"
+    this_chart = ""
+
+    if os.path.isfile(full_vulns_path):
+        # Chart table
+        severities = {'Critical': 0, 'High': 0, 'Medium': 0, 'Low': 0}
+        # Update severity values based on CSV data.
+        this_vuln_list = pd.read_csv(
+            full_vulns_path,
+            usecols = ['CvssSeverity'],
+            sep=",",
+            engine="python"
+        )
+
+        for severity in severities:
+            total_count = (
+                this_vuln_list[this_vuln_list.CvssSeverity == severity].value_counts().to_string(
+                    index=False,
+                    header=None
+                )
+            )[0]
+            if "S" != total_count:
+                # S = Series, aka no value.
+                severities[severity] = int(total_count)
+
+        # Show the chart.
+        size_width = 40
+        plt.simple_bar(
+            severities.keys(),
+            severities.values(),
+            width = size_width,
+            title = 'Vulnerability Count by CVSSv3 Severity'
+        )
+
+        # Plain text of the chart without color.
+        # Cannot be saved to a variable.
+        # Best, quick win option for writing chart to the report.
+        chart_filename = f"{cfg.SESSION[this_active_name]['path']}/report/vulns_chart.txt"
+        # The final False controls is color is preserved.  If True it will break reporting
+        # as it confuses pandoc on latex syntax.
+        plt.save_fig(chart_filename, False, False)
+        with open (chart_filename, 'r', encoding='utf8') as chart_file:
+            for line in chart_file:
+                this_chart += line
+    return this_chart

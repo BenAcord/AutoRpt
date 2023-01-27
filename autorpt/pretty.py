@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """
-autorpt_pretty.py
 Output formatting functions to make it look really nice.
 """
 

@@ -22,7 +22,7 @@ fi
 # inspecting and manually creating 7zip archives.
 sudo apt-get install -y p7zip xclip pandoc pandoc-data texlive texlive-latex-extra texlive-fonts-extra texlive-xetex
 
-pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl tabulate ijson py7zr
+pip install --no-input cvss blessings colorama pyperclip packaging pandas openpyxl tabulate ijson py7zr plotext
 # Pretty: blessings colorama pyperclip
 # Vulns: cvss pandas openpyxl tabulate
 

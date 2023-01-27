@@ -1,7 +1,5 @@
 
 
-# Details
-
 # BOILERPLATE_HOSTNAME Write-Up
 
 ## Introduction

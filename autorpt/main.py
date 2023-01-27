@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """
-autorpt.py
 Enforce consistent, dependable workflow for engagement note-taking and report writing.
 """
 
@@ -12,10 +11,10 @@ from autorpt.help import helper # pylint: disable=import-error
 from autorpt.pretty import banner, clear_screen, color_header, color_subheading # pylint: disable=import-error
 from autorpt.pretty import color_menu_item, color_verify, color_fail, color_notice # pylint: disable=import-error
 from autorpt.startup import startup # pylint: disable=import-error
-from autorpt.finalize import get_pandoc_style, finalize, whathaveidone # pylint: disable=import-error
+from autorpt.finalize import get_pandoc_style, finalize # pylint: disable=import-error
 from autorpt.vulns import vuln, vuln_list # pylint: disable=import-error
 from autorpt.cvss import ports # pylint: disable=import-error
-from autorpt.work import add_target, add_template # pylint: disable=import-error
+from autorpt.work import add_target, add_template, whathaveidone # pylint: disable=import-error
 from autorpt.work import sitrep_menu, sitrep_list, sitrep_auto # pylint: disable=import-error
 
 def show_version():

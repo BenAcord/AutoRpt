@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """
-autorpt_startup.py
 Create a new engagement work environment.
 """
 

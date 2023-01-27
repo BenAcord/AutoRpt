@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 """
-autorpt_config.py
-Global variables.
+Global variables and common configuration functions.
 """
 
 import datetime
@@ -12,6 +11,7 @@ import configparser
 import pyperclip as pc
 from packaging import version
 from autorpt.pretty import color_fail, color_notice # pylint: disable=import-error
+from autorpt.vulns import create_vuln_chart # pylint: disable=import-error
 
 def load_config_values():
     """Read application-level settings configuration file"""
@@ -157,16 +157,39 @@ def get_the_active_engagement():
             "No engagements.  Run 'autorpt.py startup' to create an engagement."
         )
     else:
-        color_notice("Ready to go!")
-        this_msg = SESSION['Current']['active']
-        color_notice(
-            "Path is in your clipboard: "
-            f"{SESSION[this_msg]['path']}"
+        # Summary sentence to frame reference.
+        print(
+            f"Currently working on {SESSION[SESSION['Current']['active']]['engagement_name']}, "
+            f"part of {SESSION[SESSION['Current']['active']]['type']} "
+            f"with {SESSION[SESSION['Current']['active']]['platform']}.\n"
         )
-        this_msg = SESSION['Current']['active']
+
+        # Display target counts and list of targets.
+        full_target_path = f"{SESSION[SESSION['Current']['active']]['path']}/{TARGETS_FILE}"
+        if os.path.isfile(full_target_path):
+            target_count = 0
+            targets = []
+            with open(full_target_path, 'r', encoding='utf8') as targets_lines:
+                for target in targets_lines:
+                    target_count = target_count + 1
+                    targets.append(target.replace('\n', ''))
+            if 1 <= target_count <= 20:
+                color_notice(f"{target_count} Targets\n{targets}\n")
+            else:
+                color_notice(f"{target_count}\n")
+
+        # Display vulnerability counts by severity.
+        print(create_vuln_chart())
+
+        # Quality of life, copy the engagement path into the clipboard.
+        color_notice(
+            "\nThe active working path is copied into your clipboard "
+            "(CTRL + SHIFT + V to paste):\n\t"
+            f"{SESSION[SESSION['Current']['active']]['path']}"
+        )
         pc.copy(
             os.path.expanduser(
-                SESSION[this_msg]['path']
+                SESSION[SESSION['Current']['active']]['path']
             )
         )
 

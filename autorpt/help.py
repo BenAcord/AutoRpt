@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """
-help.py
 A help file contain syntax and usage examples.
 """
 
