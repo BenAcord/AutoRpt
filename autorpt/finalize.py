@@ -317,7 +317,7 @@ def create_archive_file(rpt_base, rpt_name, rpt_ext):
     archive_file = f"{rpt_base}{rpt_name}.7z"
     report_file = f"{rpt_name}.{rpt_ext}"
     os.chdir(f"{rpt_base}")
-    print(f"Located in: {os.getcwd()}")
+    #print(f"Located in: {os.getcwd()}")
     if os.path.isfile(f"{report_file}"):
         color_notice(
             f"Creating 7z archive: {archive_file}\nContents: {report_file}"
