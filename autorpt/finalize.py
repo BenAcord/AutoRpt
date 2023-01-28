@@ -269,11 +269,14 @@ def replace_boilerplate(replace_values):
     with open(rpt_filename, 'w') as result: # pylint: disable=unspecified-encoding
         result.write(file_contents + '\n')
 
+    out_info("Replacing boilerplate with content", "Complete")
+
 def create_report(active, rpt_full_path, rpt_filename):
     """
     Use the merged markdown file to create the file report output format.
     """
 
+    out_info("Merging markdown files", f"{rpt_filename}")
     sitrep_auto(
         f'Creating final report.  File: {rpt_full_path}'
     )
@@ -332,7 +335,7 @@ def create_output_file(active, rpt_filename, rpt_full_path, rpt_extension):
     if cfg.CONFIG_VALUES['Settings']['style'] == '':
         cfg.CONFIG_VALUES['Settings']['style'] = get_pandoc_style()
 
-    out_info(f"Generating {rpt_extension} report", f"{rpt_filename}")
+    out_info(f"Generating {rpt_extension} report", f"{rpt_full_path}")
 
     # Build the Pandoc command for generating the report
     cmd = '/usr/bin/pandoc ' + rpt_filename

@@ -5,7 +5,7 @@ Enforce consistent, dependable workflow for engagement note-taking and report wr
 """
 
 import sys
-from autorpt.main import main_menu, params
+from autorpt.main import main_menu, params # pylint: disable=import-error
 
 if __name__ == '__main__':
     # Take action based on parameters

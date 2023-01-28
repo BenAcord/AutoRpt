@@ -10,7 +10,7 @@ import shutil
 import configparser
 import pyperclip as pc
 from packaging import version
-from autorpt.pretty import color_fail, color_notice # pylint: disable=import-error
+from autorpt.pretty import color_fail, color_notice, out_info # pylint: disable=import-error
 from autorpt.vulns import create_vuln_chart # pylint: disable=import-error
 
 def load_config_values():
@@ -158,10 +158,12 @@ def get_the_active_engagement():
         )
     else:
         # Summary sentence to frame reference.
-        print(
-            f"Currently working on {SESSION[SESSION['Current']['active']]['engagement_name']}, "
-            f"part of {SESSION[SESSION['Current']['active']]['type']} "
-            f"with {SESSION[SESSION['Current']['active']]['platform']}.\n"
+        out_info(
+            f"Currently working on {SESSION[SESSION['Current']['active']]['engagement_name']}",
+            (
+                f"A {SESSION[SESSION['Current']['active']]['platform']} "
+                f"{SESSION[SESSION['Current']['active']]['type']}"
+            )
         )
 
         # Display target counts and list of targets.
@@ -174,18 +176,20 @@ def get_the_active_engagement():
                     target_count = target_count + 1
                     targets.append(target.replace('\n', ''))
             if 1 <= target_count <= 20:
-                color_notice(f"{target_count} Targets\n{targets}\n")
+                out_info(f"{target_count} Targets", f"{targets}\n")
             else:
-                color_notice(f"{target_count}\n")
+                out_info(f"{target_count} Targets", "\n")
 
         # Display vulnerability counts by severity.
         print(create_vuln_chart())
 
         # Quality of life, copy the engagement path into the clipboard.
-        color_notice(
-            "\nThe active working path is copied into your clipboard "
-            "(CTRL + SHIFT + V to paste):\n\t"
-            f"{SESSION[SESSION['Current']['active']]['path']}"
+        out_info(
+            "Clipboard contains active working path",
+            (
+                "CTRL + SHIFT + V to paste\n\t"
+                f"{SESSION[SESSION['Current']['active']]['path']}"
+            )
         )
         pc.copy(
             os.path.expanduser(

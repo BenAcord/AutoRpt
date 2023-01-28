@@ -38,7 +38,7 @@ def out_info(field, msg):
     Field - 40 string characters indicating an action or information
     Msg   - 35+ string characters most likely of a status
     """
-    print(f"[i] {field:40s} {msg:35s}")
+    print(f"{field:40s} {msg:35s}")
 
 def color_header(this_msg):
     """Function to format header text"""
