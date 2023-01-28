@@ -36,19 +36,18 @@ def startup():
 
     # Get the engagement type: training, ctf, exam, bugbounty, pentest
     color_notice("Select the type of engagement:")
-    main.dictionary_to_menu(cfg.CONFIG_VALUES['Settings']['types'])
+    menu_size = int(main.dictionary_to_menu(cfg.CONFIG_VALUES['Settings']['types']))
     picker = int(input('>  '))
+
     if 99 == picker:
+        picker = ''
         main.main_menu()
-    elif picker >= int(main.dictionary_to_menu(
-        cfg.CONFIG_VALUES['Settings']['types'])
-    ):
+    elif picker >= menu_size:
         main.main_menu()
     else:
         engagement_type = cfg.CONFIG_VALUES['Settings']['types'].split(',')[picker]
-
+    
     set_default_template_path(engagement_type, student_name, student_email)
-
     cfg.get_the_active_engagement()
     time.sleep(0.5)
 

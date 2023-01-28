@@ -235,7 +235,7 @@ def main_menu():
     #get_runtime_variables()
     picker = ''
     clear_screen()
-    banner()
+    banner(get_version())
     color_header('Main Menu')
     color_menu_item('1. Startup')
     color_menu_item('2. Vulnerabilities')
