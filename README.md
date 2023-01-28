@@ -8,8 +8,11 @@ The workflow is terminal friendly to keep your head in the engagement and not ju
 
 ![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-1.jpeg "AutoRpt startup screenshot for an OSCP exam attempt")
 
-The following directory structure with canned template files is created after completing the prompts in `autorpt startup`.  This directory can be opened as an Obsidian vault.
-![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-2.jpeg "Resulting directory structure created")
+The following directory structure with canned template files is created after completing the prompts in `autorpt startup`.  
+![startup2](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-2.jpeg "Resulting directory structure created")
+
+This directory can be opened as an Obsidian vault.  It's canned files are templates to guide your note taking and report writing process.
+![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/20-obsidian-0.jpeg "Using Obsidian to write your report with canned files")
 
 AutoRpt creates unique working directories from these templates.  If you retake a course or certification exam the new directory will be unique from the previous.
 ```
