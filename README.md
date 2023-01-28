@@ -1,20 +1,6 @@
 # AutoRpt Overview
-AutoRpt enforces a consistent, dependable workflow for engagement note-taking and report writing.
-It does this by managing a base directory structure with note and report templates.  The main focus is easing the process associated with InfoSec certification exams such as the OSCP or PNPT, though many others are supported.  It also covers training and CTF on common InfoSec platforms like Hack the Box, Try Hack Me, or Proving grounds to name but a few.  Bug bounty hunting and penetration tests are use case options but are considered work in progress.
-
-All wrapped in a sleak 1980's menu system.
-
-The workflow is terminal friendly to keep your head in the engagement and not juggling various interfaces.
-
-![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-1.jpeg "AutoRpt startup screenshot for an OSCP exam attempt")
-
-The following directory structure with canned template files is created after completing the prompts in `autorpt startup`.  
-![startup2](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-2.jpeg "Resulting directory structure created")
-
-This directory can be opened as an Obsidian vault.  It's canned files are templates to guide your note taking and report writing process.
-![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/20-obsidian-0.jpeg "Using Obsidian to write your report with canned files")
-
 AutoRpt creates unique working directories from these templates.  If you retake a course or certification exam the new directory will be unique from the previous.
+
 ```
 templates
 ├── oscp
@@ -41,9 +27,24 @@ templates
     └── web-300-lab
 ```
 
-:trophy: Mad props and respect to [noraj for the "Offensive Security Exam Report Template in Markdown"](https://github.com/noraj/OSCP-Exam-Report-Template-Markdown).  This project is included in AutoRpt.
+AutoRpt enforces a consistent, dependable workflow for engagement note-taking and report writing.
+It does this by managing a base directory structure with note and report templates.  All wrapped in a sleak 1980's menu system.  The workflow is terminal friendly to keep your head in the engagement and not juggling various interfaces.
 
-:warning: use at your own risk.
+The main focus is easing the process associated with InfoSec certification exams such as the OSCP or PNPT, though many others are supported.  It also covers training and CTF on common InfoSec platforms like Hack the Box, Try Hack Me, or Proving grounds to name but a few.  Bug bounty hunting and penetration tests are also use case options but are considered work in progress.
+
+:trophy: Mad props and respect to [noraj for the "Offensive Security Exam Report Template in Markdown"](https://github.com/noraj/OSCP-Exam-Report-Template-Markdown).  Portions of that repository are included in AutoRpt.
+
+:warning: It's your responsibility to ensure the final report, archive, and all work products are complete and accurate before any submission.  While every attempt has been made to reduce bugs they are still an unfortunately possibility.
+
+
+![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-1.jpeg "AutoRpt startup screenshot for an OSCP exam attempt")
+
+The following directory structure with canned template files is created after completing the prompts in `autorpt startup`.  
+![startup2](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-2.jpeg "Resulting directory structure created")
+
+This directory can be opened as an Obsidian vault.  It's canned files are templates to guide your note taking and report writing process.  Boilerplate tags are automatically replaced when producing the final report file format.
+![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/20-obsidian-0.jpeg "Using Obsidian to write your report with canned files")
+
 
 ---
 
