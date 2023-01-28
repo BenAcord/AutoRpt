@@ -31,9 +31,11 @@ def get_version():
 def dictionary_to_menu(dictionary):
     """ Helper to convert a dictionary to menu item listing. """
     i = 0
+
     for item in dictionary.split(','):
         color_menu_item(str(i) + ".  " + item)
         i += 1
+
     color_menu_item('99 for main menu')
     return i
 
@@ -41,10 +43,12 @@ def section_to_menu(section):
     """ Helper to convert a section to menu item listing. """
     i = 0
     items = []
+
     for item in section:
         color_menu_item(str(i) + ".  " + section[item])
         items.append(section[item])
         i += 1
+
     color_menu_item('99 for main menu')
     return items
 

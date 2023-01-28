@@ -46,7 +46,7 @@ def startup():
         main.main_menu()
     else:
         engagement_type = cfg.CONFIG_VALUES['Settings']['types'].split(',')[picker]
-    
+
     set_default_template_path(engagement_type, student_name, student_email)
     cfg.get_the_active_engagement()
     time.sleep(0.5)

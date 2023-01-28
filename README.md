@@ -57,6 +57,13 @@ This directory can be opened as an Obsidian vault.  It's canned files are templa
 
 ---
 
+## Upgrade
+If you have a clone or release pre-v1.1.3, do these two steps.  This will update your home directory config.toml with the latest values.
+
+(1) `git pull` to get the latest code.
+(2) run `autorpt upgrade` after pulling the latest from the repo.
+
+
 ## Install
 A work-in-progress shell script is included which is intended to automate the dependencies and setup.  The example here uses /opt as AutoRpt's install home.
 
