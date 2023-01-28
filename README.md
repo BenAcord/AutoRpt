@@ -108,6 +108,10 @@ Startup is required before using any other parameters, excluding help and settin
 
 3. `autorpt.py vuln` A submenu for logging confirmed vulnerabilities and assigning a CVSS 3 score and MITRE ATT&CK Framework tactic and technique.  Recorded vulnerabilities are stored in a vulns.csv file and automatically injected into the final report as a table.
 
+If you take an extended break and forget where you left off, no worries, use `autorpt active` to display information of the last engagement.
+![active](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/6-active.jpeg "Active engagement")
+
+
 4. `autorpt.py sitrep` Track your status and activity throughout the engagement.  You can quickly add a status or review the log to see the history of activities.  Yes, I realize this isn't a real sitrep report.  This is a markdown file to ease visibility.
 
 5. `autorpt.py finalize` During the exam report window AutoRpt generates a final report PDF and 7z archive from your markdown files.  Other file formats are supported: Jira, odt, docx, and common markdown.
