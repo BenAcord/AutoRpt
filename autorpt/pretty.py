@@ -32,6 +32,14 @@ def clear_screen():
     """Function to clear screen text"""
     _ = subprocess.call('clear' if os.name == 'posix' else 'cls')
 
+def out_info(field, msg):
+    """
+    Clean info level logging to the screen.
+    Field - 40 string characters indicating an action or information
+    Msg   - 35+ string characters most likely of a status
+    """
+    print(f"[i] {field:40s} {msg:35s}")
+
 def color_header(this_msg):
     """Function to format header text"""
     print(f"\n{term.bold_bright_blue}{this_msg}{term.normal}\n")
