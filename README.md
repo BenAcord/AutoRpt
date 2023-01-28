@@ -8,7 +8,7 @@ The workflow is terminal friendly to keep your head in the engagement and not ju
 
 ![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-1.jpeg "AutoRpt startup screenshot for an OSCP exam attempt")
 
-This creates the following directory structure with canned template files which can be opened as an Obsidian vault.
+The following directory structure with canned template files is created after completing the prompts in `autorpt startup`.  This directory can be opened as an Obsidian vault.
 ![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/2-startup-2.jpeg "Resulting directory structure created")
 
 AutoRpt creates unique working directories from these templates.  If you retake a course or certification exam the new directory will be unique from the previous.
@@ -65,7 +65,7 @@ These dependencies will be added with setup.sh.
 - pandoc-data
 - texlive
 - texlive-xetex
-- pip: cvss blessings colorama pyperclip packaging pandas openpyxl ijson
+- pip: cvss blessings colorama pyperclip packaging pandas openpyxl ijson py7zr plotext
 
 Highly recommend:
 :hammer_and_wrench: [AutoRecon](https://github.com/Tib3rius/AutoRecon)
@@ -107,7 +107,6 @@ Startup is required before using any other parameters, excluding help and settin
    
 7. `autorpt.py whathaveidone` will list the status of all engagements recorded to-date.  This is a convenient way to keep track of what you've accomplished over time.
 ![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/whathaveidone-00.jpg "Audit trail summary")
-![startup](https://github.com/BenAcord/wiki-images/raw/main/AutoRpt/whathaveidone-01.jpg "Audit trail details")
 
 
 ## Contributing
