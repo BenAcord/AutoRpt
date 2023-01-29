@@ -69,7 +69,7 @@ A work-in-progress shell script is included which is intended to automate the de
 
 ### Dependencies & Caveats
 AutoRpt has only been tested on Kali Linux.
-These dependencies will be added with setup.sh.
+These dependencies will be added with `setup.sh`.
 - p7zip
 - xclip
 - pandoc
@@ -83,15 +83,37 @@ Highly recommend:
 :hammer_and_wrench: [Flameshot](https://flameshot.org/)
 :hammer_and_wrench: [Obsidian](https://obsidian.md/)
 
-### Clone the repo & run setup
+### 1. Clone the repo
 ```Bash
 cd /opt
 sudo mkdir AutoRpt
 # Set your user and group as owner.
 sudo chown kali:kali AutoRpt
+# Clone
 git clone https://github.com/BenAcord/AutoRpt.git
+```
+
+### 2. Run Setup
+```Bash
 cd AutoRpt
 ./setup.sh
+```
+
+### 3. Verify successful installation
+```Bash
+autorpt help
+```
+
+### 4. Personalize Settings
+```Bash
+autorpt
+# Follow these settings, one-by-one.
+Pick option 6 # Pick 6for Settings
+Pick option 1 # for Application-level settings
+Pick option 2 # to set your full name, follow the prompts
+Pick option 3 # if you have a student ID that carries to everything
+Pick option 4 # to set your email address.  Leave blank if you use different accounts for various use cases (e.g. bug bounty, training)
+Pick option 5 # to set the preferred report format (e.g. pdf, pdf+7z, GitHub Markdown)
 ```
 
 ## Usage
