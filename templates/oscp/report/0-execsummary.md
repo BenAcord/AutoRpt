@@ -1,5 +1,5 @@
 ---
-title: "Offensive Security Certified Professional Exam Report"
+title: "BOILERPLATE_AUTHOR Offensive Security Certified Professional Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Penetration Testing with Kali Linux"

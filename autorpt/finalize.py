@@ -80,11 +80,11 @@ def confirm_identity(active):
                 " if required?\n(eg. OS-12345, N/A)"
             )
             cfg.SESSION[active]['student_id'] = str(input('>  '))
-        else:
-            color_notice(
-                "Student ID pulled from session file as "
-                + cfg.SESSION[active]['student_id']
-            )
+#        else:
+#            color_notice(
+#                "Student ID pulled from session file as "
+#                + cfg.SESSION[active]['student_id']
+#            )
 
     if cfg.SESSION[active]['student_email'] == '':
         color_notice("What is your full email address?")
@@ -244,11 +244,11 @@ def replace_boilerplate(replace_values):
             active.split('-')[2],
             file_contents
         )
-        file_contents = re.sub(
-            'BOILERPLATE_OSID',
-            '',
-            file_contents
-        )
+        #file_contents = re.sub(
+        #    'BOILERPLATE_OSID',
+        #    '',
+        #    file_contents
+        #)
         file_contents = re.sub(
             'BOILERPLATE_OSID',
             cfg.SESSION[active]['student_id'],

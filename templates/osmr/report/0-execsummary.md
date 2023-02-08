@@ -1,5 +1,5 @@
 ---
-title: "Offensive Security macOS Researcher Exam Report"
+title: "BOILERPLATE_AUTHOR Offensive Security macOS Researcher Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Offensive Security macOS Researcher"

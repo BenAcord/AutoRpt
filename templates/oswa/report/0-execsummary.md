@@ -1,5 +1,5 @@
 ---
-title: "Offensive Security Web Assessor Exam Report"
+title: "BOILERPLATE_AUTHOR Offensive Security Web Assessor Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Offensive Security Web Assessor"

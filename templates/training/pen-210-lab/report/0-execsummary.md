@@ -1,10 +1,10 @@
 ---
-title: "PEN-210 Lab Report"
+title: "BOILERPLATE_AUTHOR PEN-210 Lab Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
-subject: "PEN-210 Lab Report"
+subject: "Offensive Security Wireless Attacks"
 keywords: [wireless security, penetration testing]
-subtitle: "PEN-210 Lab Report"
+subtitle: "Offensive Security Wireless Attacks"
 lang: "en"
 titlepage: true
 titlepage-color: "FF8C00"
@@ -26,11 +26,11 @@ No part of this publication, in whole or in part, may be reproduced, copied, tra
 
 ## Introduction
 
-The Offensive Security OSWP exam documentation contains all efforts that were conducted in order to pass the Offensive Security Wireless Professional exam. This report will be graded from a standpoint of correctness and fullness to all aspects of the exam. The purpose of this report is to ensure that the student has the technical knowledge required to pass the qualifications for the Offensive Security Wireless Professional certification.
+The Offensive Security PEN-210 lab documentation contains all efforts that were conducted in order to pass the Offensive Security Wireless Attacks course. This report will be graded from a standpoint of correctness and fullness to all aspects of the course. The purpose of this report is to ensure that the student has the technical knowledge required to pass the qualifications for the Offensive Security Wireless Attacks certification.
 
 ## Requirements
 
-You are required to fill out this exam documentation fully and to include the following sections:
+You are required to fill out this documentation fully and to include the following sections:
 
 -   Methodology walkthrough and detailed outline of steps taken
     

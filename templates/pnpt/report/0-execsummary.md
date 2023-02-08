@@ -1,6 +1,6 @@
 ---
 title: "Practical Network Penetration Tester Exam Report"
-author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
+author: ["BOILERPLATE_AUTHOR", "BOILERPLATE_EMAIL"]
 date: "BOILERPLATE_DATE"
 subject: "Practical Network Penetration Tester"
 keywords: [network penetration testing, osint, PNPT]

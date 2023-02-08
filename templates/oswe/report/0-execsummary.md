@@ -1,5 +1,5 @@
 ---
-title: "Offensive Security Web Expert Exam Report"
+title: "BOILERPLATE_AUTHOR Offensive Security Web Expert Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Advanced Web Attacks and Exploitation"

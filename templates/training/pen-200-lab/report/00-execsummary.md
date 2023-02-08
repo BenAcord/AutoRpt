@@ -1,10 +1,10 @@
 ---
-title: "PEN-200 Lab Report"
-author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
+title: "BOILERPLATE_AUTHOR PEN-200 Lab Report"
+author: [BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Penetration Testing with Kali Linux"
 keywords: [network penetration testing, buffer overflow]
-subtitle: "PEN-200 Lab Report"
+subtitle: "Penetration Testing with Kali Linux"
 lang: "en"
 titlepage: true
 titlepage-color: "1E90FF"
@@ -23,11 +23,11 @@ No part of this publication, in whole or in part, may be reproduced, copied, tra
 
 ## Introduction
 
-The Offensive Security Exam penetration test report contains all efforts that were conducted in order to pass the Offensive Security exam.  This report will be graded from a standpoint of correctness and fullness to all aspects of the exam.  The purpose of this report is to ensure that the student has a full understanding of penetration testing methodologies as well as the technical knowledge to pass the qualifications for the Offensive Security Certified Professional.
+The Offensive Security lab penetration test report contains all efforts that were conducted in order to complete the Offensive Security course.  This report will be graded from a standpoint of correctness and fullness to all aspects of the lab.  The purpose of this report is to ensure that the student has a full understanding of penetration testing methodologies as well as the technical knowledge to pass the qualifications for the Offensive Security Certified Professional.
 
 ## Objective
 
-The objective of this assessment is to perform an internal penetration test against the Offensive Security Exam network.  The student is tasked with following methodical approach in obtaining access to the objective goals.  This test should simulate an actual penetration test and how you would start from beginning to end, including the overall report.  
+The objective of this assessment is to perform an internal penetration test against the Offensive Security lab network.  The student is tasked with following methodical approach in obtaining access to the objective goals.  This test should simulate an actual penetration test and how you would start from beginning to end, including the overall report.  
 
 An example page has already been created for you at the latter portions of this document that should give you ample information on what is expected to pass this course.  Use the sample report as a guideline to get you through the reporting.
 
@@ -42,9 +42,9 @@ The student will be required to fill out this penetration testing report fully a
 
 # High-Level Summary
 
-I was tasked with performing an internal penetration test towards Offensive Security Exam.
+I was tasked with performing an internal penetration test towards Offensive Security course.
 An internal penetration test is a dedicated attack against internally connected systems.
-The focus of this test is to perform attacks, similar to those of a hacker and attempt to infiltrate Offensive Security's internal exam systems - the THINC.local domain.
+The focus of this test is to perform attacks, similar to those of a hacker and attempt to infiltrate Offensive Security's internal lab systems - the THINC.local domain.
 My overall objective was to evaluate the network, identify systems, and exploit flaws while reporting the findings back to Offensive Security.
 
 BOILERPLATE_VULNS_CHART
@@ -61,14 +61,14 @@ BOILERPLATE_VULNS_RECOMMENDATIONS
 
 # Methodologies
 
-I utilized a widely adopted approach to performing penetration testing that is effective in testing how well the Offensive Security Exam environments is secured.  Below is a breakout of how I was able to identify and exploit the variety of systems and includes all individual vulnerabilities found.
+I utilized a widely adopted approach to performing penetration testing that is effective in testing how well the Offensive Security lab environments is secured.  Below is a breakout of how I was able to identify and exploit the variety of systems and includes all individual vulnerabilities found.
 
 ## Information Gathering
 
-The information gathering portion of a penetration test focuses on identifying the scope of the penetration test.  During this penetration test, I was tasked with exploiting the exam network.
+The information gathering portion of a penetration test focuses on identifying the scope of the penetration test.  During this penetration test, I was tasked with exploiting the lab network.
 The specific IP addresses were:
 
-**Exam Network**
+**Lab Network**
 
 BOILERPLATE_TARGETS_LIST
 
@@ -85,8 +85,7 @@ Maintaining access to a system is important to us as attackers, ensuring that we
 
 The house cleaning portions of the assessment ensures that remnants of the penetration test are removed. Often fragments of tools or user accounts are left on an organization's computer which can cause security issues down the road. Ensuring that we are meticulous and no remnants of our penetration test are left over is important.
 
-After collecting trophies from the exam network was completed, I removed all user accounts and passwords as well as the Meterpreter services installed on the system.
+After collecting trophies from the lab network was completed, I removed all user accounts and passwords as well as the Meterpreter services installed on the system.
 
 Offensive Security should not have to remove any user accounts or services from the system.
 
-# Details

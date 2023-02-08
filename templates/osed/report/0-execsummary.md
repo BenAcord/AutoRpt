@@ -1,5 +1,5 @@
 ---
-title: "Offensive Security Exploit Developer Exam Report"
+title: "BOILERPLATE_AUTHOR Offensive Security Exploit Developer Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Windows User Mode Exploit Development"

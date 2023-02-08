@@ -1,5 +1,5 @@
 ---
-title: "Offensive Security Experienced Penetration Tester Exam Report"
+title: "BOILERPLATE_AUTHOR Offensive Security Experienced Penetration Tester Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Evasion Techniques and Breaching Defenses"

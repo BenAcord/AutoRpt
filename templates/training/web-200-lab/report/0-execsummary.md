@@ -1,10 +1,10 @@
 ---
-title: "WEB-200 Lab Report"
+title: "BOILERPLATE_AUTHOR WEB-200 Lab Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Web Attacks with Kali Linux"
 keywords: [web application security, white box penetration testing]
-subtitle: "WEB-200 Lab Report"
+subtitle: "Web Attacks with Kali Linux"
 lang: "en"
 titlepage: true
 titlepage-color: "FF8C00"
@@ -24,20 +24,15 @@ No part of this publication, in whole or in part, may be reproduced, copied, tra
 ## Introduction
 
 The Offensive Security WEB-200 lab documentation contains all efforts that were conducted in
-order to pass the Offensive Security Web Expert exam. This report will be graded from a
-standpoint of correctness and fullness to all aspects of the exam. The purpose of this report is
-to ensure that the student has the technical knowledge required to pass the qualifications for
-the Offensive Security Web Expert certification.
+order to pass the Offensive Security Web Attacks with Kali Linux course. This report will be graded from a standpoint of correctness and fullness to all aspects of the lab. The purpose of this report is to ensure that the student has the technical knowledge required to pass the qualifications for the Offensive Security Web Expert certification.
 
 ## Objective
 
-The objective of this assessment is to perform a white-box penetration test the Offensive Security Exam network.
-The student is tasked with following methodical approach in obtaining access to the objective goals.
-This test should simulate an actual white-box penetration test with Proof of Concept and how you would start from beginning to end, including the overall report.
+The objective of this assessment is to perform a white-box penetration test the Offensive Security lab network.  The student is tasked with following methodical approach in obtaining access to the objective goals.  This test should simulate an actual white-box penetration test with Proof of Concept and how you would start from beginning to end, including the overall report.
 
 ## Requirements
 
-The student will be required to fill out this exam documentation fully and to include the
+The student will be required to fill out this lab documentation fully and to include the
 following sections:
 
 - Methodology walkthrough and detailed outline of steps taken
@@ -47,8 +42,7 @@ applicable.
 
 # High-Level Summary
 
-I was tasked with performing a white-box penetration test towards Offensive Security Exam.
-A white-box penetration test is sifting through the massive amount of data available to identify potential points of weakness.  The focus of this test is to provide a comprehensive assessment of both internal and external vulnerabilities.  My overall objective was to evaluate the application, identify vulnerabilities, and write automated exploit while reporting the findings back to Offensive Security.
+I was tasked with performing a white-box penetration test towards Offensive Security Web Attacks with Kali Linux course lab.  A white-box penetration test is sifting through the massive amount of data available to identify potential points of weakness.  The focus of this test is to provide a comprehensive assessment of both internal and external vulnerabilities.  My overall objective was to evaluate the application, identify vulnerabilities, and write automated exploit while reporting the findings back to Offensive Security.
 
 BOILERPLATE_VULNS_CHART
 
@@ -60,8 +54,7 @@ BOILERPLATE_VULNS_TABLE
 
 ## Recommendations
 
-I recommend patching the vulnerabilities identified during the testing to ensure that an attacker cannot exploit these systems in the future.
-One thing to remember is that these systems require frequent patching and once patched, should remain on a regular patch program to protect additional vulnerabilities that are discovered at a later date.
+I recommend patching the vulnerabilities identified during the testing to ensure that an attacker cannot exploit these systems in the future.  One thing to remember is that these systems require frequent patching and once patched, should remain on a regular patch program to protect additional vulnerabilities that are discovered at a later date.
 
 BOILERPLATE_VULNS_RECOMMENDATIONS
 

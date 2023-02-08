@@ -1,10 +1,10 @@
 ---
-title: "Offensive Security WEB-300 Lab Report"
+title: "BOILERPLATE_AUTHOR WEB-300 Lab Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Advanced Web Attacks and Exploitation"
 keywords: [web application security, white box penetration testing]
-subtitle: "WEB-300 Lab Report"
+subtitle: "Advanced Web Attacks and Exploitation"
 lang: "en"
 titlepage: true
 titlepage-color: "FF8C00"
@@ -24,18 +24,15 @@ No part of this publication, in whole or in part, may be reproduced, copied, tra
 ## Introduction
 
 The Offensive Security WEB-300 lab documentation contains all efforts that were conducted in
-order to pass the Offensive Security Web Expert exam. This report will be graded from a
-standpoint of correctness and fullness to all aspects of the exam. The purpose of this report is
-to ensure that the student has the technical knowledge required to pass the qualifications for
-the Offensive Security Web Expert certification.
+order to pass the Offensive Security Advanced Web Attacks and Exploitation lab. This report will be graded from a standpoint of correctness and fullness to all aspects of the course. The purpose of this report is to ensure that the student has the technical knowledge required to complete the qualifications for the Offensive Security Advanced Web Attacks and Exploitation course.
 
 ## Objective
 
-The objective of this assessment is to perform a white-box penetration test the Offensive Security Exam network.  The student is tasked with following methodical approach in obtaining access to the objective goals.  This test should simulate an actual white-box penetration test with Proof of Concept and how you would start from beginning to end, including the overall report.
+The objective of this assessment is to perform a white-box penetration test the Offensive Security lab network.  The student is tasked with following methodical approach in obtaining access to the objective goals.  This test should simulate an actual white-box penetration test with Proof of Concept and how you would start from beginning to end, including the overall report.
 
 ## Requirements
 
-The student will be required to fill out this exam documentation fully and to include the
+The student will be required to fill out this lab documentation fully and to include the
 following sections:
 
 - Methodology walkthrough and detailed outline of steps taken

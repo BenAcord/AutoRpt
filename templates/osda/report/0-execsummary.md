@@ -1,5 +1,5 @@
 ---
-title: "Offensive Security Defense Analyst Exam Report"
+title: "BOILERPLATE_AUTHOR Offensive Security Defense Analyst Exam Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Offensive Security Defense Analyst"

@@ -1,10 +1,10 @@
 ---
-title: "PEN-300 Lab Report"
+title: "BOILERPLATE_AUTHOR PEN-300 Lab Report"
 author: ["BOILERPLATE_EMAIL", "OSID: BOILERPLATE_OSID"]
 date: "BOILERPLATE_DATE"
 subject: "Evasion Techniques and Breaching Defenses"
 keywords: [phishing, red team, network penetration testing, active directory]
-subtitle: "PEN-300 Lab Report"
+subtitle: "Evasion Techniques and Breaching Defenses"
 lang: "en"
 titlepage: true
 titlepage-color: "DC143C"
@@ -23,19 +23,18 @@ No part of this publication, in whole or in part, may be reproduced, copied, tra
 
 ## Introduction
 
-The Offensive Security PEN-300 lab documentation contains all efforts that were conducted in order to pass the Offensive Security Experienced Penetration Tester exam.
-This report will be graded from a standpoint of correctness and fullness to all aspects of the exam.
-The purpose of this report is to ensure that the student has the technical knowledge required to pass the qualifications for the Offensive Security Experienced Penetration Tester certification.
+The Offensive Security PEN-300 lab documentation contains all efforts that were conducted in order to pass the Offensive Security Evasion Techniques and Breaching Defenses course.
+This report will be graded from a standpoint of correctness and fullness to all aspects of the course.  The purpose of this report is to ensure that the student has the technical knowledge required to complete the qualifications for the Offensive Security Evasion Techniques and Breaching Defenses.
 
 ## Objective
 
-The objective of this assessment is to perform an external penetration test against the Offensive Security Exam network.  The student is tasked with following methodical approach in obtaining access to the objective goals.  This test should simulate an actual penetration test and how you would start from beginning to end, including enumeration and post-exploitation.  The exam report is not meant to be a penetration test report, but rather a writeup of the steps taken to locate, enumerate and compromise the network.  Enumeration and post-exploitation actions that lead to subsequent attacks with successful compromises should be included in the report.  
+The objective of this assessment is to perform an external penetration test against the Offensive Security lab network.  The student is tasked with following methodical approach in obtaining access to the objective goals.  This test should simulate an actual penetration test and how you would start from beginning to end, including enumeration and post-exploitation.  The lab report is not meant to be a penetration test report, but rather a writeup of the steps taken to locate, enumerate and compromise the network.  Enumeration and post-exploitation actions that lead to subsequent attacks with successful compromises should be included in the report.  
 
-An example page has already been created for you at the latter portions of this document that should give you ample information on what is expected to pass this exam.  Use the sample report as a guideline to get you through the reporting.
+An example page has already been created for you at the latter portions of this document that should give you ample information on what is expected to pass this course.  Use the sample report as a guideline to get you through the reporting.
 
 ## Requirements
 
-The student will be required to fill out this exam documentation fully and to include the following sections:
+The student will be required to fill out this lab documentation fully and to include the following sections:
 
 - High level summery of findings, including the depth of compromise.
 - Methodology walkthrough and detailed outline of steps taken including enumeration.
