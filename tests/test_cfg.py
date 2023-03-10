@@ -4,7 +4,7 @@ test_work.py
 Verify module use.
 """
 
-import autorpt_cfg as cfg
+from autorpt import cfg
 
 def test_active_path():
     """ Verify variable: ACTIVE_PATH """

@@ -5,12 +5,7 @@ Verify output formatting module.
 """
 
 import pytest
-import autorpt_pretty as out
-
-def test_helper():
-    """Test"""
-    with pytest.raises(SystemExit):
-        out.helper()
+from autorpt import pretty as out
 
 def test_banner():
     """Test"""
