@@ -60,28 +60,28 @@ This directory can be opened as an Obsidian vault.  It's canned files are templa
 ## Upgrade
 If you have a clone or release pre-v1.1.3, do these two steps.  This will update your home directory config.toml with the latest values.
 
-(1) `git pull` to get the latest code.
-(2) run `autorpt upgrade` after pulling the latest from the repo.
+0. Ensure your OS is updated with `sudo apt-get update -y && sudo apt-get upgrade -y`.
+1. `git pull` to get the latest code.
+2. run `autorpt upgrade` after pulling the latest from the repo.
 
 
 ## Install
+
 A work-in-progress shell script is included which is intended to automate the dependencies and setup.  The example here uses /opt as AutoRpt's install home.
 
 ### Dependencies & Caveats
-AutoRpt has only been tested on Kali Linux.
-These dependencies will be added with `setup.sh`.
-- p7zip
-- xclip
-- pandoc
-- pandoc-data
-- texlive
-- texlive-xetex
-- pip: cvss blessings colorama pyperclip packaging pandas openpyxl ijson py7zr plotext
+AutoRpt has only been tested on Kali Linux and Ubuntu 22.04.  A list of application dependencies may be found in the setup.sh script.  Python dependencies are listed in the pyproject.toml file.
 
-Highly recommend:
+
+Highly recommended:
 :hammer_and_wrench: [AutoRecon](https://github.com/Tib3rius/AutoRecon)
 :hammer_and_wrench: [Flameshot](https://flameshot.org/)
 :hammer_and_wrench: [Obsidian](https://obsidian.md/)
+
+### 0. Update repos & upgrade
+```Bash
+sudo apt-get update -y && sudo apt-get upgrade -y
+```
 
 ### 1. Clone the repo
 ```Bash
@@ -108,7 +108,7 @@ autorpt help
 ```Bash
 autorpt
 # Follow these settings, one-by-one.
-Pick option 6 # Pick 6for Settings
+Pick option 6 # Pick 6 for Settings
 Pick option 1 # for Application-level settings
 Pick option 2 # to set your full name, follow the prompts
 Pick option 3 # if you have a student ID that carries to everything
