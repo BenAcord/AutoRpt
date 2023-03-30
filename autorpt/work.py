@@ -221,68 +221,89 @@ def sitrep_menu():
 
 def whathaveidone():
     """Summary analysis of session engagements."""
-    # Super secret functionality.  jk.
-    this_dataframe = pd.DataFrame({})
+
+    status_type_df = pd.DataFrame({})
+    status_platform_df = pd.DataFrame({})
     status = []
     types = []
     platforms = []
 
     for key in cfg.SESSION.sections():
         if key not in ['DEFAULT', 'Current']:
-            # to dataframe for analysis
             status.append(cfg.SESSION[key]['status'])
             types.append(cfg.SESSION[key]['type'])
             platforms.append(cfg.SESSION[key]['platform'])
 
-    new_row = {'STATUS': status, 'TYPE': types, 'PLATFORM': platforms}
-    this_dataframe = pd.DataFrame(new_row)
+    new_row = {'STATUS': status, 'TYPE': types, 'COUNT': platforms}
+    status_type_df = pd.DataFrame(new_row)
+
+    new_row = {'STATUS': status, 'COUNT': types, 'PLATFORM': platforms}
+    status_platform_df = pd.DataFrame(new_row)
+
     color_header("Activity Summary")
-    pivot = this_dataframe.pivot_table(
-        index=['TYPE', 'STATUS'],
-        values=['PLATFORM'],
-        aggfunc='count'
-    ).rename(columns={'PLATFORM': 'COUNT'})
-    color_notice(pivot)
+    color_notice(
+        pd.pivot_table(status_type_df,
+            index=['TYPE'],
+            columns=['STATUS'],
+            aggfunc='count',
+            values=['COUNT'],
+            fill_value=0,
+            margins=True,
+            dropna=True
+        )
+    )
 
     color_notice(
         f'\n{term.bold}Total number of enagements: '
-        f'{this_dataframe.shape[0]}{term.normal}\n'
-    ) # row count
-
-    color_subheading("Count of engagements by Status")
-    color_notice(
-        this_dataframe.STATUS.value_counts().to_string(index=True)
+        f'{status_type_df.shape[0]}{term.normal}\n'
     )
-
-    color_subheading("\nCount of engagements by Type")
-    color_notice(this_dataframe.TYPE.value_counts().to_string(index=True))
 
     color_subheading("\nCount of engagements by Platform")
     color_notice(
-        this_dataframe.PLATFORM.value_counts().to_string(index=True)
+        pd.pivot_table(status_platform_df,
+            index=['PLATFORM'],
+            columns=['STATUS'],
+            aggfunc='count',
+            values=['COUNT'],
+            fill_value=0,
+            margins=True,
+            dropna=True
+        )
     )
 
+    if status_type_df.shape[0] >= 100:
+        color_notice(
+            f"\nDo you want to see a summary of all {status_type_df.shape[0]} entries?  [ Y | N ]"
+        )
+        picker = input('>  ')
+        if picker not in [ "Y", "y", "Yes", ]:
+            sys.exit(0)
+
     color_subheading("\nDetails")
+    session_details = {}
     for key in cfg.SESSION.sections():
         if key not in ['DEFAULT', 'Current']:
-            # Either keep as is, a simple print, or add to dataframe and sort by status.
-            # Currently sorted by age, oldest to most recent.
-            if "Finalized" == cfg.SESSION[key]['status']:
-                #color_pass(session[key]['status'], key)
-                print(
-                    f'{term.red}'
-                    f'{cfg.SESSION[key]["status"]:15} '
-                    f'{key}{term.normal}'
-                )
-            elif "Started" == cfg.SESSION[key]['status']:
-                print(
-                    f'{term.bright_green}'
-                    f'{cfg.SESSION[key]["status"]:15}\t'
-                    f'{key}{term.normal}'
-                )
-            else:
-                print(
-                    f"{term.bright_yellow}"
-                    f'{cfg.SESSION[key]["status"]:15}\t'
-                    f'{key}{term.normal}'
-                )
+            session_details[key] = cfg.SESSION[key]['status']
+
+
+    sorted_by_status = dict(sorted(session_details.items(), key=lambda item: item[1]))
+
+    for this_key, this_value in sorted_by_status.items():
+        if "Finalized" == this_value:
+            print(
+                f'{term.red}'
+                f'{this_value:15} '
+                f'{this_key}{term.normal}'
+            )
+        elif "Started" == this_value:
+            print(
+                f'{term.bright_green}'
+                f'{this_value:15}\t'
+                f'{this_key}{term.normal}'
+            )
+        else:
+            print(
+                f"{term.bright_yellow}"
+                f'{this_value:15}\t'
+                f'{this_key}{term.normal}'
+            )

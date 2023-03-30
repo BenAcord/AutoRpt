@@ -58,7 +58,7 @@ This directory can be opened as an Obsidian vault.  It's canned files are templa
 ---
 
 ## Upgrade
-If you have a clone or release pre-v1.1.3, do these two steps.  This will update your home directory config.toml with the latest values.
+If you have an existing clone or release pre-v1.1.3, do these two steps.  This will update your home directory config.toml with the latest values.
 
 0. Ensure your OS is updated with `sudo apt-get update -y && sudo apt-get upgrade -y`.
 1. `git pull` to get the latest code.
