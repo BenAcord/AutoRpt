@@ -11,6 +11,7 @@ import shutil
 import sys
 import re
 import pandas as pd
+import plotext as plt
 import autorpt.cfg as cfg # pylint: disable=import-error,consider-using-from-import
 import autorpt.main as main # pylint: disable=import-error,consider-using-from-import
 from autorpt.pretty import term, color_header, color_subheading, color_verify # pylint: disable=import-error
@@ -223,7 +224,7 @@ def whathaveidone():
     """Summary analysis of session engagements."""
 
     status_type_df = pd.DataFrame({})
-    status_platform_df = pd.DataFrame({})
+    #status_platform_df = pd.DataFrame({})
     status = []
     types = []
     platforms = []
@@ -237,39 +238,68 @@ def whathaveidone():
     new_row = {'STATUS': status, 'TYPE': types, 'COUNT': platforms}
     status_type_df = pd.DataFrame(new_row)
 
-    new_row = {'STATUS': status, 'COUNT': types, 'PLATFORM': platforms}
-    status_platform_df = pd.DataFrame(new_row)
+    #new_row = {'STATUS': status, 'COUNT': types, 'PLATFORM': platforms}
+    #status_platform_df = pd.DataFrame(new_row)
+
+    chart_data = dict(
+        sorted(
+            dict(
+                status_type_df.groupby('TYPE')['TYPE'].count()
+            ).items(), key=lambda x:x[1], reverse=True
+        )
+    )
+    # Show the chart.
+    plt.simple_bar(
+        chart_data.keys(),
+        chart_data.values(),
+        width = 85,
+        title = 'Chart of Activity Types'
+    )
+    plt.show()
+
 
     color_header("Activity Summary")
-    color_notice(
-        pd.pivot_table(status_type_df,
-            index=['TYPE'],
-            columns=['STATUS'],
-            aggfunc='count',
-            values=['COUNT'],
-            fill_value=0,
-            margins=True,
-            dropna=True
-        )
+    pivot_dataset = pd.pivot_table(
+        status_type_df,
+        index=['TYPE'],
+        columns=['STATUS'],
+        aggfunc='count',
+        values=['COUNT'],
+        fill_value=0,
+        margins=True,
+        dropna=True
     )
 
+    # Sorting does not work.
+    # Opt 1: sorted_pivot_dataset = pivot_dataset.sort_values(by='All', ascending=False)
+    # Opt 2:
+    #result = pivot_dataset.assign(
+    #    sortkey=pivot_dataset.index == 'All'
+    #).sort_values(
+    #    ['sortkey','All'],
+    #    ascending=[True, False]
+    #).drop('sortkey', axis=1)
+    #print(result)
+    #pivot_sorted = pivot_dataset.sort_values(('COUNT'), ascending=False)
     color_notice(
-        f'\n{term.bold}Total number of enagements: '
-        f'{status_type_df.shape[0]}{term.normal}\n'
+        pivot_dataset
     )
 
-    color_subheading("\nCount of engagements by Platform")
-    color_notice(
-        pd.pivot_table(status_platform_df,
-            index=['PLATFORM'],
-            columns=['STATUS'],
-            aggfunc='count',
-            values=['COUNT'],
-            fill_value=0,
-            margins=True,
-            dropna=True
-        )
-    )
+
+    # Not sure this adds much value any more with a high number of engagements.
+    #color_subheading("\nCount of engagements by Platform")
+    #color_notice(
+    #    pd.pivot_table(status_platform_df,
+    #        index=['PLATFORM'],
+    #        columns=['STATUS'],
+    #        aggfunc='count',
+    #        values=['COUNT'],
+    #        fill_value=0,
+    #        margins=True,
+    #        dropna=True
+    #    )
+    #)
+
 
     if status_type_df.shape[0] >= 100:
         color_notice(
